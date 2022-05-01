@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
                 if (username.getText().toString().equals("admin") && password.getText().toString().equals("admin")) {
 
                     Intent myIntent = new Intent(MainActivity.this, HomePage.class);
+//                    Intent myIntent = new Intent(MainActivity.this, Dashboard.class);
+
                     myIntent.putExtra("Username", username.getText().toString());
                     startActivity(myIntent);
                 }
