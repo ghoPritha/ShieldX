@@ -162,6 +162,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
+                    android:id="@+id/contactId"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_margin="8dp"

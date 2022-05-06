@@ -58,71 +58,78 @@
         android:id="@+id/scrollHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:overScrollMode="never"
         android:layout_margin="20dp"
+        android:overScrollMode="never"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/searchLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/searchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/trending_background"
+            android:orientation="vertical"
+            android:padding="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/destinationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/destination"
+                android:textColor="@color/colorPrimaryLight"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/searchDestination"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/searchDestination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/trending_background"
-                android:orientation="vertical"
-                android:padding="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="MissingConstraints">
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rectangular_background"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
 
-                <TextView
-                    android:id="@+id/destinationLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/destination"
-                    android:textColor="@color/colorPrimaryLight"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/searchDestination"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:hint="Enter a destination"
+                    android:imeOptions="actionSearch"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-                <LinearLayout
-                    android:id="@+id/searchDestination"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/rectangular_background"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/dashboardBackground"
+                    android:contentDescription="@string/app_name"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/colorPrimaryDark" />
 
-                    <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:hint="Enter a destination"
-                        android:imeOptions="actionSearch"
-                        android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:paddingStart="15dp"
-                        android:paddingEnd="15dp"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+            </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@color/dashboardBackground"
-                        android:contentDescription="@string/app_name"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_search"
-                        app:tint="@color/colorPrimaryDark" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:id="@+id/timeLayout"
@@ -130,9 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/trending_background"
-                app:layout_constraintEnd_toEndOf="@id/searchLayout"
-                app:layout_constraintStart_toStartOf="@id/searchLayout"
-                app:layout_constraintTop_toBottomOf="@id/searchLayout">
+                tools:ignore="MissingConstraints">
 
                 <TextView
                     android:id="@+id/timeTaken"
@@ -152,10 +157,10 @@
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/ic_add"
                     android:layout_marginStart="90dp"
+                    android:contentDescription="@string/app_name"
                     android:padding="5dp"
+                    android:src="@drawable/ic_add"
                     app:tint="@color/white" />
             </LinearLayout>
 
@@ -182,13 +187,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/ic_add"
                     android:layout_marginStart="170dp"
+                    android:contentDescription="@string/app_name"
                     android:padding="5dp"
+                    android:src="@drawable/ic_add"
                     app:tint="@color/white" />
             </LinearLayout>
 
@@ -216,25 +222,14 @@
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/ic_add"
                     android:layout_marginStart="170dp"
+                    android:contentDescription="@string/app_name"
                     android:padding="5dp"
+                    android:src="@drawable/ic_add"
                     app:tint="@color/white" />
 
             </LinearLayout>
-
-
-            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginTop="20dp"-->
-            <!--                android:background="@drawable/circular_background"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent">-->
-
-
-            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
@@ -279,8 +274,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/bottom_button"

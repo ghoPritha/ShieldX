@@ -21,18 +21,18 @@ public class MainActivity extends AppCompatActivity {
 
         EditText username = (EditText) findViewById(R.id.username);
         TextView password = (TextView) findViewById(R.id.password);
-        MaterialButton loginBtn = (MaterialButton) findViewById(R.id.loginbtn);
+        Button loginBtn = (Button) findViewById(R.id.loginbtn);
 
-        loginBtn.setOnClickListener(new View.OnClickListener(){
+        loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (username.getText().toString().equals("admin") && password.getText().toString().equals("admin")) {
 
-                    Intent myIntent = new Intent(MainActivity.this, HomePage.class);
-//                    Intent myIntent = new Intent(MainActivity.this, Dashboard.class);
+                    //                   Intent myIntent = new Intent(MainActivity.this, HomePage.class);
+                    Intent myIntent = new Intent(MainActivity.this, Dashboard.class);
 
-                    myIntent.putExtra("Username", username.getText().toString());
+                    //myIntent.putExtra("Username", username.getText().toString());
                     startActivity(myIntent);
                 }
 
