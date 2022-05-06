@@ -3,7 +3,7 @@
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="login_text">LOGIN</string>
-	<string name="home">Home</string>
+    <string name="home">Home</string>
     <string name="search_elements">search_elements</string>
     <string name="hello">Hello,</string>
     <string name="name">John</string>
