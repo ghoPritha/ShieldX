@@ -177,6 +177,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
+                    android:id="@+id/addFollowers"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_margin="8dp"
@@ -284,23 +285,34 @@
                     android:text="@string/newActivity"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
+                    android:padding="10dp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <Button
+                <ImageView
                     android:id="@+id/newActivityButton"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
-                    android:padding="5dp"
                     app:tint="@color/white"
-                    android:layout_marginStart="170dp"
+                    android:layout_marginStart="150dp"
                     app:layout_constraintStart_toEndOf="@+id/newActivity"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintBottom_toBottomOf="parent" />
+<!--                <Button-->
+<!--                    android:id="@+id/newActivityButton"-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:contentDescription="@string/app_name"-->
+<!--                    android:src="@drawable/ic_add"-->
+<!--                    android:padding="5dp"-->
+<!--                    app:tint="@color/white"-->
+<!--                    android:layout_marginStart="170dp"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/newActivity"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"/>-->
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

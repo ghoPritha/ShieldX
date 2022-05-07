@@ -1,6 +1,7 @@
 package com.example.shieldx;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
@@ -14,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class HomePage extends AppCompatActivity {
 
-    private static final int PICK_CONTACT = 0;
+    ImageView addFollower;
+    ImageView newActivityButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +26,7 @@ public class HomePage extends AppCompatActivity {
 //        TextView text1 = (TextView) findViewById(R.id.text);
 //        text1.setText("Hi " + text);
 
-        Button newActivityButton = (Button)findViewById(R.id.newActivityButton);
+        newActivityButton= (ImageView) findViewById(R.id.newActivityButton);
         newActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,16 +36,14 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
-//        ImageView img = (ImageView) findViewById(R.id.contactId);
-//        img.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                // your code here
-//                Intent intent= new Intent(Intent.ACTION_PICK,  ContactsContract.Contacts.CONTENT_URI);
-//
-//                startActivityForResult(intent, PICK_CONTACT);
-//
-//            }
-//        });
+        addFollower = (ImageView) findViewById(R.id.addFollowers);
+        addFollower.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(HomePage.this, AddFollower.class);
+                startActivity(myIntent);
+            }
+        });
     }
 //    @Override
 //    public void onActivityResult(int reqCode, int resultCode, Intent data) {
