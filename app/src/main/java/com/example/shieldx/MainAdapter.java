@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
-    //Intialize
-
+    //Initialize variable
     Activity activity;
-    ArrayList<ContactModel> arrayList;
+    ArrayList<ContactModel> arrayList = new ArrayList<>();
 
+    //create constructor
     public MainAdapter(Activity activity, ArrayList<ContactModel> arrayList) {
         this.activity = activity;
         this.arrayList = arrayList;
@@ -27,18 +27,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     @NonNull
     @Override
     public MainAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //Intialize
-    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact,parent,false);
-
+        //Initialize view
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
+        //Return view
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MainAdapter.ViewHolder holder, int position) {
-//Initialize Contact Model
+        //Initialize Contact Model
         ContactModel model = arrayList.get(position);
+        //set name
         holder.tvName.setText(model.getName());
-
+        //set number
         holder.tvNumber.setText(model.getNumber());
     }
 
@@ -50,10 +51,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvNumber;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName= itemView.findViewById(R.id.tv_name);
-            tvName= itemView.findViewById(R.id.tv_number);
+            //assign variable
+            tvName = itemView.findViewById(R.id.tv_name);
+            tvNumber = itemView.findViewById(R.id.tv_number);
         }
     }
 }
