@@ -144,7 +144,7 @@
                 <!--                tools:layout_editor_absoluteY="4dp" />-->
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/homeImage"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_margin="8dp"
@@ -227,7 +227,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutSomething"
+                android:id="@+id/layoutMyFollower"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
@@ -267,13 +267,14 @@
 
             <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="144dp"
                 android:background="@drawable/trending_background"
-                android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="@id/layoutSomething"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="@id/layoutMyFollower"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/layoutHome"
                 app:layout_constraintTop_toBottomOf="@id/layoutFavorites">
 
@@ -282,38 +283,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:padding="15dp"
                     android:text="@string/newActivity"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
-                    android:padding="10dp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <ImageView
                     android:id="@+id/newActivityButton"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
+                    android:layout_marginStart="150dp"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
-                    app:tint="@color/white"
-                    android:layout_marginStart="150dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/newActivity"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-<!--                <Button-->
-<!--                    android:id="@+id/newActivityButton"-->
-<!--                    android:layout_width="60dp"-->
-<!--                    android:layout_height="60dp"-->
-<!--                    android:contentDescription="@string/app_name"-->
-<!--                    android:src="@drawable/ic_add"-->
-<!--                    android:padding="5dp"-->
-<!--                    app:tint="@color/white"-->
-<!--                    android:layout_marginStart="170dp"-->
-<!--                    app:layout_constraintStart_toEndOf="@+id/newActivity"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"/>-->
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:tint="@color/white" />
+            </LinearLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

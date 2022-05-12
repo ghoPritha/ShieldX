@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@color/dashboardBackground">
+    android:padding="20dp"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/contact_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:src="@drawable/ic_person"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,17 +32,14 @@
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:textColor="@color/teal_700"
-            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp" />
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -52,11 +50,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/circular_background"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/ic_delete"
             app:tint="@color/white" />
 
     </LinearLayout>
