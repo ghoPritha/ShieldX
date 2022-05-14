@@ -1,29 +1,20 @@
 package com.example.shieldx;
 
 import android.animation.LayoutTransition;
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,35 +25,50 @@ public class NewActivityPage extends AppCompatActivity {
     //Initialise variables
     EditText searchDestination;
     ImageView openAddFollower;
-
+    ImageView openTimer;
     public static int PICK_CONTACT = 1;
     LinearLayout expandedLayout;
     CardView outerLayout;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
+    private static int FOLLOWER_ADDED = 1;
+    private static int TIMER_ADDED = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.enter_newactivity);
+        setContentView(R.layout.activity_new_activity);
         searchDestination = (EditText) findViewById(R.id.searchDestination);
+        expandedLayout = findViewById(R.id.expandedAddFollower);
+        outerLayout = findViewById(R.id.cardLayoutAddFollower);
+        openTimer = findViewById(R.id.openTimer);
+        recyclerView = findViewById(R.id.recyclerView);
+        openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DisplayTrack();
             }
         });
-       // recyclerView = findViewById(R.id.recyclerView);
-        expandedLayout = findViewById(R.id.expandedAddFollower);
-        outerLayout = findViewById(R.id.cardLayoutAddFollower);
-       outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
-        openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         openAddFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
-                startActivity(myIntent);
+                startActivityForResult(myIntent, FOLLOWER_ADDED);
+            }
+        });
+
+        openTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(NewActivityPage.this, ExpectedDurationJourney.class);
+                startActivityForResult(myIntent, TIMER_ADDED);
             }
         });
 
@@ -100,5 +106,18 @@ public class NewActivityPage extends AppCompatActivity {
         int v = (expandedLayout.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
         TransitionManager.beginDelayedTransition(outerLayout, new AutoTransition());
         expandedLayout.setVisibility(v);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == FOLLOWER_ADDED) {
+                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
+                adapter = new MainAdapter(this, contactList);
+                // set adapter
+                recyclerView.setAdapter(adapter);
+            }
+        }
     }
 }

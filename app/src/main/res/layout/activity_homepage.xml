@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboardBackground"
+    android:id="@+id/drawerLayout"
+    android:fitsSystemWindows="true"
+    tools:context=".HomePage"
+    tools:openDrawer="start">
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/main_menu" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/header_background"
+            android:padding="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+            android:id="@+id/testHello"
+            android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="120sp"
+                android:text="@string/hello"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4sp"
+                android:text="@string/userName"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/testHello"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--            app:tint="@color/white" />-->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/testHello"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/testHello"
+                app:layout_constraintStart_toEndOf="@id/userName"
+                app:navigationIcon="@drawable/ic_menu" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:id="@+id/scrollHome"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/layoutHome"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22sp"
+                android:background="@drawable/rectangular_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="15sp"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toStartOf="@id/layoutContacts"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/homeImage"
+                    android:layout_width="100sp"
+                    android:layout_height="100sp"
+                    android:layout_margin="8sp"
+                    android:padding="8sp"
+                    android:src="@drawable/home" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/home"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutContacts"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22sp"
+                android:background="@drawable/rectangular_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="15sp"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/layoutHome"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/addFollowers"
+                    android:layout_width="100sp"
+                    android:layout_height="100sp"
+                    android:layout_margin="8sp"
+                    android:src="@drawable/contacts"
+                    tools:ignore="MissingConstraints" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/contacts"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutFavorites"
+                android:layout_width="170sp"
+                android:layout_height="171sp"
+                android:layout_marginTop="22sp"
+                android:background="@drawable/rectangular_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toStartOf="@id/layoutContacts"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutHome">
+
+                <ImageView
+                    android:layout_width="100sp"
+                    android:layout_height="100sp"
+                    android:layout_margin="8sp"
+                    android:src="@drawable/favourites"
+                    tools:ignore="MissingConstraints" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/Favourites"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutMyFollower"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22sp"
+                android:background="@drawable/rectangular_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="15sp"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/layoutHome"
+                app:layout_constraintTop_toBottomOf="@id/layoutContacts">
+
+                <ImageView
+                    android:layout_width="100sp"
+                    android:layout_height="100sp"
+                    android:layout_margin="8sp"
+                    android:src="@drawable/followers"
+                    tools:ignore="MissingConstraints" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/follower"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+            <!--                android:layout_width="0sp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="22sp"-->
+            <!--                android:background="@drawable/trending_background"-->
+            <!--                android:padding="20sp">-->
+
+            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+            <LinearLayout
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="144sp"
+                android:background="@drawable/trending_background"
+                android:padding="5sp"
+                app:layout_constraintEnd_toEndOf="@id/layoutMyFollower"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/layoutHome"
+                app:layout_constraintTop_toBottomOf="@id/layoutFavorites">
+
+                <TextView
+                    android:id="@+id/newActivity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="15sp"
+                    android:text="@string/newActivity"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/newActivityButton"
+                    android:layout_width="60sp"
+                    android:layout_height="60sp"
+                    android:layout_marginStart="150sp"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/newActivity"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/white" />
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>
