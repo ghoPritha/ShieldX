@@ -131,36 +131,6 @@ public class AddFollower extends AppCompatActivity {
                     //add model to array list
                     contactList.add(model);
                     //close phone cursor
-                    //phoneCursor.close();
-//                }
-//            }
-//        }
-
-                    //initialize phone uri
-//        Uri uriPhone = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-//        //initialize selection
-//        String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " =?";
-//        //initialize phone cursor
-//        Cursor phoneCursor = getContentResolver().query(uriPhone, null, null, null, null);
-//        //check condition
-//        if (phoneCursor.moveToNext()) {
-//            //when cursor moves to next
-//            @SuppressLint("Range") String name = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-//            @SuppressLint("Range") String number = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-//            Toast.makeText(this, "You've picked" + " " + name + " " + number, Toast.LENGTH_SHORT).show();
-//            ContactModel model = new ContactModel();
-//            //set name
-//            model.setName(name);
-//            //set number
-//            model.setNumber(number);
-//            //add model to array list
-//            contactList.add(model);
-//            //close phone cursor
-//            phoneCursor.close();
-//            phoneCursor.close();
-//        }
-
-                    //set layout manager
                     //initialize adapter
                     adapter = new MainAdapter(this, contactList);
                     // set adapter
@@ -173,6 +143,7 @@ public class AddFollower extends AppCompatActivity {
         else{
             // calls when user click back button
         }
+       // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
+        //finish();
     }
-
 }
