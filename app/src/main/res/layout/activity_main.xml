@@ -14,57 +14,59 @@
         android:layout_height="wrap_content"
         app:drawableTopCompat="@drawable/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="50dp"
         />
 
     <TextView
         android:id="@+id/signin"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="290dp"
+        android:layout_marginTop="250dp"
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="60dp"
         android:gravity="center"
         android:text="Sign in"
         android:textColor="@color/white"
         android:textSize="35sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
 
     <EditText
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/username"
         android:layout_below="@id/signin"
         android:background="#20ffffff"
-        android:hint="@string/username_text"
-        android:textColorHint="#33FFFFFF"
-        android:textColor="@color/white"
-        android:padding="20dp"
         android:drawableLeft="@drawable/ic_baseline_perm_identity_24"
         android:drawablePadding="20dp"
-        />
+        android:hint="@string/username_text"
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="#33FFFFFF"
+        android:translationY="-20dp" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/username"
-        android:layout_margin="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
         android:background="#20ffffff"
+        android:drawableLeft="@drawable/ic_baseline_lock_open_24"
+        android:drawablePadding="20dp"
         android:hint="@string/password_text"
+        android:inputType="textPassword"
         android:padding="20dp"
         android:textColor="@color/white"
         android:textColorHint="#33FFFFFF"
-        android:drawableLeft="@drawable/ic_baseline_lock_open_24"
-        android:drawablePadding="20dp"
-        android:inputType="textPassword"
-        />
+        android:translationY="-20dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/loginbtn"
+        android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/password"
@@ -76,17 +78,41 @@
         android:backgroundTint="@color/white"
         android:text="@string/login_text"
         android:textColor="@color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:translationY="-20dp"/>
 
     <TextView
         android:id="@+id/forgotpass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/loginbtn"
+        android:layout_below="@id/btn_login"
         android:layout_centerHorizontal="true"
-        android:layout_margin="1dp"
+        android:translationY="-25dp"
         android:text="Forgot Password?"
         android:textColor="#95FFFFFF" />
 
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forgotpass"
+        android:layout_centerHorizontal="true"
+        android:text="or"
+        android:translationY="-20dp"
+        android:textColor="#95FFFFFF" />
+
+    <Button
+        android:id="@+id/btn_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forgotpass"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/white"
+        android:text="@string/signUp_text"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
 </RelativeLayout>
