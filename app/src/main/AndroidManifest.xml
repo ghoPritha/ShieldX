@@ -34,6 +34,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".SignUp"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".HomePage"
             android:screenOrientation="portrait" />
         <activity
