@@ -14,6 +14,8 @@
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/drawable/header_background.xml" value="0.137" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_follower.xml" value="0.13551165146909827" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_dahsboard.xml" value="0.27447916666666666" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_expected_duration_journey.xml" value="0.27447916666666666" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_homepage.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_launch_screen.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_my_follower.xml" value="0.27447916666666666" />
@@ -21,6 +23,7 @@
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_signup.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/enter_newactivity.xml" value="0.264" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/enter_onlogin.xml" value="0.264" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/item_contact.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/menu/main_menu.xml" value="0.27447916666666666" />
       </map>
     </option>

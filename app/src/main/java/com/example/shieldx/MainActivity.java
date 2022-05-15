@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         loginBtn.setOnClickListener(v -> {
 
-            if (username.getText().toString().equals("admin") && password.getText().toString().equals("admin")) {
+            if (DB.checkDataOnLogin(username.getText().toString(),password.getText().toString())) {
 
                 Intent myIntent = new Intent(MainActivity.this, HomePage.class);
 //                    myIntent.putExtra("Username", username.getText().toString());
