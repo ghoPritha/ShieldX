@@ -8,7 +8,8 @@
     android:id="@+id/drawerLayout"
     android:fitsSystemWindows="true"
     tools:context=".HomePage"
-    tools:openDrawer="start">
+    >
+<!--    tools:openDrawer="start"-->
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
@@ -56,12 +57,12 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@id/testHello"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/testHello"
+                android:layout_height="match_parent"
+                android:layout_marginStart="80dp"
                 app:layout_constraintStart_toEndOf="@id/userName"
-                app:navigationIcon="@drawable/ic_menu" />
+                app:layout_wrapBehaviorInParent="horizontal_only"
+                app:navigationIcon="@drawable/ic_menu"
+                tools:layout_editor_absoluteY="-12dp" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

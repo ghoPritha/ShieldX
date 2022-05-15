@@ -10,54 +10,61 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ExpectedDurationJourney extends AppCompatActivity {
 
-    TextView showtime;
+    TextView showtime1,showtime3,showtime2;
     NumberPicker timePickerHour;
     NumberPicker timePickerMin;
     NumberPicker timePickerSec;
     Button setReminderButton;
-
+    int hour, min, second;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expected_duration_journey);
-        showtime = findViewById(R.id.showTime);
+        showtime1 = findViewById(R.id.showTime);
+        showtime3 = findViewById(R.id.showTime3);
+        showtime2 = findViewById(R.id.showTime2);
         timePickerHour = findViewById(R.id.timePickerHour);
         timePickerMin = findViewById(R.id.timePickerMin);
         timePickerSec = findViewById(R.id.timePickerSec);
         setReminderButton = findViewById(R.id.setReminderButton);
 
         timePickerHour.setMinValue(0);
-        timePickerHour.setMaxValue(59);
+        timePickerHour.setMaxValue(24);
         timePickerMin.setMinValue(0);
         timePickerMin.setMaxValue(59);
         timePickerSec.setMinValue(0);
         timePickerSec.setMaxValue(59);
 
+
+
         timePickerHour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                timePickerHour.setValue(newVal);
+                    hour = picker.getValue();
+                    showtime1.setText(hour);
             }
         });
         timePickerMin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                timePickerMin.setValue(newVal);
+                min = picker.getValue();
+                showtime2.setText(min);
             }
         });
         timePickerSec.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                timePickerSec.setValue(newVal);
+                second = picker.getValue();
+                showtime3.setText(second);
             }
         });
 
         setReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showtime.setText(String.format("Timer set for : ", timePickerHour.getValue()
-                        , " : " , timePickerMin.getValue(), " : " , timePickerSec.getValue()));
+
+              //  showtime.setText(hour);
             }
         });
         //textView = findViewById(R.id.timerClock);

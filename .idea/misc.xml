@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/circular_background.xml" value="0.1725" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/custom_button.xml" value="0.108" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/header_background.xml" value="0.1725" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/trending_background.xml" value="0.1725" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_follower.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_new.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_dahsboard.xml" value="0.1796875" />
@@ -12,13 +16,19 @@
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_my_follower.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_new_activity.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_notification.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_side_bar.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_start.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_start2.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/app_bar_side_bar.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/content_side_bar.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/enter_newactivity.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/enter_onlogin.xml" value="0.1" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_home.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_slideshow.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_start_activity2.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_start_location_tracking.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_timer.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/header.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/item_contact.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/nav_header_side_bar.xml" value="0.6" />

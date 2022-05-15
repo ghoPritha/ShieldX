@@ -1,20 +1,31 @@
 package com.example.shieldx;
 
 import android.animation.LayoutTransition;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,19 +43,23 @@ public class NewActivityPage extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
+    Button startActivityButton;
     private static int FOLLOWER_ADDED = 1;
     private static int TIMER_ADDED = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_activity);
         searchDestination = (EditText) findViewById(R.id.searchDestination);
-        expandedLayout = findViewById(R.id.expandedAddFollower);
+        //expandedLayout = findViewById(R.id.expandedAddFollower);
         outerLayout = findViewById(R.id.cardLayoutAddFollower);
         openTimer = findViewById(R.id.openTimer);
         recyclerView = findViewById(R.id.recyclerView);
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
+        startActivityButton = (Button) findViewById(R.id.startActivityButton);
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
@@ -71,6 +86,70 @@ public class NewActivityPage extends AppCompatActivity {
                 startActivityForResult(myIntent, TIMER_ADDED);
             }
         });
+
+            startActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proceedToStartActivity();
+            }
+        });
+
+    }
+
+    private void createPushNotification() {
+        String message = " this is a push notification";
+        Intent pushIntent = new Intent(NewActivityPage.this, Notification.class);
+        pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pushIntent.putExtra("message", message);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(NewActivityPage.this,0,pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(NewActivityPage.this)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle("Notification Title")
+                .setContentText(message)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId("com.example.shieldx");
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "com.example.shieldx",
+                    "ShieldX",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+        notificationManager.notify(1,builder.build());
+    }
+
+    private void proceedToStartActivity() {
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Start Activity")
+                .setMessage("How do you want to notify your followers ? ")
+                .setPositiveButton("Invite via Email", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent myIntent = new Intent(NewActivityPage.this, StartActivity.class);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Invite via Text Message", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent myIntent = new Intent(NewActivityPage.this, StartActivity.class);
+                        startActivity(myIntent);
+                    }
+                })
+                .show();
+        createPushNotification();
 
     }
 

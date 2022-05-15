@@ -15,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShieldX" >
         <activity
+            android:name=".Notification"
+            android:exported="false" />
+        <activity
+            android:name=".StartActivity"
+            android:exported="false" />
+        <activity
             android:name=".ExpectedDurationJourney"
             android:exported="false" />
         <activity
