@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -29,6 +30,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NewActivityPage extends AppCompatActivity {
@@ -38,6 +40,7 @@ public class NewActivityPage extends AppCompatActivity {
     ImageView openAddFollower;
     ImageView openTimer;
     public static int PICK_CONTACT = 1;
+    TextView userName;
     LinearLayout expandedLayout;
     CardView outerLayout;
     RecyclerView recyclerView;
@@ -46,23 +49,27 @@ public class NewActivityPage extends AppCompatActivity {
     Button startActivityButton;
     private static int FOLLOWER_ADDED = 1;
     private static int TIMER_ADDED = 1;
-
+    User userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_activity);
+        Intent intent = getIntent();
+        // Get the data of the activity providing the same key value
+        userData = (User) intent.getSerializableExtra("user_key");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
-        outerLayout = findViewById(R.id.cardLayoutAddFollower);
+        //outerLayout = findViewById(R.id.cardLayoutAddFollower);
         openTimer = findViewById(R.id.openTimer);
         recyclerView = findViewById(R.id.recyclerView);
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
+        userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
 
-
+        userName.setText(userData.getFirstName());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+       // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +82,7 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
                 startActivityForResult(myIntent, FOLLOWER_ADDED);
             }
         });

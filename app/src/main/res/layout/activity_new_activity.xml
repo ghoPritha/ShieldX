@@ -33,7 +33,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4sp"
-            android:text="@string/userName"
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -169,23 +168,24 @@
                     app:tint="@color/white" />
             </RelativeLayout>
 
-            <androidx.cardview.widget.CardView
+            <RelativeLayout
                 android:id="@+id/cardLayoutAddFollower"
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
                 android:animateLayoutChanges="true"
+                android:background="@drawable/trending_background"
                 android:onClick="expandAddFollowers"
                 app:cardBackgroundColor="@null"
                 app:layout_constraintEnd_toEndOf="@id/layoutExpectedTime"
                 app:layout_constraintStart_toStartOf="@id/layoutExpectedTime"
                 app:layout_constraintTop_toBottomOf="@id/layoutExpectedTime">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/trending_background" />
+<!--                <ImageView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:scaleType="fitXY"-->
+<!--                    android:src="@drawable/trending_background" />-->
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -239,7 +239,7 @@
                             tools:listitem="@layout/item_contact" />
                     </RelativeLayout>
                 </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/activityType"

@@ -73,10 +73,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:layout_margin="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scrollView">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/fromCurrentFollower"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -101,11 +102,11 @@
                     android:id="@+id/addFromCurrentFollower"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_alignParentEnd="true"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
                     app:tint="@color/white" />
-            </LinearLayout>
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="80dp"
@@ -121,7 +122,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fromCurrentFollower" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/fromContact"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -147,12 +148,12 @@
                     android:id="@+id/addFromContact"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_marginStart="100dp"
+                    android:layout_alignParentEnd="true"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
                     app:layout_constraintStart_toEndOf="@+id/addFromContactText"
                     app:tint="@color/white" />
-            </LinearLayout>
+            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
