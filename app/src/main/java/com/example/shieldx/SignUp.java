@@ -1,6 +1,12 @@
 package com.example.shieldx;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -10,16 +16,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class SignUp extends AppCompatActivity {
     DBHelper DB;
+    FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         EditText firstname = (EditText) findViewById(R.id.firstname);
         EditText lastname = (EditText) findViewById(R.id.lastname);
         EditText phone = (EditText) findViewById(R.id.phone);
@@ -39,6 +59,17 @@ public class SignUp extends AppCompatActivity {
                                                               phone.getText().toString(), email.getText().toString(), password.getText().toString());
                                                       Intent myintent = new Intent(SignUp.this, HomePage.class);
                                                       startActivity(myintent);
+
+
+                                                      //Check permission
+                                                      if(ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+                                                          //When permission granted
+                                                          getLocation();
+                                                      }
+                                                      else{
+                                                          ActivityCompat.requestPermissions(SignUp.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
+
+                                                      }
                                                   }
                                                   else{
                                                       Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
@@ -48,7 +79,30 @@ public class SignUp extends AppCompatActivity {
 
                                           }
 
-                                          private boolean checkdetails() {
+            @SuppressLint("MissingPermission")
+            private void getLocation() {
+                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task){
+                        //Initialize location
+                        Location location = task.getResult();
+                        if(location!=null) {
+                            try {
+                                //Initialise geocoder
+                                Geocoder geocoder= new Geocoder(SignUp.this, Locale.getDefault());
+                                //Initialise address list
+                                List<Address> addresses = geocoder.getFromLocation(
+                                        location.getLatitude(),location.getLongitude(),1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+                });
+            }
+
+            private boolean checkdetails() {
                                               boolean flag = false;
                                               if (TextUtils.isEmpty(firstname.getText())) {
                                                   firstname.setError(" Please Enter the First Name ");
