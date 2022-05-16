@@ -53,11 +53,13 @@ public class SignUp extends AppCompatActivity {
                                           @Override
                                           public void onClick(View view) {
 
-                                              if(!checkdetails()){
-                                                  if(!DB.checkDataOnSignUp(phone.getText().toString(),email.getText().toString())) {
+                                              if (!checkdetails()) {
+                                                  if (!DB.checkDataOnSignUp(phone.getText().toString(), email.getText().toString())) {
                                                       DB.insertData(firstname.getText().toString(), lastname.getText().toString(),
                                                               phone.getText().toString(), email.getText().toString(), password.getText().toString());
                                                       Intent myintent = new Intent(SignUp.this, HomePage.class);
+                                                      myintent.putExtra("phone_key", phone.getText().toString());
+                                                      myintent.putExtra("name_key", firstname.getText().toString());
                                                       startActivity(myintent);
 
 
@@ -106,30 +108,29 @@ public class SignUp extends AppCompatActivity {
                                               boolean flag = false;
                                               if (TextUtils.isEmpty(firstname.getText())) {
                                                   firstname.setError(" Please Enter the First Name ");
-                                                  flag=true;
+                                                  flag = true;
                                               }
                                               if (TextUtils.isEmpty(lastname.getText())) {
                                                   lastname.setError(" Please Enter the Last Name ");
-                                                  flag=true;
+                                                  flag = true;
                                               }
                                               if (TextUtils.isEmpty(phone.getText())) {
                                                   phone.setError(" Please Enter the Phone Number");
-                                                  flag=true;
+                                                  flag = true;
                                               }
                                               if (TextUtils.isEmpty(email.getText()) || (!TextUtils.isEmpty(email.getText())
                                                       && !Patterns.EMAIL_ADDRESS.matcher(email.getText().toString()).matches()))  //!EMAIL_ADDRESS_PATTERN.matcher(email.getText()).matches()
                                               {
                                                   email.setError(" Please Enter the Email address correctly ");
-                                                  flag=true;
+                                                  flag = true;
                                               }
                                               if (TextUtils.isEmpty(password.getText())) {
                                                   password.setError(" Please Enter the Password ");
-                                                  flag=true;
+                                                  flag = true;
                                               }
-                                              if (TextUtils.isEmpty(confirmpassword.getText()) || !confirmpassword.getText().toString().equals(password.getText().toString()))
-                                                       {
+                                              if (TextUtils.isEmpty(confirmpassword.getText()) || !confirmpassword.getText().toString().equals(password.getText().toString())) {
                                                   confirmpassword.setError(" Password does not matches the entered password ");
-                                                  flag=true;
+                                                  flag = true;
                                               }
                                               return flag;
                                           }

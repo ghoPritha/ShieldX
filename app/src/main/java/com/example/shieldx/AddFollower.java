@@ -1,7 +1,6 @@
 package com.example.shieldx;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,6 +9,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,35 +26,57 @@ public class AddFollower extends AppCompatActivity {
 
     //initialize variable
     ImageView addFromContact;
+    User userData;
+    TextView userName;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     public static int PICK_CONTACT = 1;
     public static int CONTACT_PERMISSION_CODE = 1;
+    DBHelper DB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_follower);
 
+        Intent intent = getIntent();
+        // Get the data of the activity providing the same key value
+        userData = (User) intent.getSerializableExtra("user_key");
+        DB = new DBHelper(this);
+
         //assign variable
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
+        userName = (TextView) findViewById(R.id.userName);
+        //userName.setText(userData.getFirstName());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         addFromContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(checkPermission()){
+                if (checkPermission()) {
                     pickContactIntent();
-                }
-                else{
+                } else {
                     requestPermissions();
                 }
             }
         });
         //check permission
     }
+
+//    private User fetchFollowerData() throws IllegalAccessException, InstantiationException {
+//        Cursor c = DB.fetchData(phone);
+//        if (c.moveToLast()) {
+//            userData.setUserId(c.getInt(0));
+//            userData.setFirstName(c.getString(1));
+//            userData.setLastName(c.getString(2));
+//            userData.setNumber(c.getString(3));
+//            userData.setEmail(c.getString(4));
+//        } else {
+//        }
+//        return userData;
+//    }
 
     private boolean checkPermission() {
         //check condition
@@ -72,6 +94,7 @@ public class AddFollower extends AppCompatActivity {
         Intent myIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(myIntent, PICK_CONTACT);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -85,18 +108,13 @@ public class AddFollower extends AppCompatActivity {
             //checkPermission();
         }
     }
-
-//    public void callContacts(View view) {
-//        checkPermission();
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_CONTACT) {
 
-                Cursor c, c1 = null;
+                Cursor c, phoneCursor, emailCursor = null;
                 Uri contactData = data.getData();
                 c = getContentResolver().query(contactData, null, null, null, null);
 
@@ -107,43 +125,72 @@ public class AddFollower extends AppCompatActivity {
                     String idResults = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                     int idResultsHols = Integer.parseInt(idResults);
                     String contactNumber = null;
-                    if(idResultsHols == 1 || idResultsHols > 1 ){
-                        c1 = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    String contactEmail = null;
+                    if (idResultsHols > 0) {
+                        phoneCursor = getContentResolver().query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                                 null,
-                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "+contactId,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
                                 null,
                                 null);
-                        while(c1.moveToNext()){
-                           contactNumber =  c1.getString(c1.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            if(contactThumbnail != null){
-
+                        while (phoneCursor.moveToNext()) {
+                            contactNumber = phoneCursor.getString(phoneCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            emailCursor = getContentResolver().query(
+                                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                                    null,
+                                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + contactId,
+                                    null,
+                                    null);
+                            while (emailCursor.moveToNext()) {
+                                contactEmail = emailCursor.getString(emailCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.DATA));
                             }
+                            emailCursor.close();
                         }
-                        c1.close();
-                    }
-                   // @SuppressLint("Range") String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                  Toast.makeText(this, "You've picked" + contactName + " " + contactNumber, Toast.LENGTH_SHORT).show();
-                    ContactModel model = new ContactModel();
-                    //set name
-                    model.setName(contactName);
-                    //set number
-                    model.setNumber(contactNumber);
-                    //add model to array list
-                    contactList.add(model);
-                    //close phone cursor
-                    //initialize adapter
-                    adapter = new MainAdapter(this, contactList);
-                    // set adapter
-                    recyclerView.setAdapter(adapter);
+                        phoneCursor.close();
 
+                        // @SuppressLint("Range") String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        Toast.makeText(this, "You've picked" + contactName + " " + contactNumber + " " + contactEmail,
+                                Toast.LENGTH_SHORT).show();
+                        ContactModel model = new ContactModel();
+                        //set name
+                        model.setName(contactName);
+                        //set number
+                        model.setNumber(contactNumber);
+
+                        model.setEmail(contactEmail);
+
+                        contactList.add(model);
+                        //close phone cursor
+                        //initialize adapter
+                        adapter = new MainAdapter(this, contactList);
+                        // set adapter
+                        recyclerView.setAdapter(adapter);
+
+                        if (!DB.checkDataOnSignUp(contactName.toString(), contactNumber.toString())) {
+                            if (DB.insertDataInFollowers(userData.getUserId(), contactName.toString(), contactNumber.toString(), contactEmail.toString())) {
+                                Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(AddFollower.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
+                        }
+                        //add model to array list
+
+
+                    }
+                    c.close();
                 }
-                c.close();
+            } else {
+                // calls when user click back button
             }
+            // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
+            //finish();
+
+            //addFollowersToDB();
         }
-        else{
-            // calls when user click back button
-        }
-       // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
-        //finish();
+
+//        private void addFollowersToDB(){
+//
+//
+//        }
     }
 }
