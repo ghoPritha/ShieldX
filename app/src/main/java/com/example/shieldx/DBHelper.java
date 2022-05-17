@@ -8,12 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DBName="users.db";
 
     public DBHelper(@Nullable Context context) {
-        super(context, DBName, null, 2);
+        super(context, DBName, null, 3);
     }
 
     @Override
@@ -27,9 +29,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         shieldXDB.execSQL("create Table ACTIVITY_LOG (Acty_ID INTEGER PRIMARY KEY AUTOINCREMENT, currentLocation TEXT NOT NULL, destination TEXT NOT NULL, " +
                 "time_taken default (STRFTIME('%H:%M:%f')), start_acty default (STRFTIME('%Y-%m-%d %H:%M:%f'))," +
-                "end_acty default (STRFTIME('%Y-%m-%d %H:%M:%f')),acty_status BOOLEAN default '0', " +
-                "FOREIGN KEY (User_ID) REFERENCES USERS(User_ID) )");
-//                ", FOREIGN KEY (Follower_ID) REFERENCES FOLLOWERS(Follower_ID))");
+                "end_acty default (STRFTIME('%Y-%m-%d %H:%M:%f')),acty_status BOOLEAN default '0',  User_ID INTEGER NOT NULL, Follower_ID INTEGER NOT NULL, " +
+                "FOREIGN KEY (User_ID) REFERENCES USERS(User_ID) , FOREIGN KEY (Follower_ID) REFERENCES FOLLOWERS(Follower_ID))");
+               // ", FOREIGN KEY (Follower_ID) REFERENCES FOLLOWERS(Follower_ID))");
     }
 
     @Override
@@ -70,9 +72,9 @@ public class DBHelper extends SQLiteOpenHelper {
             return false;
     }
 
-    public Cursor fetchData(String phone) {
+    public Cursor fetchIntegerData(Integer columnValue, String tableName, String columnName) {
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=?", new String[]{phone});
+        Cursor cursor = shieldXDB.rawQuery("Select * from " + tableName +" where " + columnName + "=" + columnValue, null);
         return cursor;
     }
 
@@ -161,5 +163,31 @@ public class DBHelper extends SQLiteOpenHelper {
         long result = shieldXDB.insert("ACTIVITY_LOG",null,contentValues);
         if(result==-1) return false;
         else return true;
+    }
+
+
+    public User fetchUserData(Cursor c) throws IllegalAccessException, InstantiationException {
+        User userData = new User();
+        userData.setUserId(c.getInt(0));
+        userData.setFirstName(c.getString(1));
+        userData.setLastName(c.getString(2));
+        userData.setNumber(c.getString(3));
+        userData.setEmail(c.getString(4));
+        return userData;
+    }
+
+    public ArrayList<Follower> fetchFollowerData(Cursor c) throws IllegalAccessException, InstantiationException {
+        ArrayList<Follower> followerList = new ArrayList<>();
+        while(c.moveToNext()) {
+            Follower follower = new Follower();
+            follower.setFollowerId(c.getInt(0));
+            follower.setFollowerName(c.getString(1));
+            follower.setUserID(c.getInt(2));
+            follower.setFollowerNumber(c.getString(3));
+            follower.setFollowerEmail(c.getString(4));
+            follower.setFollowerAbout(c.getString(5));
+            followerList.add(follower);
+        }
+        return followerList;
     }
 }

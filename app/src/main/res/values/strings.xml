@@ -20,7 +20,7 @@
     <string name="newActivity">New Activity</string>
     <string name="addFollower">Add Follower</string>
     <string name="destination">Enter destination</string>
-    <string name="expectedTime">Expected duration of journey</string>
+    <string name="expectedTime">Expected journey duration</string>
     <string name="startActivity">START ACTIVITY</string>
     <string name="addToFavourite">ADD TO FAVOURITE</string>
     <string name="activityType">Activity Type</string>

@@ -63,7 +63,7 @@ public class SignUp extends AppCompatActivity {
                                                       Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
                                                       if (c != null) {
                                                           try {
-                                                              userData = fetchUserData(c);
+                                                              userData = DB.fetchUserData(c);
                                                           } catch (IllegalAccessException e) {
                                                               e.printStackTrace();
                                                           } catch (InstantiationException e) {
@@ -146,16 +146,6 @@ public class SignUp extends AppCompatActivity {
                                       }
         );
 
-
     }
 
-    private User fetchUserData(Cursor c) throws IllegalAccessException, InstantiationException {
-        User userData = new User();
-        userData.setUserId(c.getInt(0));
-        userData.setFirstName(c.getString(1));
-        userData.setLastName(c.getString(2));
-        userData.setNumber(c.getString(3));
-        userData.setEmail(c.getString(4));
-        return userData;
-    }
 }

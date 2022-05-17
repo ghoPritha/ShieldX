@@ -27,7 +27,6 @@ public class ExpectedDurationJourney extends AppCompatActivity {
         timePickerHour = findViewById(R.id.timePickerHour);
         timePickerMin = findViewById(R.id.timePickerMin);
         timePickerSec = findViewById(R.id.timePickerSec);
-        setReminderButton = findViewById(R.id.setReminderButton);
 
         timePickerHour.setMinValue(0);
         timePickerHour.setMaxValue(24);
@@ -41,22 +40,20 @@ public class ExpectedDurationJourney extends AppCompatActivity {
         timePickerHour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    hour = picker.getValue();
-                    showtime1.setText(hour);
+                    //hour = picker.getValue();
+                    showtime1.setText(String.format(String.valueOf(newVal)) + " hh : ");
             }
         });
         timePickerMin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                min = picker.getValue();
-                showtime2.setText(min);
+                showtime2.setText(String.format(String.valueOf(newVal)) + " mm");
             }
         });
         timePickerSec.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                second = picker.getValue();
-                showtime3.setText(second);
+                showtime3.setText(" : " + String.format(String.valueOf(newVal)) + " ss");
             }
         });
 

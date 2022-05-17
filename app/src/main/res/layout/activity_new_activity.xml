@@ -137,8 +137,8 @@
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
-                android:orientation="horizontal"
                 android:background="@drawable/trending_background"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="@id/layoutSearchDestination"
                 app:layout_constraintStart_toStartOf="@id/layoutSearchDestination"
                 app:layout_constraintTop_toBottomOf="@id/layoutSearchDestination">
@@ -161,8 +161,8 @@
                     android:id="@+id/openTimer"
                     android:layout_width="60sp"
                     android:layout_height="60sp"
-                    android:contentDescription="@string/app_name"
                     android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/app_name"
                     android:padding="5sp"
                     android:src="@drawable/ic_double_arrow"
                     app:tint="@color/white" />
@@ -181,11 +181,11 @@
                 app:layout_constraintStart_toStartOf="@id/layoutExpectedTime"
                 app:layout_constraintTop_toBottomOf="@id/layoutExpectedTime">
 
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:scaleType="fitXY"-->
-<!--                    android:src="@drawable/trending_background" />-->
+                <!--                <ImageView-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    android:scaleType="fitXY"-->
+                <!--                    android:src="@drawable/trending_background" />-->
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -264,8 +264,8 @@
                 <ImageView
                     android:layout_width="60sp"
                     android:layout_height="60sp"
-                    android:contentDescription="@string/app_name"
                     android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/app_name"
                     android:padding="5sp"
                     android:src="@drawable/ic_add"
                     app:tint="@color/white" />
@@ -276,18 +276,39 @@
 
     </ScrollView>
 
-    <Button
-        android:id="@+id/startActivityButton"
+    <!--    <Button-->
+    <!--        android:id="@+id/startActivityButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="@drawable/circular_background"-->
+    <!--        android:text="@string/startActivity"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="30dp"-->
+    <!--        android:textStyle="bold|italic"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />-->
+    <RelativeLayout
+        android:id="@+id/bottom_sheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/circular_background"
-        android:text="@string/startActivity"
-        android:textColor="@color/white"
-        android:textSize="30dp"
-        android:textStyle="bold|italic"
+        app:behavior_hideable="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
+
+        <Button
+            android:id="@+id/startActivityButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/circular_background"
+            android:text="@string/startActivity" />
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/dashboardBackground"
     android:layout_height="match_parent"
     tools:context=".ExpectedDurationJourney">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,6 +31,7 @@
             android:id="@+id/imageMenu"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
             android:layout_marginEnd="15dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_menu"
@@ -41,94 +41,106 @@
             app:tint="@color/white" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <!-- Here adding a TextView to show countdown -->
-    <!--    <TextView-->
-    <!--        android:id="@+id/timerText"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:background="?android:attr/detailsElementBackground"-->
-    <!--        android:gravity="center_horizontal|center_vertical"-->
-    <!--        android:text="Pick a time"-->
-    <!--        android:textColor="@color/colorTrendingStart"-->
-    <!--        android:textSize="24sp"-->
-    <!--        android:textStyle="bold"-->
-    <!--        app:layout_constraintBottom_toTopOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/layoutHeader" />-->
-
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/showTime"
+        android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="148dp"
+        android:text="Duration :"
+        android:textColor="@color/teal_700"
+        android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/timerClock"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/showTime2"
-        app:layout_constraintTop_toBottomOf="@+id/layoutHeader"  />
-    <TextView
-        android:id="@+id/showTime2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/timerClock"
-        app:layout_constraintStart_toEndOf="@id/showTime"
-        app:layout_constraintEnd_toStartOf="@id/showTime3"
-        app:layout_constraintTop_toBottomOf="@+id/layoutHeader"  />
-    <TextView
-        android:id="@+id/showTime3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/timerClock"
-        app:layout_constraintStart_toEndOf="@id/showTime2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutHeader"  />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutHeader" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/timerClock"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text">
+
+        <TextView
+            android:id="@+id/showTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal_700"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/showTime2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal_700"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/showTime3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal_700"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/timerClock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginBottom="170dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/showTime">
+        app:layout_constraintTop_toBottomOf="@id/showTime"
+        tools:ignore="NotSibling">
 
         <NumberPicker
             android:id="@+id/timePickerHour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:solidColor="@color/teal_700" />
 
         <NumberPicker
             android:id="@+id/timePickerMin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:solidColor="@color/teal_700" />
 
         <NumberPicker
             android:id="@+id/timePickerSec"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:solidColor="@color/teal_700" />
     </LinearLayout>
 
-
     <Button
-        android:id="@+id/setReminderButton"
+        android:id="@+id/setTimeBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/timerClock"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/circular_background"
+        android:text="Set Timer"
+        android:textColor="@color/white"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="@color/colorTrendingStart"
-        android:text="SET REMINDER"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timerClock" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

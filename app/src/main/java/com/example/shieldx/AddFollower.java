@@ -20,13 +20,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact;
+    ImageView addFromContact, addFromMyFollower;
     User userData;
+    int userId;
     TextView userName;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
@@ -48,9 +50,12 @@ public class AddFollower extends AppCompatActivity {
         //assign variable
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
+        addFromMyFollower = findViewById(R.id.addFromMyFollower);
         userName = (TextView) findViewById(R.id.userName);
+        if (userData != null)
+            userId = userData.getUserId();
         //userName.setText(userData.getFirstName());
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         addFromContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +65,15 @@ public class AddFollower extends AppCompatActivity {
                 } else {
                     requestPermissions();
                 }
+            }
+        });
+
+        addFromMyFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
+                startActivity(myIntent);
             }
         });
         //check permission
@@ -166,9 +180,9 @@ public class AddFollower extends AppCompatActivity {
                         // set adapter
                         recyclerView.setAdapter(adapter);
 
-                            if (DB.insertDataInFollowers(userData.getUserId(), contactName.toString(), contactNumber.toString(), contactEmail.toString())) {
-                                Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
-                            }
+                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
+                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
+                        }
                         //add model to array list
 
 
