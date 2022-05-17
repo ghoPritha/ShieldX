@@ -2,7 +2,6 @@ package com.example.shieldx;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -56,7 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public Cursor checkDataOnLogin(String email, String password){
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where email_id=? and password=?", new String[] {email, password});
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where email_id=? or password=?", new String[] {email, password});
         if (cursor.moveToFirst()) //cursor.getCount()>0)
             return cursor;
         else
@@ -64,7 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public boolean checkDataOnSignUp(String phone,String email){
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=? and email_id=?", new String[] {phone,email});
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=? or email_id=?", new String[] {phone,email});
         if (cursor.moveToFirst())
             return true;
         else
@@ -73,13 +72,22 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor fetchData(String phone) {
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=?", new String[] {phone});
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=?", new String[]{phone});
         return cursor;
     }
 
-    public boolean insertDataInFollowers(Integer userId, String firstname, String phoneNumber, String emailID){
+    public Cursor fetchUserDataOnSignUp(String phone,String email) {
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        if(tableExists(shieldXDB, "FOLLOWERS")) {
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=? and email_id=?", new String[]{phone, email});
+        if (cursor.moveToFirst())
+            return cursor;
+        else
+            return null;
+    }
+
+    public boolean insertDataInFollowers(Integer userId, String firstname, String phoneNumber, String emailID) {
+        SQLiteDatabase shieldXDB = this.getWritableDatabase();
+        if (tableExists(shieldXDB, "FOLLOWERS")) {
             ContentValues contentValues = new ContentValues();
             contentValues.put("User_ID", userId);
             contentValues.put("follower_name", firstname);
