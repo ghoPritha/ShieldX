@@ -23,8 +23,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "email_id TEXT NOT NULL UNIQUE, password TEXT NOT NULL )");
 //        shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_firstname TEXT NOT NULL, follower_lastname TEXT NOT NULL , " +
 //                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL UNIQUE, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
-//        shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_name TEXT NOT NULL , User_ID INTEGER NOT NULL, " +
-//                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
+        shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_name TEXT NOT NULL , User_ID INTEGER NOT NULL, " +
+                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
 
         shieldXDB.execSQL("create Table ACTIVITY_LOG (Acty_ID INTEGER PRIMARY KEY AUTOINCREMENT, currentLocation TEXT NOT NULL, destination TEXT NOT NULL, " +
                 "time_taken default (STRFTIME('%H:%M:%f')), start_acty default (STRFTIME('%Y-%m-%d %H:%M:%f'))," +
@@ -125,20 +125,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return count > 0;
     }
 
-    //    public boolean insertFollowers(String follower_firstname,String follower_lastname, String follower_phone_number, String follower_email_id, String follower_about, Integer user_ID){
-//        SQLiteDatabase shieldXDB = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put("follower_firstname",follower_firstname);
-//        contentValues.put("follower_lastname",follower_lastname);
-//        contentValues.put("follower_phone_number",follower_phone_number);
-//        contentValues.put("follower_email_id",follower_email_id);
-//        contentValues.put("follower_about",follower_about);
-//        contentValues.put("User_ID",user_ID);
-//
-//        long result = shieldXDB.insert("FOLLOWERS",null,contentValues);
-//        if(result==-1) return false;
-//        else return true;
-//    }
+        public boolean insertFollowers(String follower_name, String follower_phone_number, String follower_email_id, String follower_about, Integer user_ID){
+        SQLiteDatabase shieldXDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("follower_name",follower_name);
+        contentValues.put("follower_phone_number",follower_phone_number);
+        contentValues.put("follower_email_id",follower_email_id);
+        contentValues.put("follower_about",follower_about);
+        contentValues.put("User_ID",user_ID);
+
+        long result = shieldXDB.insert("FOLLOWERS",null,contentValues);
+        if(result==-1) return false;
+        else return true;
+    }
 
     public boolean insertActivity(String current_Location,String destination, String time_taken, String acty_startTime, String acty_endTime, boolean acty_status, Integer user_ID){
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
