@@ -66,8 +66,9 @@ public class NewActivityPage extends AppCompatActivity {
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
-
-        userName.setText(userData.getFirstName());
+        if(userData != null) {
+            userName.setText(userData.getFirstName());
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
        // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 

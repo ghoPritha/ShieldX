@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -26,12 +27,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
 public class SignUp extends AppCompatActivity {
     DBHelper DB;
     FusedLocationProviderClient fusedLocationProviderClient;
+    User userData = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,23 +60,29 @@ public class SignUp extends AppCompatActivity {
                                                   if (!DB.checkDataOnSignUp(phone.getText().toString(), email.getText().toString())) {
                                                       DB.insertData(firstname.getText().toString(), lastname.getText().toString(),
                                                               phone.getText().toString(), email.getText().toString(), password.getText().toString());
-                                                      Intent myintent = new Intent(SignUp.this, HomePage.class);
-                                                      myintent.putExtra("phone_key", phone.getText().toString());
-                                                      myintent.putExtra("name_key", firstname.getText().toString());
-                                                      startActivity(myintent);
+                                                      Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
+                                                      if (c != null) {
+                                                          try {
+                                                              userData = fetchUserData(c);
+                                                          } catch (IllegalAccessException e) {
+                                                              e.printStackTrace();
+                                                          } catch (InstantiationException e) {
+                                                              e.printStackTrace();
+                                                          }
+                                                          Intent myIntent = new Intent(SignUp.this, HomePage.class);
+                                                          myIntent.putExtra("user_key", (Serializable) userData);
+                                                          startActivity(myIntent);
 
+                                                          //Check permission
+                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                              //When permission granted
+                                                              getLocation();
+                                                          } else {
+                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
 
-                                                      //Check permission
-                                                      if(ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
-                                                          //When permission granted
-                                                          getLocation();
+                                                          }
                                                       }
-                                                      else{
-                                                          ActivityCompat.requestPermissions(SignUp.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
-
-                                                      }
-                                                  }
-                                                  else{
+                                                  } else {
                                                       Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
                                                   }
                                               }
@@ -132,11 +141,21 @@ public class SignUp extends AppCompatActivity {
                                                   confirmpassword.setError(" Password does not matches the entered password ");
                                                   flag = true;
                                               }
-                                              return flag;
-                                          }
+                return flag;
+            }
                                       }
         );
 
 
+    }
+
+    private User fetchUserData(Cursor c) throws IllegalAccessException, InstantiationException {
+        User userData = new User();
+        userData.setUserId(c.getInt(0));
+        userData.setFirstName(c.getString(1));
+        userData.setLastName(c.getString(2));
+        userData.setNumber(c.getString(3));
+        userData.setEmail(c.getString(4));
+        return userData;
     }
 }

@@ -31,7 +31,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDLNGYXfIzglOXbonp0-Pwvc1nuPcDAhXg" /> <!-- Get API key from google console API: Play API -->
         <activity
-            android:name=".MainActivity"
+            android:name=".Login"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

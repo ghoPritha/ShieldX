@@ -40,7 +40,9 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         navigationView = (NavigationView) findViewById(R.id.navView);
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         userName = (TextView) findViewById(R.id.userName);
-        userName.setText(userData.getFirstName());
+        if(userData != null) {
+            userName.setText(userData.getFirstName());
+        }
         //toolbar
 
         setSupportActionBar(toolbar);

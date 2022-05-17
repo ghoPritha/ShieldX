@@ -50,7 +50,7 @@ public class AddFollower extends AppCompatActivity {
         addFromContact = findViewById(R.id.addFromContact);
         userName = (TextView) findViewById(R.id.userName);
         //userName.setText(userData.getFirstName());
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
         addFromContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,13 +166,9 @@ public class AddFollower extends AppCompatActivity {
                         // set adapter
                         recyclerView.setAdapter(adapter);
 
-                        if (!DB.checkDataOnSignUp(contactName.toString(), contactNumber.toString())) {
                             if (DB.insertDataInFollowers(userData.getUserId(), contactName.toString(), contactNumber.toString(), contactEmail.toString())) {
                                 Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(AddFollower.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
-                        }
                         //add model to array list
 
 
