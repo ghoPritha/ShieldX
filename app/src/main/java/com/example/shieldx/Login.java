@@ -3,7 +3,6 @@ package com.example.shieldx;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,7 +14,7 @@ import com.google.android.material.button.MaterialButton;
 
 import java.io.Serializable;
 
-public class MainActivity extends AppCompatActivity {
+public class Login extends AppCompatActivity {
 
     DBHelper DB = new DBHelper(this);
     User userData = new User();
@@ -23,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         EditText username = (EditText) findViewById(R.id.username);
         TextView password = (TextView) findViewById(R.id.password);
@@ -39,16 +38,16 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 }
-                Intent myIntent = new Intent(MainActivity.this, HomePage.class);
+                Intent myIntent = new Intent(Login.this, HomePage.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
 //                    myIntent.putExtra("Username", username.getText().toString());
                 startActivity(myIntent);
             } else
-                Toast.makeText(MainActivity.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
         });
 
         signupBtn.setOnClickListener(v -> {
-                    Intent myintent = new Intent(MainActivity.this, SignUp.class);
+                    Intent myintent = new Intent(Login.this, SignUp.class);
                     startActivity(myintent);
                 }
         );
