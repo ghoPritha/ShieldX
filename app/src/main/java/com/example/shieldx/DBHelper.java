@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
 //        shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_firstname TEXT NOT NULL, follower_lastname TEXT NOT NULL , " +
 //                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL UNIQUE, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
         shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_name TEXT NOT NULL , User_ID INTEGER NOT NULL, " +
-                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
+                "follower_phone_number TEXT NOT NULL, follower_email_id TEXT NOT NULL, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
 
         shieldXDB.execSQL("create Table ACTIVITY_LOG (Acty_ID INTEGER PRIMARY KEY AUTOINCREMENT, currentLocation TEXT NOT NULL, destination TEXT NOT NULL, " +
                 "time_taken default (STRFTIME('%H:%M:%f')), start_acty default (STRFTIME('%Y-%m-%d %H:%M:%f'))," +

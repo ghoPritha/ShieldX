@@ -61,12 +61,12 @@ public class Login extends AppCompatActivity {
                 startActivity(myIntent);
 
                 //Check permission
-                if(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
                     //When permission granted
                     getLocation();
                 }
                 else{
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
+                    ActivityCompat.requestPermissions(Login.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
 
                 }
             } else
@@ -99,7 +99,7 @@ public class Login extends AppCompatActivity {
                 if(location!=null) {
                     try {
                         //Initialise geocoder
-                        Geocoder geocoder= new Geocoder(MainActivity.this, Locale.getDefault());
+                        Geocoder geocoder= new Geocoder(Login.this, Locale.getDefault());
                         //Initialise address list
                         List<Address> addresses = geocoder.getFromLocation(
                                 location.getLatitude(),location.getLongitude(),1);
