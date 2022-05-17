@@ -78,7 +78,7 @@
             app:layout_constraintTop_toBottomOf="@+id/scrollView">
 
             <RelativeLayout
-                android:id="@+id/fromCurrentFollower"
+                android:id="@+id/fromMyFollower"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/trending_background"
@@ -93,13 +93,13 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="15dp"
-                    android:text="Add from Current Follower"
+                    android:text="Add from My Follower"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/addFromCurrentFollower"
+                    android:id="@+id/addFromMyFollower"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_alignParentEnd="true"
@@ -120,7 +120,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/fromContact"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fromCurrentFollower" />
+                app:layout_constraintTop_toBottomOf="@+id/fromMyFollower" />
 
             <RelativeLayout
                 android:id="@+id/fromContact"
@@ -131,7 +131,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fromCurrentFollower">
+                app:layout_constraintTop_toBottomOf="@+id/fromMyFollower">
 
                 <TextView
                     android:id="@+id/addFromContactText"

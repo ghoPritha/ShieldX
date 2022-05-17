@@ -49,7 +49,7 @@ public class Login extends AppCompatActivity {
             Cursor c = DB.checkDataOnLogin(username.getText().toString(), password.getText().toString());
             if (c != null) {
                 try {
-                    userData = fetchUserData(c);
+                    userData = DB.fetchUserData(c);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InstantiationException e) {
@@ -61,12 +61,12 @@ public class Login extends AppCompatActivity {
                 startActivity(myIntent);
 
                 //Check permission
-                if(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
                     //When permission granted
                     getLocation();
                 }
                 else{
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
+                    ActivityCompat.requestPermissions(Login.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
 
                 }
             } else
@@ -80,15 +80,6 @@ public class Login extends AppCompatActivity {
         );
     }
 
-    private User fetchUserData(Cursor c) throws IllegalAccessException, InstantiationException {
-        User userData = new User();
-        userData.setUserId(c.getInt(0));
-        userData.setFirstName(c.getString(1));
-        userData.setLastName(c.getString(2));
-        userData.setNumber(c.getString(3));
-        userData.setEmail(c.getString(4));
-        return userData;
-    }
     @SuppressLint("MissingPermission")
     private void getLocation() {
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
@@ -99,7 +90,7 @@ public class Login extends AppCompatActivity {
                 if(location!=null) {
                     try {
                         //Initialise geocoder
-                        Geocoder geocoder= new Geocoder(MainActivity.this, Locale.getDefault());
+                        Geocoder geocoder= new Geocoder(Login.this, Locale.getDefault());
                         //Initialise address list
                         List<Address> addresses = geocoder.getFromLocation(
                                 location.getLatitude(),location.getLongitude(),1);
