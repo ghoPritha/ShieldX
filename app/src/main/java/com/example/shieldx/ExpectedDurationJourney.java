@@ -27,7 +27,7 @@ public class ExpectedDurationJourney extends AppCompatActivity {
         timePickerHour = findViewById(R.id.timePickerHour);
         timePickerMin = findViewById(R.id.timePickerMin);
         timePickerSec = findViewById(R.id.timePickerSec);
-
+        setReminderButton = findViewById(R.id.setReminderButton);
         timePickerHour.setMinValue(0);
         timePickerHour.setMaxValue(24);
         timePickerMin.setMinValue(0);

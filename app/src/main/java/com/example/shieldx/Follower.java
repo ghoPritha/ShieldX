@@ -3,54 +3,65 @@ package com.example.shieldx;
 public class Follower {
 
 
-    int followerId, userID;
-    String followerName, followerNumber, followerEmail, followerAbout;
+    int Follower_ID, User_ID;
+    String Follower_Name, Follower_Number, Follower_Email, Follower_About;
 
-    public int getFollowerId() {
-        return followerId;
+    public Follower() {
     }
 
-    public void setFollowerId(int followerId) {
-        this.followerId = followerId;
+    public Follower(int user_ID, String follower_Name, String follower_Number, String follower_Email, String follower_About) {
+        User_ID = user_ID;
+        Follower_Name = follower_Name;
+        Follower_Number = follower_Number;
+        Follower_Email = follower_Email;
+        Follower_About = follower_About;
     }
 
-    public int getUserID() {
-        return userID;
+    public int getFollower_ID() {
+        return Follower_ID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setFollower_ID(int follower_ID) {
+        this.Follower_ID = follower_ID;
     }
 
-    public String getFollowerName() {
-        return followerName;
+    public int getUser_ID() {
+        return User_ID;
     }
 
-    public void setFollowerName(String followerName) {
-        this.followerName = followerName;
+    public void setUser_ID(int user_ID) {
+        this.User_ID = user_ID;
     }
 
-    public String getFollowerNumber() {
-        return followerNumber;
+    public String getFollower_Name() {
+        return Follower_Name;
     }
 
-    public void setFollowerNumber(String followerNumber) {
-        this.followerNumber = followerNumber;
+    public void setFollower_Name(String follower_Name) {
+        this.Follower_Name = follower_Name;
     }
 
-    public String getFollowerEmail() {
-        return followerEmail;
+    public String getFollower_Number() {
+        return Follower_Number;
     }
 
-    public void setFollowerEmail(String followerEmail) {
-        this.followerEmail = followerEmail;
+    public void setFollower_Number(String follower_Number) {
+        this.Follower_Number = follower_Number;
     }
 
-    public String getFollowerAbout() {
-        return followerAbout;
+    public String getFollower_Email() {
+        return Follower_Email;
     }
 
-    public void setFollowerAbout(String followerAbout) {
-        this.followerAbout = followerAbout;
+    public void setFollower_Email(String follower_Email) {
+        this.Follower_Email = follower_Email;
+    }
+
+    public String getFollower_About() {
+        return Follower_About;
+    }
+
+    public void setFollower_About(String follower_About) {
+        this.Follower_About = follower_About;
     }
 }

@@ -39,9 +39,9 @@ public class MyFollower extends AppCompatActivity {
         ArrayList<ContactModel> contactList = new ArrayList<>();
         for(int i=0; i< followerList.size(); i++){
             ContactModel model = new ContactModel();
-            model.setEmail(followerList.get(i).getFollowerEmail());
-            model.setName(followerList.get(i).getFollowerName());
-            model.setNumber(followerList.get(i).getFollowerNumber());
+            model.setEmail(followerList.get(i).getFollower_Email());
+            model.setName(followerList.get(i).getFollower_Name());
+            model.setNumber(followerList.get(i).getFollower_Number());
             contactList.add(model);
         }
 
