@@ -100,13 +100,13 @@
                     android:layout_height="100sp"
                     android:layout_margin="8sp"
                     android:padding="8sp"
-                    android:src="@drawable/home" />
+                    android:src="@drawable/tasks" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/home"
+                    android:text="@string/tasks"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold" />
