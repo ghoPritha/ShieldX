@@ -30,6 +30,9 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+//import com.google.android.gms.location.places.Place;
+//import com.google.android.gms.location.places.ui.PlacePicker;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -37,6 +40,7 @@ public class NewActivityPage extends AppCompatActivity {
 
     //Initialise variables
     EditText searchDestination;
+    EditText text;
     ImageView openAddFollower;
     ImageView openTimer;
     public static int PICK_CONTACT = 1;
@@ -104,6 +108,20 @@ public class NewActivityPage extends AppCompatActivity {
         });
 
     }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+//        super.onActivityResult(requestCode, resultCode, data);
+//        Place place= PlacePicker.getPlace(data,this);
+//        StringBuilder stringBuilder =new StringBuilder();
+//        String lat =String.valueOf(place.getLatLng().latitude);
+//        String lon =String.valueOf(place.getLatLng().longitude);
+//        stringBuilder.append("Latitude : ");
+//        stringBuilder.append(lat);
+//        stringBuilder.append("\n");
+//        stringBuilder.append("Longitude : ");
+//        stringBuilder.append(lon);
+//    }
 
     private void createPushNotification() {
         String message = " this is a push notification";
@@ -196,16 +214,28 @@ public class NewActivityPage extends AppCompatActivity {
         expandedLayout.setVisibility(v);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == FOLLOWER_ADDED) {
-                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
-                adapter = new MainAdapter(this, contactList);
-                // set adapter
-                recyclerView.setAdapter(adapter);
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == FOLLOWER_ADDED) {
+//                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
+//                adapter = new MainAdapter(this, contactList);
+//                // set adapter
+//                recyclerView.setAdapter(adapter);
+//            }
+//            Place place= PlacePicker.getPlace(data,this);
+//            StringBuilder stringBuilder =new StringBuilder();
+//            String lat =String.valueOf(place.getLatLng().latitude);
+//            String lon =String.valueOf(place.getLatLng().longitude);
+//            stringBuilder.append("Latitude : ");
+//            stringBuilder.append(lat);
+//            stringBuilder.append("\n");
+//            stringBuilder.append("Longitude : ");
+//            stringBuilder.append(lon);
+//            text.setText(stringBuilder.toString());
+//        }
+//
+//
+//    }
 }

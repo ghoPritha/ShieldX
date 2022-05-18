@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "826910626751",
-    "firebase_url": "https://shieldx-348704-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "shieldx-348704",
-    "storage_bucket": "shieldx-348704.appspot.com"
+    "project_number": "143729797307",
+    "project_id": "shieldx-67a7b",
+    "storage_bucket": "shieldx-67a7b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:826910626751:android:ee881d2cd583ce8c31470a",
+        "mobilesdk_app_id": "1:143729797307:android:819a6322997745ff6d219e",
         "android_client_info": {
           "package_name": "com.example.shieldx"
         }
       },
       "oauth_client": [
         {
-          "client_id": "826910626751-623kii40nafudhi7mp6l9d7tofju8rlv.apps.googleusercontent.com",
+          "client_id": "143729797307-a4e3bnb6ofokjbbbbhri4tn1svsvfj85.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAQORQU2sYmEO2vbaWdbnZ-ZNaXA2A9Nwo"
+          "current_key": "AIzaSyCceaYaJu6oOlhKRWcx8Q3yDv_342XOwCw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "826910626751-623kii40nafudhi7mp6l9d7tofju8rlv.apps.googleusercontent.com",
+              "client_id": "143729797307-a4e3bnb6ofokjbbbbhri4tn1svsvfj85.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

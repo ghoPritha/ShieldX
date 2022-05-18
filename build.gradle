@@ -19,6 +19,13 @@ allprojects {
     }
 }
 
+allprojects {
+
+    repositories {
+        google()  // Google's Maven repository
+        jcenter()
+    }
+}
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
