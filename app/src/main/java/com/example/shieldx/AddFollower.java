@@ -206,7 +206,7 @@ public class AddFollower extends AppCompatActivity {
                         followerReference = rootNode.getReference().child("FOLLOWERS");
 
                         Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
-                        followerReference.setValue(follower);
+                        followerReference.push().setValue(follower);
 
                         followerReference.addValueEventListener(new ValueEventListener() {
                             @Override
