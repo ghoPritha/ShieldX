@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "699812599430",
-    "project_id": "shieldx-b42c9",
-    "storage_bucket": "shieldx-b42c9.appspot.com"
+    "project_number": "143729797307",
+    "project_id": "shieldx-67a7b",
+    "storage_bucket": "shieldx-67a7b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:699812599430:android:7c11f1be81323302ef6307",
+        "mobilesdk_app_id": "1:143729797307:android:819a6322997745ff6d219e",
         "android_client_info": {
           "package_name": "com.example.shieldx"
         }
       },
       "oauth_client": [
         {
-          "client_id": "699812599430-rfk49q8nvsbmsbq2ngmulkbsusgg67i4.apps.googleusercontent.com",
+          "client_id": "143729797307-a4e3bnb6ofokjbbbbhri4tn1svsvfj85.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAM16H2Rs71piyS9ZKmCAaIiK4qbKJG8hU"
+          "current_key": "AIzaSyCceaYaJu6oOlhKRWcx8Q3yDv_342XOwCw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "699812599430-rfk49q8nvsbmsbq2ngmulkbsusgg67i4.apps.googleusercontent.com",
+              "client_id": "143729797307-a4e3bnb6ofokjbbbbhri4tn1svsvfj85.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
