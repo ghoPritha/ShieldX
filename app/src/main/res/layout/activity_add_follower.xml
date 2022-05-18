@@ -154,6 +154,17 @@
                     app:tint="@color/white" />
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/demo"
+                android:layout_width="0dp"
+                android:layout_height="22dp"
+                app:layout_constraintBottom_toTopOf="@+id/fromMyFollower"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </TextView>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,12 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -29,13 +36,16 @@ public class AddFollower extends AppCompatActivity {
     ImageView addFromContact, addFromMyFollower;
     User userData;
     int userId;
-    TextView userName;
+    TextView userName,demo;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     public static int PICK_CONTACT = 1;
     public static int CONTACT_PERMISSION_CODE = 1;
     DBHelper DB;
+    FirebaseDatabase rootNode;
+    DatabaseReference followerReference;
+    int maxId =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,7 @@ public class AddFollower extends AppCompatActivity {
         addFromContact = findViewById(R.id.addFromContact);
         addFromMyFollower = findViewById(R.id.addFromMyFollower);
         userName = (TextView) findViewById(R.id.userName);
+        demo = (TextView) findViewById(R.id.demo);
         if (userData != null)
             userId = userData.getUserId();
         //userName.setText(userData.getFirstName());
@@ -77,6 +88,18 @@ public class AddFollower extends AppCompatActivity {
             }
         });
         //check permission
+
+//        followerReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if(snapshot.exists())
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        })
     }
 
 //    private User fetchFollowerData() throws IllegalAccessException, InstantiationException {
@@ -179,10 +202,32 @@ public class AddFollower extends AppCompatActivity {
                         adapter = new MainAdapter(this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);
+                        rootNode =  FirebaseDatabase.getInstance();
+                        followerReference = rootNode.getReference().child("FOLLOWERS");
 
-                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
-                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
-                        }
+                        Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
+                        followerReference.setValue(follower);
+
+                        followerReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                // This method is called once with the initial value and again
+                                // whenever data at this location is updated.
+                                Follower follower1 = dataSnapshot.getValue(Follower.class);
+                                demo.setText(follower1.getFollower_Name());
+                               // Log.d(TAG, "Value is: " + value);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                               // Log.w(TAG, "Failed to read value.", error.toException());
+                            }
+                        });
+                       // followerReference.child(String.valueOf(maxId+1)).setValue(follower);
+//                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
+//                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
+//                        }
                         //add model to array list
 
 
