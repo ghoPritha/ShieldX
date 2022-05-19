@@ -32,7 +32,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
-        FirebaseDatabase.getInstance().getReference().setValue("This is our app: ShieldX");
+        //FirebaseDatabase.getInstance().getReference().setValue("This is our app: ShieldX  dadsfdfgfgh");
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         User userData = (User) intent.getSerializableExtra("user_key");

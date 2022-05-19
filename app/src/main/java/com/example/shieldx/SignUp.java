@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class SignUp extends AppCompatActivity {
     DBHelper DB;
     FusedLocationProviderClient fusedLocationProviderClient;
     User userData = new User();
+    FirebaseDatabase rootNode;
+    DatabaseReference followerReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,11 @@ public class SignUp extends AppCompatActivity {
                                                           } catch (InstantiationException e) {
                                                               e.printStackTrace();
                                                           }
+
+                                                          rootNode =  FirebaseDatabase.getInstance();
+                                                          followerReference = rootNode.getReference().child("USERS");
+                                                          followerReference.push().setValue(userData);
+
                                                           Intent myIntent = new Intent(SignUp.this, HomePage.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
                                                           startActivity(myIntent);
