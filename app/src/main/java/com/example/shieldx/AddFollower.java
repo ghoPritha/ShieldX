@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,8 @@ public class AddFollower extends AppCompatActivity {
     ImageView addFromContact, addFromMyFollower;
     User userData;
     int userId;
-    TextView userName,demo;
+    TextView userName;
+    Button demo;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
@@ -46,6 +48,7 @@ public class AddFollower extends AppCompatActivity {
     FirebaseDatabase rootNode;
     DatabaseReference followerReference;
     int maxId =0;
+    Follower follower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class AddFollower extends AppCompatActivity {
         addFromContact = findViewById(R.id.addFromContact);
         addFromMyFollower = findViewById(R.id.addFromMyFollower);
         userName = (TextView) findViewById(R.id.userName);
-        demo = (TextView) findViewById(R.id.demo);
+        demo = (Button) findViewById(R.id.demo);
         if (userData != null)
             userId = userData.getUserId();
         //userName.setText(userData.getFirstName());
@@ -85,6 +88,34 @@ public class AddFollower extends AppCompatActivity {
                 Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
                 startActivity(myIntent);
+            }
+        });
+
+        demo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rootNode =  FirebaseDatabase.getInstance("https://shieldx-67a7b-default-rtdb.firebaseio.firebasedatabase.app");
+                followerReference = rootNode.getReference().child("FOLLOWERS");
+                followerReference.push().setValue(follower);
+
+                followerReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // This method is called once with the initial value and again
+                        // whenever data at this location is updated.
+//                                Follower follower1 = dataSnapshot.getValue(Follower.class);
+//                                demo.setText(follower1.getFollower_Name());
+                        Toast.makeText(AddFollower.this, "data added", Toast.LENGTH_SHORT).show();
+
+                        // Log.d(TAG, "Value is: " + value);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        // Log.w(TAG, "Failed to read value.", error.toException());
+                    }
+                });
             }
         });
         //check permission
@@ -202,28 +233,28 @@ public class AddFollower extends AppCompatActivity {
                         adapter = new MainAdapter(this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);
-                        rootNode =  FirebaseDatabase.getInstance("https://shieldx-67a7b-default-rtdb.firebaseio.firebasedatabase.app");
-                        followerReference = rootNode.getReference().child("FOLLOWERS");
 
-                        Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
-                        followerReference.push().setValue(follower);
+                        follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
 
-                        followerReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
-                                // whenever data at this location is updated.
-                                Follower follower1 = dataSnapshot.getValue(Follower.class);
-                                demo.setText(follower1.getFollower_Name());
-                               // Log.d(TAG, "Value is: " + value);
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                               // Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
+//                        followerReference.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                // This method is called once with the initial value and again
+//                                // whenever data at this location is updated.
+////                                Follower follower1 = dataSnapshot.getValue(Follower.class);
+////                                demo.setText(follower1.getFollower_Name());
+//                                followerReference.push().setValue(follower);
+//                                Toast.makeText(AddFollower.this, "data added", Toast.LENGTH_SHORT).show();
+//
+//                                // Log.d(TAG, "Value is: " + value);
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError error) {
+//                                // Failed to read value
+//                               // Log.w(TAG, "Failed to read value.", error.toException());
+//                            }
+//                        });
                        // followerReference.child(String.valueOf(maxId+1)).setValue(follower);
 //                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
 //                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();

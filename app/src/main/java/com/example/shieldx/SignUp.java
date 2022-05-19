@@ -25,6 +25,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,8 +36,9 @@ import java.util.Locale;
 public class SignUp extends AppCompatActivity {
     DBHelper DB;
     FusedLocationProviderClient fusedLocationProviderClient;
-    User userData = new User();
 
+    FirebaseDatabase rootNode;
+    DatabaseReference followerReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,37 +59,46 @@ public class SignUp extends AppCompatActivity {
                                           @Override
                                           public void onClick(View view) {
 
-                                              if (!checkdetails()) {
-                                                  if (!DB.checkDataOnSignUp(phone.getText().toString(), email.getText().toString())) {
-                                                      DB.insertData(firstname.getText().toString(), lastname.getText().toString(),
-                                                              phone.getText().toString(), email.getText().toString(), password.getText().toString());
-                                                      Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
-                                                      if (c != null) {
-                                                          try {
-                                                              userData = DB.fetchUserData(c);
-                                                          } catch (IllegalAccessException e) {
-                                                              e.printStackTrace();
-                                                          } catch (InstantiationException e) {
-                                                              e.printStackTrace();
-                                                          }
-                                                          Intent myIntent = new Intent(SignUp.this, HomePage.class);
+//                                              if (!checkdetails()) {
+//                                                  if (!DB.checkDataOnSignUp(phone.getText().toString(), email.getText().toString())) {
+//                                                      DB.insertData(firstname.getText().toString(), lastname.getText().toString(),
+//                                                              phone.getText().toString(), email.getText().toString(), password.getText().toString());
+//                                                      Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
+//                                                      if (c != null) {
+//                                                          try {
+//                                                              userData = DB.fetchUserData(c);
+//                                                          } catch (IllegalAccessException e) {
+//                                                              e.printStackTrace();
+//                                                          } catch (InstantiationException e) {
+//                                                              e.printStackTrace();
+//                                                          }
+//                                                          Intent myIntent = new Intent(SignUp.this, HomePage.class);
+//                                                          myIntent.putExtra("user_key", (Serializable) userData);
+//                                                          startActivity(myIntent);
+//
+//                                                          //Check permission
+//                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                                                              //When permission granted
+//                                                              getLocation();
+//                                                          } else {
+//                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+//
+//                                                          }
+//                                                      }
+//                                                  } else {
+//                                                      Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
+//                                                  }
+//                                              }
+                                                User userData = new User();
+//                                              User userData = new User("firstname.getText().toString()",
+//                                                      lastname.getText().toString(),phone.getText().toString(),email.getText().toString());
+                                              userData.setFirstName("dfgdg");
+                                              rootNode =  FirebaseDatabase.getInstance("https://shieldx-67a7b-default-rtdb.firebaseio.firebasedatabase.app");
+                                              followerReference = rootNode.getReference();
+                                              followerReference.push().setValue(userData);
+                                              Intent myIntent = new Intent(SignUp.this, HomePage.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
                                                           startActivity(myIntent);
-
-                                                          //Check permission
-                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                                              //When permission granted
-                                                              getLocation();
-                                                          } else {
-                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-
-                                                          }
-                                                      }
-                                                  } else {
-                                                      Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
-                                                  }
-                                              }
-
 
                                           }
 
