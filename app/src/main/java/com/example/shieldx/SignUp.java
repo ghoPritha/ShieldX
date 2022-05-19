@@ -74,14 +74,14 @@ public class SignUp extends AppCompatActivity {
                                                           myIntent.putExtra("user_key", (Serializable) userData);
                                                           startActivity(myIntent);
 
-                                                          //Check permission
-                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                                              //When permission granted
-                                                              getLocation();
-                                                          } else {
-                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-
-                                                          }
+//                                                          //Check permission
+//                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                                                              //When permission granted
+//                                                              getLocation();
+//                                                          } else {
+//                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+//
+//                                                          }
                                                       }
                                                   } else {
                                                       Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
@@ -91,29 +91,29 @@ public class SignUp extends AppCompatActivity {
 
                                           }
 
-            @SuppressLint("MissingPermission")
-            private void getLocation() {
-                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task){
-                        //Initialize location
-                        Location location = task.getResult();
-                        if(location!=null) {
-                            try {
-                                //Initialise geocoder
-                                Geocoder geocoder= new Geocoder(SignUp.this, Locale.getDefault());
-                                //Initialise address list
-                                List<Address> addresses = geocoder.getFromLocation(
-                                        location.getLatitude(),location.getLongitude(),1);
-//                                FirebaseDatabase.getInstance().getReference()
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-            }
+//            @SuppressLint("MissingPermission")
+//            private void getLocation() {
+//                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
+//                    @Override
+//                    public void onComplete(@NonNull Task<Location> task){
+//                        //Initialize location
+//                        Location location = task.getResult();
+//                        if(location!=null) {
+//                            try {
+//                                //Initialise geocoder
+//                                Geocoder geocoder= new Geocoder(SignUp.this, Locale.getDefault());
+//                                //Initialise address list
+//                                List<Address> addresses = geocoder.getFromLocation(
+//                                        location.getLatitude(),location.getLongitude(),1);
+////                                FirebaseDatabase.getInstance().getReference()
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                        }
+//                    }
+//                });
+//            }
 
             private boolean checkdetails() {
                                               boolean flag = false;
