@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 
@@ -31,6 +32,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
+        FirebaseDatabase.getInstance().getReference().setValue("This is our app: ShieldX");
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         User userData = (User) intent.getSerializableExtra("user_key");

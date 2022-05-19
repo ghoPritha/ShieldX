@@ -30,8 +30,10 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.google.android.gms.location.places.Place;
-//import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -79,7 +81,18 @@ public class NewActivityPage extends AppCompatActivity {
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DisplayTrack();
+                Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                startActivity(gpsIntent);
+//                DisplayTrack();
+//                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//                try {
+//                    startActivityForResult(builder.build(NewActivityPage.this),1);
+//                } catch (GooglePlayServicesRepairableException e) {
+//                    e.printStackTrace();
+//                } catch (GooglePlayServicesNotAvailableException e) {
+//                    e.printStackTrace();
+//                }
+
             }
         });
 
@@ -180,32 +193,32 @@ public class NewActivityPage extends AppCompatActivity {
 
     }
 
-    private void DisplayTrack() {
-        try {
-            //When google maps is installed
-            //Initialise Uri
-            Uri uri = Uri.parse("https://www.google.de/maps/dir/");
-            //Initialise intent with action view
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            //Set package
-            intent.setPackage("com.google.android.apps.maps");
-            //Set Flag
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //Start activity
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            //When google map is not installed
-            //Initialise Uri
-            Uri uri = Uri.parse("https://play.google.de/stroe/apps/details?id=com.google.android.apps.maps");
-            //Initialise intent with action view
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            //Set Flag
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //Start activity
-            startActivity(intent);
-        }
-
-    }
+//    private void DisplayTrack() {
+//        try {
+//            //When google maps is installed
+//            //Initialise Uri
+//            Uri uri = Uri.parse("https://www.google.de/maps/dir/");
+//            //Initialise intent with action view
+//            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            //Set package
+//            intent.setPackage("com.google.android.apps.maps");
+//            //Set Flag
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            //Start activity
+//            startActivity(intent);
+//        } catch (ActivityNotFoundException e) {
+//            //When google map is not installed
+//            //Initialise Uri
+//            Uri uri = Uri.parse("https://play.google.de/stroe/apps/details?id=com.google.android.apps.maps");
+//            //Initialise intent with action view
+//            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            //Set Flag
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            //Start activity
+//            startActivity(intent);
+//        }
+//
+//    }
 
     public void expandAddFollowers(View view) {
         outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
@@ -214,28 +227,33 @@ public class NewActivityPage extends AppCompatActivity {
         expandedLayout.setVisibility(v);
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == FOLLOWER_ADDED) {
-//                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
-//                adapter = new MainAdapter(this, contactList);
-//                // set adapter
-//                recyclerView.setAdapter(adapter);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == FOLLOWER_ADDED) {
+                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
+                adapter = new MainAdapter(this, contactList);
+                // set adapter
+                recyclerView.setAdapter(adapter);
+            }
+        }
+//        if (requestCode==1) {
+//            if (resultCode == RESULT_OK) {
+//                Place place = PlacePicker.getPlace(data, this);
+//                StringBuilder stringBuilder = new StringBuilder();
+//                String lat = String.valueOf(place.getLatLng().latitude);
+//                String lon = String.valueOf(place.getLatLng().longitude);
+//                stringBuilder.append("Latitude : ");
+//                stringBuilder.append(lat);
+//                stringBuilder.append("\n");
+//                stringBuilder.append("Longitude : ");
+//                stringBuilder.append(lon);
+//                text.setText(stringBuilder.toString());
 //            }
-//            Place place= PlacePicker.getPlace(data,this);
-//            StringBuilder stringBuilder =new StringBuilder();
-//            String lat =String.valueOf(place.getLatLng().latitude);
-//            String lon =String.valueOf(place.getLatLng().longitude);
-//            stringBuilder.append("Latitude : ");
-//            stringBuilder.append(lat);
-//            stringBuilder.append("\n");
-//            stringBuilder.append("Longitude : ");
-//            stringBuilder.append(lon);
-//            text.setText(stringBuilder.toString());
 //        }
-//
-//
-//    }
-}
+    }
+
+
+    }

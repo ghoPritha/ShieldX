@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -104,6 +105,7 @@ public class SignUp extends AppCompatActivity {
                                 //Initialise address list
                                 List<Address> addresses = geocoder.getFromLocation(
                                         location.getLatitude(),location.getLongitude(),1);
+//                                FirebaseDatabase.getInstance().getReference()
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
