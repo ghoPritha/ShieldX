@@ -12,7 +12,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="140dp"
         tools:context=".MapsActivity" />
 
     <EditText
@@ -33,6 +33,15 @@
         android:layout_marginLeft="10dp"
         android:backgroundTint="#20ffffff"
         android:hint="Enter Destination" />
+
+    <EditText
+        android:id="@+id/etd"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="98dp"
+        android:layout_marginLeft="10dp"
+        android:background="#20ffffff"
+        android:hint="Expected time duration"/>
 
     <ImageButton
         android:id="@+id/searchButton"
