@@ -1,7 +1,10 @@
 package com.example.shieldx;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,12 +20,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,6 +44,7 @@ public class Login extends AppCompatActivity {
     DBHelper DB = new DBHelper(this);
     User userData = new User();
     FusedLocationProviderClient fusedLocationProviderClient;
+    ActivityLog activityLog = new ActivityLog();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +71,16 @@ public class Login extends AppCompatActivity {
 //                    myIntent.putExtra("Username", username.getText().toString());
                 startActivity(myIntent);
 
-                //Check permission
-                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
-                    //When permission granted
-                    getLocation();
-                }
-                else{
-                    ActivityCompat.requestPermissions(Login.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
-
-                }
+                getLocation(userData.getEmail());
+//                //Check permission
+//                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+//                    //When permission granted
+//                    getLocation();
+//                }
+//                else{
+//                    ActivityCompat.requestPermissions(Login.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
+//
+//                }
             } else
                 Toast.makeText(Login.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
         });
@@ -81,26 +93,92 @@ public class Login extends AppCompatActivity {
     }
 
     @SuppressLint("MissingPermission")
-    private void getLocation() {
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
-            @Override
-            public void onComplete(@NonNull Task<Location> task){
-                //Initialize location
-                Location location = task.getResult();
-                if(location!=null) {
-                    try {
-                        //Initialise geocoder
-                        Geocoder geocoder= new Geocoder(Login.this, Locale.getDefault());
-                        //Initialise address list
-                        List<Address> addresses = geocoder.getFromLocation(
-                                location.getLatitude(),location.getLongitude(),1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+    private void getLocation(String userMail) {
 
+        //Check permission
+        if (ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            //When permission granted
+            Context mContext = this;
+
+            LocationRequest mLocationRequest = LocationRequest.create();
+            mLocationRequest.setInterval(60000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationCallback mLocationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if (locationResult == null) {
+                        return;
+                    }
+                    for (Location location : locationResult.getLocations()) {
+                        if (location != null) {
+                            //TODO: UI updates.
+                        }
+                    }
                 }
-            }
-        });
+            };
+            LocationServices.getFusedLocationProviderClient(mContext).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+            LocationServices.getFusedLocationProviderClient(mContext).getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //Initialize location
+//                    Location location = task.getResult();
+                    if (location != null) {
+                        try {
+                            //Initialise geocoder
+                            Geocoder geocoder = new Geocoder(Login.this, Locale.getDefault());
+                            //Initialise address list
+                            List<Address> addresses = geocoder.getFromLocation(
+                                    location.getLatitude(), location.getLongitude(), 1);
+                            Address obj = addresses.get(0);
+
+                            LatLng startLocation = new LatLng(obj.getLatitude(), obj.getLongitude());
+//                            ((EditText) findViewById(R.id.startlocation)).setText(obj.getLocality());
+                            activityLog.setCurrentLocation(startLocation);
+                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
+                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+        else {
+            ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+            getLocation(userData.getEmail());
+        }
+//        else {
+//            LatLng university = new LatLng(52.1205, 11.6276);
+//            mMap.addMarker(new MarkerOptions().position(university).title("Current location"));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(university));
+//        }
     }
+//    @SuppressLint("MissingPermission")
+//    private void getLocation() {
+//        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
+//            @Override
+//            public void onComplete(@NonNull Task<Location> task){
+//                //Initialize location
+//                Location location = task.getResult();
+//                if(location!=null) {
+//                    try {
+//                        //Initialise geocoder
+//                        Geocoder geocoder= new Geocoder(Login.this, Locale.getDefault());
+//                        //Initialise address list
+//                        List<Address> addresses = geocoder.getFromLocation(
+//                                location.getLatitude(),location.getLongitude(),1);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            }
+//        });
+//    }
 
 }
