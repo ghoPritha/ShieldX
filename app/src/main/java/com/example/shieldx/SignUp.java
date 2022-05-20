@@ -66,13 +66,18 @@ public class SignUp extends AppCompatActivity {
                                                               phone.getText().toString(), email.getText().toString(), password.getText().toString());
                                                       Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
                                                       if (c != null) {
-                                                          try {
-                                                              userData = DB.fetchUserData(c);
-                                                          } catch (IllegalAccessException e) {
-                                                              e.printStackTrace();
-                                                          } catch (InstantiationException e) {
-                                                              e.printStackTrace();
-                                                          }
+//                                                          try {
+//                                                              userData = DB.fetchUserData(c);
+//                                                          } catch (IllegalAccessException e) {
+//                                                              e.printStackTrace();
+//                                                          } catch (InstantiationException e) {
+//                                                              e.printStackTrace();
+//                                                          }
+
+                                                          userData.setEmail(email.getText().toString());
+                                                          userData.setNumber(phone.getText().toString());
+                                                          userData.setFirstName(firstname.getText().toString());
+                                                          userData.setLastName(lastname.getText().toString());
 
                                                           rootNode =  FirebaseDatabase.getInstance();
                                                           followerReference = rootNode.getReference().child("USERS");
