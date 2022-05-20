@@ -34,7 +34,17 @@
         android:backgroundTint="#20ffffff"
         android:hint="Enter Destination" />
 
-<!--    <ImageButton-->
+    <ImageButton
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="updateLocation"
+        android:rotationX="2"
+        android:src="@drawable/ic_search"
+        android:translationX="361dp"
+        android:translationY="32dp" />
+
+    <!--    <ImageButton-->
 <!--        android:id="@+id/imageButton"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->

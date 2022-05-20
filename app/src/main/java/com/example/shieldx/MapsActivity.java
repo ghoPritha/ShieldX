@@ -2,10 +2,13 @@ package com.example.shieldx;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -27,7 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -41,13 +47,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            .apiKey("AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0")
 //            .build();
     ActivityLog activityLog = new ActivityLog();
-    EditText startlocation, destination; //= (EditText)findViewById(R.id.startlocation);
+    EditText startlocation, destination;
     String userEmail;
     private DatabaseReference databasereference;
     private LocationListener locationListener;
     private LocationManager locationManager;
     private final long Min_Time = 1000;
     private final long Min_dist = 5;
+    Location loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +72,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
+
         startlocation = findViewById(R.id.startlocation);
         destination = findViewById(R.id.destination);
+
+
         databasereference = FirebaseDatabase.getInstance().getReference("Location");
         databasereference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -123,11 +133,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 try {
-                    startlocation.setText(Double.toString(location.getLatitude()));
-                    destination.setText(Double.toString(location.getLongitude()));
+                    loc = location;
+                    startlocation.setText(getAddress(location));
+//                    destination.setText(Double.toString(location.getLongitude()));
 
-                    databasereference.child("latitude").push().setValue(startlocation.getText().toString());
-                    databasereference.child("longitude").push().setValue(destination.getText().toString());
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString() + " , " + destination.getText().toString()));
+                    mMap.addMarker(new MarkerOptions().title(startlocation.getText().toString()));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
+                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
+//                    databasereference.child("latitude").push().setValue(startlocation.getText().toString());
+//                    databasereference.child("longitude").push().setValue(destination.getText().toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -135,7 +152,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -148,11 +166,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Min_Time, Min_dist, locationListener);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Min_Time, Min_dist, locationListener);
-            databasereference.child("latitude").setValue(startlocation.getText().toString());
-            databasereference.child("longitude").setValue(destination.getText().toString());
+//            databasereference.child("latitude").push().setValue(startlocation.getText().toString());
+//            databasereference.child("longitude").push().setValue(destination.getText().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateLocation(View view){
+        databasereference.child("latitude").push().setValue(loc.getLatitude());
+        databasereference.child("longitude").push().setValue(loc.getLongitude());
+    }
+
+    public String getAddress(Location location) throws IOException {
+        String addr;
+        List<Address> addresses;
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+        String city = addresses.get(0).getLocality();
+        String state = addresses.get(0).getAdminArea();
+        String country = addresses.get(0).getCountryName();
+        String postalCode = addresses.get(0).getPostalCode();
+        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+        addr = address +" " + city+" " +state+" " +country;
+        return addr;
     }
 
 //    @SuppressLint("MissingPermission")
