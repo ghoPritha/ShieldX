@@ -82,6 +82,7 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                gpsIntent.putExtra("user_email",userData.email);
                 startActivity(gpsIntent);
 //                DisplayTrack();
 //                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();

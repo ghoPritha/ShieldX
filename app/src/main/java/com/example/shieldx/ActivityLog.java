@@ -18,6 +18,10 @@ public class ActivityLog {
     public ActivityLog() {
     }
 
+    public ActivityLog(String userMail,LatLng startLocation){
+        this.startLocation = startLocation;
+        this.userMail = userMail;
+    }
     public ActivityLog(LatLng currentLocation, LatLng destination, LatLng startLocation, String userMail, String userName, String destinationName, String sourceName, String typeOfActivity, Boolean journeyCompleted, Boolean destinationReached, Time expectedTime, List<Follower> followersList) {
         this.currentLocation = currentLocation;
         this.destination = destination;

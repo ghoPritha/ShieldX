@@ -36,7 +36,7 @@ public class AddFollower extends AppCompatActivity {
     ImageView addFromContact, addFromMyFollower;
     User userData;
     int userId;
-    TextView userName,demo;
+    TextView userName;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
@@ -62,7 +62,7 @@ public class AddFollower extends AppCompatActivity {
         addFromContact = findViewById(R.id.addFromContact);
         addFromMyFollower = findViewById(R.id.addFromMyFollower);
         userName = (TextView) findViewById(R.id.userName);
-        demo = (TextView) findViewById(R.id.demo);
+
         if (userData != null)
             userId = userData.getUserId();
         //userName.setText(userData.getFirstName());
@@ -214,7 +214,7 @@ public class AddFollower extends AppCompatActivity {
                                 // This method is called once with the initial value and again
                                 // whenever data at this location is updated.
                                 Follower follower1 = dataSnapshot.getValue(Follower.class);
-                                demo.setText(follower1.getFollower_Name());
+
                                // Log.d(TAG, "Value is: " + value);
                             }
 
