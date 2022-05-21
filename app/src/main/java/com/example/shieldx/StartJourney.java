@@ -8,7 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-public class StartActivity extends AppCompatActivity {
+public class StartJourney extends AppCompatActivity {
 
     private TabLayout tablayout;
     private ViewPager viewPager;
@@ -56,4 +56,6 @@ public class StartActivity extends AppCompatActivity {
 //        fragmentTransaction.commit();
 //
 //    }
+
+
 }
