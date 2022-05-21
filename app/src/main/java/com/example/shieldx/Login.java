@@ -135,10 +135,11 @@ public class Login extends AppCompatActivity {
 
                             LatLng startLocation = new LatLng(obj.getLatitude(), obj.getLongitude());
 //                            ((EditText) findViewById(R.id.startlocation)).setText(obj.getLocality());
-                            activityLog.setCurrentLocation(startLocation);
-                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
-                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
-
+//                            activityLog.setCurrentLocation(startLocation);
+//                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
+//                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
+                            activityLog.setUserMail(userMail);
+                            FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(userMail);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

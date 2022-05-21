@@ -15,6 +15,14 @@
         android:layout_marginTop="140dp"
         tools:context=".MapsActivity" />
 
+    <fragment android:id="@+id/autocomplete_fragment"
+        android:layout_width="350dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="54dp"
+        android:layout_marginLeft="10dp"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        />
+
     <EditText
         android:id="@+id/startlocation"
         android:layout_width="350dp"
@@ -25,14 +33,20 @@
 
         android:hint=" Enter Start Location"/>
 
-    <EditText
-        android:id="@+id/destination"
-        android:layout_width="350dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="54dp"
-        android:layout_marginLeft="10dp"
-        android:backgroundTint="#20ffffff"
-        android:hint="Enter Destination" />
+<!--    <EditText-->
+<!--        android:id="@+id/destination"-->
+<!--        android:layout_width="350dp"-->
+<!--        android:layout_height="44dp"-->
+<!--        android:layout_marginTop="54dp"-->
+<!--        android:layout_marginLeft="10dp"-->
+<!--        android:backgroundTint="#20ffffff"-->
+<!--        android:hint="Enter Destination"-->
+<!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
+<!--        >-->
+
+
+<!--    </EditText>-->
+
 
     <EditText
         android:id="@+id/etd"
@@ -41,17 +55,18 @@
         android:layout_marginTop="98dp"
         android:layout_marginLeft="10dp"
         android:background="#20ffffff"
-        android:hint="Expected time duration"/>
+        android:hint=" Expected time duration"/>
 
     <ImageButton
         android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="updateLocation"
         android:rotationX="2"
         android:src="@drawable/ic_search"
         android:translationX="361dp"
         android:translationY="32dp" />
+
+<!--    android:onClick="updateLocation"-->
 
     <!--    <ImageButton-->
 <!--        android:id="@+id/imageButton"-->
