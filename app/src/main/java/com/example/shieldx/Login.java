@@ -71,7 +71,7 @@ public class Login extends AppCompatActivity {
 //                    myIntent.putExtra("Username", username.getText().toString());
                 startActivity(myIntent);
 
-                getLocation(userData.getEmail());
+                getLocation(userData.encodedEmail());
 //                //Check permission
 //                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
 //                    //When permission granted
@@ -151,6 +151,7 @@ public class Login extends AppCompatActivity {
         else {
             ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+//            getLocation(userData.getEmail());
             getLocation(userData.getEmail());
         }
 //        else {
