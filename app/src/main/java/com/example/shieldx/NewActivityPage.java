@@ -2,18 +2,16 @@ package com.example.shieldx;
 
 import android.animation.LayoutTransition;
 import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,14 +24,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -78,6 +73,47 @@ public class NewActivityPage extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
        // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
+        enterDestiantion();
+
+        addFollower();
+
+        addExpectedTime();
+
+        startJourney();
+
+    }
+
+    private void startJourney() {
+        startActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proceedToStartJourney();
+            }
+        });
+    }
+
+    private void addExpectedTime() {
+        openTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(NewActivityPage.this, ExpectedDurationJourney.class);
+                startActivityForResult(myIntent, TIMER_ADDED);
+            }
+        });
+    }
+
+    private void addFollower() {
+        openAddFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
+                startActivityForResult(myIntent, FOLLOWER_ADDED);
+            }
+        });
+    }
+
+    private void enterDestiantion() {
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,31 +132,6 @@ public class NewActivityPage extends AppCompatActivity {
 
             }
         });
-
-        openAddFollower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
-                myIntent.putExtra("user_key", (Serializable) userData);
-                startActivityForResult(myIntent, FOLLOWER_ADDED);
-            }
-        });
-
-        openTimer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(NewActivityPage.this, ExpectedDurationJourney.class);
-                startActivityForResult(myIntent, TIMER_ADDED);
-            }
-        });
-
-            startActivityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proceedToStartActivity();
-            }
-        });
-
     }
 
 //    @Override
@@ -170,7 +181,7 @@ public class NewActivityPage extends AppCompatActivity {
         notificationManager.notify(1,builder.build());
     }
 
-    private void proceedToStartActivity() {
+    private void proceedToStartJourney() {
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
@@ -178,14 +189,32 @@ public class NewActivityPage extends AppCompatActivity {
                 .setPositiveButton("Invite via Email", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, StartActivity.class);
-                        startActivity(myIntent);
+                        Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
+////                        startActivity(myIntent);
+////                        TOPIC = "/topics/userABC"; //topic has to match what the receiver subscribed to
+////                        NOTIFICATION_TITLE = edtTitle.getText().toString();
+////                        NOTIFICATION_MESSAGE = edtMessage.getText().toString();
+////
+////                        JSONObject notification = new JSONObject();
+////                        JSONObject notifcationBody = new JSONObject();
+////                        try {
+////                            notifcationBody.put("title", NOTIFICATION_TITLE);
+////                            notifcationBody.put("message", NOTIFICATION_MESSAGE);
+////
+////                            notification.put("to", TOPIC);
+////                            notification.put("data", notifcationBody);
+////                        } catch (JSONException e) {
+////                            Log.e(TAG, "onCreate: " + e.getMessage() );
+////                        }
+//                        sendNotification(notification);
+
+
                     }
                 })
                 .setNegativeButton("Invite via Text Message", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, StartActivity.class);
+                        Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
                         startActivity(myIntent);
                     }
                 })
@@ -256,5 +285,32 @@ public class NewActivityPage extends AppCompatActivity {
 //        }
     }
 
-
+//
+//    private void sendNotification(JSONObject notification) {
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.i(TAG, "onResponse: " + response.toString());
+//                        edtTitle.setText("");
+//                        edtMessage.setText("");
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(MainActivity.this, "Request error", Toast.LENGTH_LONG).show();
+//                        Log.i(TAG, "onErrorResponse: Didn't work");
+//                    }
+//                }){
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("Authorization", serverKey);
+//                params.put("Content-Type", contentType);
+//                return params;
+//            }
+//        };
+//        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+//    }
     }

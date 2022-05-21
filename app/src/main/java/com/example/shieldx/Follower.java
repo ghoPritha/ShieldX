@@ -64,4 +64,6 @@ public class Follower {
     public void setFollower_About(String follower_About) {
         this.Follower_About = follower_About;
     }
+
+    public String encodedEmail() { return this.Follower_Email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
 }

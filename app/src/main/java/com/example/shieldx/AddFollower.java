@@ -202,11 +202,11 @@ public class AddFollower extends AppCompatActivity {
                         adapter = new MainAdapter(this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);
-                        rootNode =  FirebaseDatabase.getInstance("https://shieldx-67a7b-default-rtdb.firebaseio.firebasedatabase.app");
-                        followerReference = rootNode.getReference().child("FOLLOWERS");
+                        rootNode =  FirebaseDatabase.getInstance();
 
                         Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
-                        followerReference.push().setValue(follower);
+                        followerReference = rootNode.getReference("FOLLOWERS").child(follower.encodedEmail());
+                        followerReference.setValue(follower);
 
                         followerReference.addValueEventListener(new ValueEventListener() {
                             @Override

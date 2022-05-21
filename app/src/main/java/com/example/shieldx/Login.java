@@ -17,7 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -28,10 +27,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
@@ -45,7 +43,8 @@ public class Login extends AppCompatActivity {
     User userData = new User();
     FusedLocationProviderClient fusedLocationProviderClient;
     ActivityLog activityLog = new ActivityLog();
-
+    FirebaseDatabase rootNode;
+    DatabaseReference followerReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +65,7 @@ public class Login extends AppCompatActivity {
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 }
-                Intent myIntent = new Intent(Login.this, HomePage.class);
-                myIntent.putExtra("user_key", (Serializable) userData);
-//                    myIntent.putExtra("Username", username.getText().toString());
-                startActivity(myIntent);
+                showHomePage();
 
                 getLocation(userData.getEmail());
 //                //Check permission
@@ -85,6 +81,26 @@ public class Login extends AppCompatActivity {
                 Toast.makeText(Login.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
         });
 
+        showSignUp(signupBtn);
+    }
+
+    private void showHomePage() {
+//        userData.setEmail(email.getText().toString());
+//        userData.setNumber(phone.getText().toString());
+//        userData.setFirstName(firstname.getText().toString());
+//        userData.setLastName(lastname.getText().toString());
+
+        rootNode =  FirebaseDatabase.getInstance();
+        followerReference = rootNode.getReference("USERS").child(userData.encodedEmail());
+        followerReference.setValue(userData);
+
+        Intent myIntent = new Intent(Login.this, HomePage.class);
+        myIntent.putExtra("user_key", (Serializable) userData);
+//                    myIntent.putExtra("Username", username.getText().toString());
+        startActivity(myIntent);
+    }
+
+    private void showSignUp(Button signupBtn) {
         signupBtn.setOnClickListener(v -> {
                     Intent myintent = new Intent(Login.this, SignUp.class);
                     startActivity(myintent);
