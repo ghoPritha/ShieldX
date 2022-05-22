@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,8 +43,8 @@ public class AddFollower extends AppCompatActivity {
     public static int CONTACT_PERMISSION_CODE = 1;
     DBHelper DB;
     FirebaseDatabase rootNode;
-    DatabaseReference followerReference;
-    int maxId =0;
+    DatabaseReference followerReference, activityReference;
+    int maxId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +206,6 @@ public class AddFollower extends AppCompatActivity {
                         Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
                         followerReference = rootNode.getReference("FOLLOWERS").child(follower.encodedEmail());
                         followerReference.setValue(follower);
-
                         followerReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -215,16 +213,40 @@ public class AddFollower extends AppCompatActivity {
                                 // whenever data at this location is updated.
                                 Follower follower1 = dataSnapshot.getValue(Follower.class);
 
-                               // Log.d(TAG, "Value is: " + value);
+                                // Log.d(TAG, "Value is: " + value);
                             }
 
                             @Override
                             public void onCancelled(DatabaseError error) {
                                 // Failed to read value
-                               // Log.w(TAG, "Failed to read value.", error.toException());
+                                // Log.w(TAG, "Failed to read value.", error.toException());
                             }
                         });
-                       // followerReference.child(String.valueOf(maxId+1)).setValue(follower);
+
+                        ArrayList<Follower> followerList = new ArrayList<>();
+                        followerList.add(follower);
+                        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+                        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+                        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList").push().setValue(followerList);
+                                    Toast.makeText(AddFollower.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // activityReference.setValue(newActivity);
+                                    Toast.makeText(AddFollower.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        // followerReference.child(String.valueOf(maxId+1)).setValue(follower);
 //                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
 //                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
 //                        }

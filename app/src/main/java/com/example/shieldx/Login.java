@@ -67,7 +67,7 @@ public class Login extends AppCompatActivity {
                 }
                 showHomePage();
 
-                getLocation(userData.getEmail());
+                getLocation(userData.encodedEmail());
 //                //Check permission
 //                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
 //                    //When permission granted

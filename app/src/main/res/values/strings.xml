@@ -44,5 +44,7 @@
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="msg_token_fmt" />
+    <string name="default_notification_channel_id" />
 
 </resources>

@@ -1,6 +1,5 @@
 package com.example.shieldx;
 
-import android.animation.LayoutTransition;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,16 +8,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,11 +28,25 @@ import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.shieldx.SendNotificationPack.APIService;
+import com.example.shieldx.SendNotificationPack.Client;
+import com.example.shieldx.SendNotificationPack.Data;
+import com.example.shieldx.SendNotificationPack.MyResponse;
+import com.example.shieldx.SendNotificationPack.NotificationSender;
+import com.example.shieldx.SendNotificationPack.Token;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NewActivityPage extends AppCompatActivity {
 
@@ -47,10 +62,14 @@ public class NewActivityPage extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
+    private APIService apiService;
+
     Button startActivityButton;
     private static int FOLLOWER_ADDED = 1;
     private static int TIMER_ADDED = 1;
     User userData;
+    FirebaseDatabase rootNode;
+    DatabaseReference activityReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +86,35 @@ public class NewActivityPage extends AppCompatActivity {
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
-        if(userData != null) {
+        if (userData != null) {
             userName.setText(userData.getFirstName());
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-       // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
+        rootNode = FirebaseDatabase.getInstance();
+        ActivityLog newActivity = new ActivityLog();
+        newActivity.setUserMail(userData.encodedEmail());
+        newActivity.setUserName(userData.getFirstName());
+        Toast.makeText(NewActivityPage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
+
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+
+                } else {
+                    activityReference.setValue(newActivity);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         enterDestiantion();
 
@@ -84,12 +127,26 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void startJourney() {
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proceedToStartJourney();
+                proceedToStartJourney();;
+                FirebaseDatabase.getInstance().getReference().child("Tokens").child("UserTB.getText().toString().trim()").child("token").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String usertoken = dataSnapshot.getValue(String.class);
+                        sendNotifications(usertoken, "Title.getText().toString().trim()", "Message.getText().toString().trim()");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
+        UpdateToken();
     }
 
     private void addExpectedTime() {
@@ -118,7 +175,8 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                gpsIntent.putExtra("user_email",userData.email);
+                gpsIntent.putExtra("user_email", userData.email);
+                gpsIntent.putExtra("user_key", (Serializable) userData);
                 startActivity(gpsIntent);
 //                DisplayTrack();
 //                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -190,6 +248,8 @@ public class NewActivityPage extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
+                        myIntent.putExtra("user_key", (Serializable) userData);
+
 ////                        startActivity(myIntent);
 ////                        TOPIC = "/topics/userABC"; //topic has to match what the receiver subscribed to
 ////                        NOTIFICATION_TITLE = edtTitle.getText().toString();
@@ -215,11 +275,16 @@ public class NewActivityPage extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
+                        myIntent.putExtra("user_key", (Serializable) userData);
+
                         startActivity(myIntent);
                     }
                 })
                 .show();
         createPushNotification();
+
+
+
 
     }
 
@@ -251,7 +316,7 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void expandAddFollowers(View view) {
-        outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        //outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         int v = (expandedLayout.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
         TransitionManager.beginDelayedTransition(outerLayout, new AutoTransition());
         expandedLayout.setVisibility(v);
@@ -285,32 +350,31 @@ public class NewActivityPage extends AppCompatActivity {
 //        }
     }
 
-//
-//    private void sendNotification(JSONObject notification) {
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.i(TAG, "onResponse: " + response.toString());
-//                        edtTitle.setText("");
-//                        edtMessage.setText("");
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(MainActivity.this, "Request error", Toast.LENGTH_LONG).show();
-//                        Log.i(TAG, "onErrorResponse: Didn't work");
-//                    }
-//                }){
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("Authorization", serverKey);
-//                params.put("Content-Type", contentType);
-//                return params;
-//            }
-//        };
-//        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-//    }
+
+    private void UpdateToken() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //String refreshToken = FirebaseInstanceId.getInstance().getToken();
+        Token token = new Token();
+//        FirebaseDatabase.getInstance().getReference("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(token);
     }
+
+    public void sendNotifications(String usertoken, String title, String message) {
+        Data data = new Data(title, message);
+        NotificationSender sender = new NotificationSender(data, usertoken);
+        apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<MyResponse> call, Response<MyResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().success != 1) {
+                        Toast.makeText(NewActivityPage.this, "Failed ", Toast.LENGTH_LONG);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<MyResponse> call, Throwable t) {
+
+            }
+        });
+    }
+}

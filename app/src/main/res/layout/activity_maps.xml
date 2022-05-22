@@ -1,83 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MapsActivity" >
+    android:background="@color/dashboardBackground"
+    tools:context=".MapsActivity">
 
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="140dp"
+        android:layout_marginBottom="160dp"
         tools:context=".MapsActivity" />
 
-    <fragment android:id="@+id/autocomplete_fragment"
-        android:layout_width="350dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="54dp"
-        android:layout_marginLeft="10dp"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        />
+    <!--    <fragment android:id="@+id/autocomplete_fragment"-->
+    <!--        android:layout_width="350dp"-->
+    <!--        android:layout_height="44dp"-->
+    <!--        android:layout_marginTop="54dp"-->
+    <!--        android:layout_marginLeft="10dp"-->
+    <!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
+    <!--        />-->
 
-    <EditText
-        android:id="@+id/startlocation"
-        android:layout_width="350dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:background="#20ffffff"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
-        android:hint=" Enter Start Location"/>
+        <EditText
+            android:id="@+id/startlocation"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/circular_background"
+            android:gravity="center"
+            android:layout_marginBottom="6dp"
+            android:textSize="14dp"
+            android:hint=" Enter Start Location"
+            android:textColorHint="@color/white" />
 
-<!--    <EditText-->
-<!--        android:id="@+id/destination"-->
-<!--        android:layout_width="350dp"-->
-<!--        android:layout_height="44dp"-->
-<!--        android:layout_marginTop="54dp"-->
-<!--        android:layout_marginLeft="10dp"-->
-<!--        android:backgroundTint="#20ffffff"-->
-<!--        android:hint="Enter Destination"-->
-<!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
-<!--        >-->
+        <EditText
+            android:id="@+id/destination"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:textSize="14dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/circular_background"
+            android:gravity="center"
+            android:hint="Enter Destination"
+            android:textColorHint="@color/white" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-<!--    </EditText>-->
+            <EditText
+                android:id="@+id/etd"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:textSize="14dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/circular_background"
+                android:gravity="center"
+                android:hint=" Expected time duration"
+                android:textColorHint="@color/white" />
 
+        </LinearLayout>
+        <!--    android:onClick="updateLocation"-->
 
-    <EditText
-        android:id="@+id/etd"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="98dp"
-        android:layout_marginLeft="10dp"
-        android:background="#20ffffff"
-        android:hint=" Expected time duration"/>
+        <!--    <ImageButton-->
+        <!--        android:id="@+id/imageButton"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:src="@drawable/ic_search" />-->
+
+        <!--    <ImageButton-->
+        <!--        android:id="@+id/imageButton2"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:src="@drawable/ic_search" />-->
+    </LinearLayout>
+
 
     <ImageButton
         android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:rotationX="2"
-        android:src="@drawable/ic_search"
-        android:translationX="361dp"
-        android:translationY="32dp" />
-
-<!--    android:onClick="updateLocation"-->
-
-    <!--    <ImageButton-->
-<!--        android:id="@+id/imageButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/ic_search" />-->
-
-<!--    <ImageButton-->
-<!--        android:id="@+id/imageButton2"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/ic_search" />-->
-
+        android:src="@drawable/ic_search" />
 </FrameLayout>

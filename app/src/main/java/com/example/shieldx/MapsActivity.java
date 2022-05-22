@@ -1,6 +1,7 @@
 package com.example.shieldx;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,44 +12,33 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.shieldx.databinding.ActivityMapsBinding;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsRoute;
-import com.google.maps.model.EncodedPolyline;
-import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -57,29 +47,70 @@ import java.util.Locale;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
 
+    private static final String PLACES_KEY = "AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0";
     private GoogleMap mMap;
     EditText startlocation, destination;
+    ImageButton searchButton;
     private DatabaseReference databasereference;
-    private LocationListener locationListener;;
+    private LocationListener locationListener;
+    ;
     private LocationManager locationManager;
     private final long Min_Time = 1000;  //1 second
     private final long Min_dist = 1;  //1 meter
     private static final String TAG = "Info: ";
     Location loc;
     String userEmail;
+    User userData;
     ActivityLog activityLog = new ActivityLog();
+    FirebaseDatabase rootNode;
+    DatabaseReference followerReference, activityReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        Intent intent = getIntent();
+        userData = (User) intent.getSerializableExtra("user_key");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
+
+        Places.initialize(getApplicationContext(), PLACES_KEY);
+//        }
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(MapsActivity.this);
+
+        // Initialize the AutocompleteSupportFragment.
+//        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        findViewById(R.id.searchButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateLocation();
+            }
+        });
+        findViewById(R.id.destination).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//                    String userDestinationText = ((TextView) findViewById(R.id.destination)).getText().toString();
+//                    if (userDestinationText.equals(getString(R.string.guard_enterDestination))) {
+//                        userDestinationText = "";
+//                    }
+//                    destinationAutocompleteFragment = DestinationAutocompleteFragment.newInstance(userDestinationText);
+//                    ft.add(R.id.destinationAutocompletePlaceholder, destinationAutocompleteFragment, "destinationAutocompleteFragment");
+//                    ft.commit();
+
+                List<Place.Field> placeList = Arrays.asList(Place.Field.ADDRESS_COMPONENTS, Place.Field.NAME, Place.Field.LAT_LNG);
+                Intent myIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeList).build(MapsActivity.this);
+                startActivityForResult(myIntent, 100);
+            }
+        });
 
         startlocation = findViewById(R.id.startlocation);
 //        destination = findViewById(R.id.destination);
@@ -124,35 +155,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          * Initialize Places. For simplicity, the API key is hard-coded. In a production
          * environment we recommend using a secure mechanism to manage API keys.
          */
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.api_key));
-        }
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
+//        if (!Places.isInitialized()) {
 
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-//                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
-
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-                // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
+//        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+//
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+////                mMap.clear();
+//                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())));
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f), 5000, null);
+//
+//            }
+//
+//
+//            @Override
+//            public void onError(@NonNull Status status) {
+//                // TODO: Handle the error.
+//                Log.i(TAG, "An error occurred: " + status);
+//            }
+//        });
     }
 
 //        ((TextView) findViewById(R.id.destination)).setOnClickListener(new View.OnClickListener() {
@@ -170,6 +195,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        });
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Status status = Autocomplete.getStatusFromIntent(data);
+        Log.e("SomLogcat", status.toString());
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            destination.setText(place.getAddress() + place.getLatLng());
+
+        }
+    }
 
     private void getLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -268,7 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return p1;
     }
 
     public String getAddress(Location location) throws IOException {
@@ -288,15 +324,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return addr;
     }
 
-    public void updateLocation(View view){
+    public void updateLocation(View view) {
 //        databasereference.child("latitude").push().setValue(loc.getLatitude());
 //        databasereference.child("longitude").push().setValue(loc.getLongitude());
 //        databasereference.child("latitude").push().setValue(startlocation.getText().toString());
 //        databasereference.child("longitude").push().setValue(destination.getText().toString());
+
+        //databasereference
+        activityLog.setSource(getLocationFromAddress(startlocation.getText().toString()));
+        activityLog.setSourceName(startlocation.getText().toString());
+        activityLog.setUserMail(userData.encodedEmail());
         activityLog.setDestinationName(destination.getText().toString());
         activityLog.setDestination(getLocationFromAddress(destination.getText().toString()));
-        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
-        FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(activityLog.getUserMail()).push().setValue(acty);
+//        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
+        rootNode = FirebaseDatabase.getInstance();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    activityReference.child("destinationName").setValue(destination.getText().toString());
+                    activityReference.child("sourceName").setValue(startlocation.getText().toString());
+                    activityReference.child("destination").setValue(getLocationFromAddress(destination.getText().toString()));
+                    activityReference.child("source").setValue(getLocationFromAddress(startlocation.getText().toString()));
+                    activityReference.child("journeyCompleted").setValue(false);
+                    activityReference.child("destinationReached").setValue(false);
+                    Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+                } else {
+                    // activityReference.setValue(newActivity);
+                    Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(activityLog.getUserMail()).push().setValue(activityLog);
     }
 //    void getRoutes() {
 ////        Log.i("GuardActivity", "getRoute called");
@@ -337,4 +404,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            Log.e("GuardActivity", ex.getLocalizedMessage());
 //        }
 //    }
+
+    public void updateLocation() {
+//        databasereference.child("latitude").push().setValue(loc.getLatitude());
+//        databasereference.child("longitude").push().setValue(loc.getLongitude());
+//        databasereference.child("latitude").push().setValue(startlocation.getText().toString());
+//        databasereference.child("longitude").push().setValue(destination.getText().toString());
+
+        //databasereference
+        activityLog.setSource(getLocationFromAddress(startlocation.getText().toString()));
+        activityLog.setSourceName(startlocation.getText().toString());
+        activityLog.setUserMail(userData.encodedEmail());
+        //  activityLog.setDestinationName(destination.getText().toString());
+        // activityLog.setDestination(getLocationFromAddress(destination.getText().toString()));
+//        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
+        rootNode = FirebaseDatabase.getInstance();
+
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    //activityReference.child("destinationName").setValue(destination.getText().toString());
+                    activityReference.child("sourceName").setValue(startlocation.getText().toString());
+                    // activityReference.child("destination").setValue(getLocationFromAddress(destination.getText().toString()));
+                    activityReference.child("source").setValue(getLocationFromAddress(startlocation.getText().toString()));
+                    activityReference.child("journeyCompleted").setValue(false);
+                    activityReference.child("destinationReached").setValue(false);
+                    Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+                } else {
+                    // activityReference.setValue(newActivity);
+                    Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

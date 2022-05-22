@@ -1,7 +1,5 @@
 package com.example.shieldx;
 
-import android.location.Location;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.Time;
@@ -9,7 +7,7 @@ import java.util.List;
 
 public class ActivityLog {
 
-    LatLng currentLocation, destination, startLocation;
+    LatLng currentLocation, destination, source;
     String userMail, userName, destinationName, sourceName, typeOfActivity;
     Boolean journeyCompleted, destinationReached;
     Time expectedTime;
@@ -21,7 +19,7 @@ public class ActivityLog {
     public ActivityLog(String userMail,LatLng startLocation, LatLng destination, String destinationName){
 
         this.userMail = userMail;
-        this.startLocation = startLocation;
+        this.source = startLocation;
         this.destination = destination;
 //        this.startLocationName = startLocationName;
         this.destinationName = destinationName;
@@ -29,7 +27,7 @@ public class ActivityLog {
     public ActivityLog(LatLng currentLocation, LatLng destination, LatLng startLocation, String userMail, String userName, String destinationName, String sourceName, String typeOfActivity, Boolean journeyCompleted, Boolean destinationReached, Time expectedTime, List<Follower> followersList) {
         this.currentLocation = currentLocation;
         this.destination = destination;
-        this.startLocation = startLocation;
+        this.source = startLocation;
         this.userMail = userMail;
         this.userName = userName;
         this.destinationName = destinationName;
@@ -57,12 +55,12 @@ public class ActivityLog {
         this.destination = destination;
     }
 
-    public LatLng getStartLocation() {
-        return startLocation;
+    public LatLng getSource() {
+        return source;
     }
 
-    public void setStartLocation(LatLng startLocation) {
-        this.startLocation = startLocation;
+    public void setSource(LatLng source) {
+        this.source = source;
     }
 
     public String getUserMail() {
