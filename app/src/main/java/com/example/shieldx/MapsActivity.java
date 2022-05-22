@@ -389,7 +389,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String key = "key=" + getString(R.string.google_maps_key);
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&amp;"+str_dest+"&amp;"+key;
+//        String parameters = str_origin+"&amp;"+str_dest+"&amp;"+key;
+        String parameters = str_origin+"&"+str_dest+"&"+key;
 
         // Output format
         String output = "json";
