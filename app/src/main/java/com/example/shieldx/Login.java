@@ -167,6 +167,7 @@ public class Login extends AppCompatActivity {
         else {
             ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+//            getLocation(userData.getEmail());
             getLocation(userData.getEmail());
         }
 //        else {

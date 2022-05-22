@@ -56,7 +56,6 @@ public class User implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String encodedEmail() { return this.email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
 
 }

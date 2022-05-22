@@ -14,7 +14,6 @@
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_homepage.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_launch_screen.xml" value="0.1796875" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_maps.xml" value="0.14666666666666667" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_my_follower.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_new_activity.xml" value="0.1" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_notification.xml" value="0.16145833333333334" />
@@ -31,7 +30,6 @@
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_start_activity2.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_start_location_tracking.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_timer.xml" value="0.17552083333333332" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/google_maps_api.xml" value="0.1" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/header.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/item_contact.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/nav_header_side_bar.xml" value="0.6" />
@@ -44,11 +42,14 @@
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/layout/EnterAppOnLogin.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/layout/enter_onlogin.xml" value="0.1" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_follower.xml" value="0.2557291666666667" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_homepage.xml" value="0.264" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_login.xml" value="0.2296875" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_main.xml" value="0.11170212765957446" />
-        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_maps.xml" value="0.27447916666666666" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_maps.xml" value="0.264" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_new_activity.xml" value="0.264" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_signup.xml" value="0.17074275362318841" />
+        <entry key="..\:/Users/Shimony/AndroidStudioProjects/shieldx/app/src/main/res/layout/fragment_start_location_tracking.xml" value="0.23385416666666667" />
       </map>
     </option>
   </component>
