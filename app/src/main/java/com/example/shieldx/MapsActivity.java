@@ -83,12 +83,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<LatLng> mMarkerPoints;
     private MarkerOptions place1, place2, source, destination;
     private Polyline currentPolyline;
-
+    FirebaseDatabase rootNode;
+    DatabaseReference activityReference;
+    User userData = new User();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        Intent intent = getIntent();
+        // Get the data of the activity providing the same key value
+        userData = (User) intent.getSerializableExtra("user_key");
         // start route implementation
 //        mMarkerPoints = new ArrayList<>();
         ImageButton getDirection = findViewById(R.id.searchButton);
@@ -96,6 +100,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), "driving"), "driving");
+                updateLocation();
+                finish();
             }
         });
         //27.658143,85.3199503
@@ -408,17 +414,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return addr;
     }
 
-    public void updateLocation(View view) {
-//        databasereference.child("latitude").push().setValue(loc.getLatitude());
-//        databasereference.child("longitude").push().setValue(loc.getLongitude());
-//        databasereference.child("latitude").push().setValue(startlocation.getText().toString());
-//        databasereference.child("longitude").push().setValue(destination.getText().toString());
-//        activityLog.setDestinationName(destination.getText().toString());
-//        activityLog.setDestination(getLocationFromAddress(destination.getText().toString()));
+    public void updateLocation() {
+//        activityLog.setSource(getLocationFromAddress(startlocation.getText().toString()));
+//        activityLog.setSourceName(startlocation.getText().toString());
+//        activityLog.setDestinationName(destinationLocation.getText().toString());
+//        activityLog.setDestination(getLocationFromAddress(destinationLocation.getText().toString()));
 //        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
-//        FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(activityLog.getUserMail()).push().setValue(acty);
+        rootNode = FirebaseDatabase.getInstance();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    activityReference.child("destinationName").setValue(destinationLocation.getText().toString());
+                    activityReference.child("sourceName").setValue(startlocation.getText().toString());
+                    activityReference.child("destination").setValue(destination.getPosition());
+                    activityReference.child("source").setValue(source.getPosition());
+                    activityReference.child("journeyCompleted").setValue(false);
+                    activityReference.child("destinationReached").setValue(false);
+                } else {
+                    // activityReference.setValue(newActivity);
+                }
+                Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+            }
 
-    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });}
 
 
     // start route implementation
