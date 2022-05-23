@@ -79,7 +79,7 @@ public class NewActivityPage extends AppCompatActivity {
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
         //outerLayout = findViewById(R.id.cardLayoutAddFollower);
-        openTimer = findViewById(R.id.openTimer);
+        //openTimer = findViewById(R.id.openTimer);
         recyclerView = findViewById(R.id.recyclerView);
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         userName = (TextView) findViewById(R.id.userName);
@@ -118,7 +118,7 @@ public class NewActivityPage extends AppCompatActivity {
 
         addFollower();
 
-        addExpectedTime();
+        //addExpectedTime();
 
         startJourney();
 
@@ -302,9 +302,9 @@ public class NewActivityPage extends AppCompatActivity {
 
     public void expandAddFollowers(View view) {
         //outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-        int v = (expandedLayout.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
-        TransitionManager.beginDelayedTransition(outerLayout, new AutoTransition());
-        expandedLayout.setVisibility(v);
+//        int v = (expandedLayout.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
+//        TransitionManager.beginDelayedTransition(outerLayout, new AutoTransition());
+//        expandedLayout.setVisibility(v);
     }
 
     @Override
