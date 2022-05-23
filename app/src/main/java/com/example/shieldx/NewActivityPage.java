@@ -34,8 +34,6 @@ import com.example.shieldx.SendNotificationPack.Data;
 import com.example.shieldx.SendNotificationPack.MyResponse;
 import com.example.shieldx.SendNotificationPack.NotificationSender;
 import com.example.shieldx.SendNotificationPack.Token;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -127,26 +125,13 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void startJourney() {
-        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proceedToStartJourney();;
-                FirebaseDatabase.getInstance().getReference().child("Tokens").child("UserTB.getText().toString().trim()").child("token").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String usertoken = dataSnapshot.getValue(String.class);
-                        sendNotifications(usertoken, "Title.getText().toString().trim()", "Message.getText().toString().trim()");
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                proceedToStartJourney();
             }
         });
-        UpdateToken();
+        //UpdateToken();
     }
 
     private void addExpectedTime() {
@@ -351,30 +336,30 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
 
-    private void UpdateToken() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //String refreshToken = FirebaseInstanceId.getInstance().getToken();
-        Token token = new Token();
-//        FirebaseDatabase.getInstance().getReference("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(token);
-    }
-
-    public void sendNotifications(String usertoken, String title, String message) {
-        Data data = new Data(title, message);
-        NotificationSender sender = new NotificationSender(data, usertoken);
-        apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
-            @Override
-            public void onResponse(retrofit2.Call<MyResponse> call, Response<MyResponse> response) {
-                if (response.code() == 200) {
-                    if (response.body().success != 1) {
-                        Toast.makeText(NewActivityPage.this, "Failed ", Toast.LENGTH_LONG);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<MyResponse> call, Throwable t) {
-
-            }
-        });
-    }
+//    private void UpdateToken() {
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        //String refreshToken = FirebaseInstanceId.getInstance().getToken();
+//        Token token = new Token();
+////        FirebaseDatabase.getInstance().getReference("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(token);
+//    }
+//
+//    public void sendNotifications(String usertoken, String title, String message) {
+//        Data data = new Data(title, message);
+//        NotificationSender sender = new NotificationSender(data, usertoken);
+//        apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
+//            @Override
+//            public void onResponse(retrofit2.Call<MyResponse> call, Response<MyResponse> response) {
+//                if (response.code() == 200) {
+//                    if (response.body().success != 1) {
+//                        Toast.makeText(NewActivityPage.this, "Failed ", Toast.LENGTH_LONG);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(retrofit2.Call<MyResponse> call, Throwable t) {
+//
+//            }
+//        });
+//    }
 }

@@ -42,8 +42,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="150dp"
-        tools:context=".StartJourney" />
+        android:layout_marginBottom="150dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

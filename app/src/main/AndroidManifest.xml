@@ -88,13 +88,13 @@
 <!--                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->
 <!--            </intent-filter>-->
 <!--        </service>-->
-        <service android:name=".MyFirebaseMessagingService" android:permission="com.google.android.c2dm.permission.SEND"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-            </intent-filter>
-        </service>
+<!--        <service android:name=".MyFirebaseMessagingService" android:permission="com.google.android.c2dm.permission.SEND"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
+<!--                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>-->
+<!--            </intent-filter>-->
+<!--        </service>-->
     </application>
 
 </manifest>

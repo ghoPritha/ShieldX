@@ -56,7 +56,7 @@ public class StartJourney extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot dss : snapshot.getChildren()) {
-                        followerList.add(dss.getValue(Follower.class));
+                       // followerList = dss.getValue(ArrayList.class);
                     }
                     for (int i = 0; i < followerList.size(); i++) {
                         ContactModel model = new ContactModel();
