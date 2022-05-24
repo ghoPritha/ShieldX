@@ -16,11 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -49,7 +51,9 @@ import retrofit2.Response;
 public class NewActivityPage extends AppCompatActivity {
 
     //Initialise variables
+    RelativeLayout layoutEtd;
     EditText searchDestination;
+    TextView etd;
     EditText text;
     ImageView openAddFollower;
     ImageView openTimer;
@@ -65,6 +69,7 @@ public class NewActivityPage extends AppCompatActivity {
     Button startActivityButton;
     private static int FOLLOWER_ADDED = 1;
     private static int TIMER_ADDED = 1;
+    private static int DESTINATION_ADDED = 1;
     User userData;
     FirebaseDatabase rootNode;
     DatabaseReference activityReference;
@@ -77,6 +82,8 @@ public class NewActivityPage extends AppCompatActivity {
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
+        etd = findViewById(R.id.etd);
+        etd.setVisibility(View.GONE);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
         //outerLayout = findViewById(R.id.cardLayoutAddFollower);
         //openTimer = findViewById(R.id.openTimer);
@@ -84,6 +91,7 @@ public class NewActivityPage extends AppCompatActivity {
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
+        layoutEtd = (RelativeLayout) findViewById(R.id.layoutEtd);
         if (userData != null) {
             userName.setText(userData.getFirstName());
         }
@@ -162,7 +170,7 @@ public class NewActivityPage extends AppCompatActivity {
                 Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                 gpsIntent.putExtra("user_email", userData.email);
                 gpsIntent.putExtra("user_key", (Serializable) userData);
-                startActivity(gpsIntent);
+                startActivityForResult(gpsIntent, DESTINATION_ADDED);
 //                DisplayTrack();
 //                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 //                try {
@@ -319,6 +327,20 @@ public class NewActivityPage extends AppCompatActivity {
                 recyclerView.setAdapter(adapter);
             }
         }
+
+        if (requestCode == DESTINATION_ADDED) {
+            if (resultCode == RESULT_OK) {
+                // Get String data from Intent
+                String dest = data.getStringExtra("destination");
+                String duration =  data.getStringExtra("duration");
+                searchDestination.setText(dest);
+                etd.setText(duration);
+                layoutEtd.setVisibility(View.VISIBLE);
+
+            }
+        }
+
+
 //        if (requestCode==1) {
 //            if (resultCode == RESULT_OK) {
 //                Place place = PlacePicker.getPlace(data, this);
@@ -334,7 +356,6 @@ public class NewActivityPage extends AppCompatActivity {
 //            }
 //        }
     }
-
 
 //    private void UpdateToken() {
 //        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

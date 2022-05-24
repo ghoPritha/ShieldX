@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -66,9 +67,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     EditText startlocation, destinationLocation;
+    TextView etd;
     private DatabaseReference databasereference;
     private LocationListener locationListener;
-    ;
+
+    String distance = "";
+    String duration = "";
     private LocationManager locationManager;
     private final long Min_Time = 1000;  //1 second
     private final long Min_dist = 1;  //1 meter
@@ -99,8 +103,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), "driving"), "driving");
-                updateLocation();
+                Intent intent = new Intent();
+                intent.putExtra("duration", duration);
+                intent.putExtra("destination", destinationLocation.getText().toString());
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
@@ -117,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
-
+        etd = findViewById(R.id.etd);
         startlocation = findViewById(R.id.startlocation);
 //        destination = findViewById(R.id.destination);
         destinationLocation = findViewById(R.id.destinationLocation);
@@ -217,9 +223,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             destination = new MarkerOptions().position(place.getLatLng()).title("destination");
-            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())));
+            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15.0f));
+            new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), "driving"), "driving");
+            updateLocation();
+           // finish();
 
         }
     }
@@ -233,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Min_Time, Min_dist, this);
                 } else {
-                    Toast.makeText(MapsActivity.this, "No Provider Enabled", Toast.LENGTH_SHORT).show();
+
                 }
             }
         }
@@ -323,7 +332,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 MarkerOptions option = new MarkerOptions();
                 option.position(markerDestination);
-                option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 currentMarker = mMap.addMarker(option);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerDestination, 15));
 
@@ -431,12 +440,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     activityReference.child("sourceName").setValue(startlocation.getText().toString());
                     activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
+                    activityReference.child("duration").setValue(duration);
                     activityReference.child("journeyCompleted").setValue(false);
                     activityReference.child("destinationReached").setValue(false);
                 } else {
                     // activityReference.setValue(newActivity);
                 }
-                Toast.makeText(MapsActivity.this, "follower " + snapshot + " added", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -486,7 +496,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 // Fetching the data from web service
                 data = downloadUrl(strings[0]);
-                Log.d("mylog", "Background task data " + data.toString());
+
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }
@@ -580,6 +590,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // Fetching all the points in i-th route
                 for (int j = 0; j < path.size(); j++) {
                     HashMap<String, String> point = path.get(j);
+                    if(j==0){    // Get distance from the list
+                        distance = (String)point.get("distance");
+                        continue;
+                    }else if(j==1){ // Get duration from the list
+                        duration = (String)point.get("duration");
+                        continue;
+                    }
+
+                    etd.setText(duration);
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
@@ -590,9 +609,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (directionMode.equalsIgnoreCase("walking")) {
                     lineOptions.width(10);
                     lineOptions.color(Color.MAGENTA);
-                } else {
+                } else if (directionMode.equalsIgnoreCase("driving")){
                     lineOptions.width(20);
                     lineOptions.color(Color.BLUE);
+                }
+                else {
+                    lineOptions.width(20);
+                    lineOptions.color(Color.RED);
                 }
                 Log.d("mylog", "onPostExecute lineoptions decoded");
             }
