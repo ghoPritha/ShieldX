@@ -51,15 +51,13 @@ import retrofit2.Response;
 public class NewActivityPage extends AppCompatActivity {
 
     //Initialise variables
-    RelativeLayout layoutEtd;
-    EditText searchDestination;
-    TextView etd;
+    EditText searchDestination,etd;
     EditText text;
     ImageView openAddFollower;
     ImageView openTimer;
     public static int PICK_CONTACT = 1;
     TextView userName;
-    LinearLayout expandedLayout;
+    LinearLayout expandedLayout, layoutEtd;
     CardView outerLayout;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
@@ -83,7 +81,6 @@ public class NewActivityPage extends AppCompatActivity {
         userData = (User) intent.getSerializableExtra("user_key");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         etd = findViewById(R.id.etd);
-        etd.setVisibility(View.GONE);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
         //outerLayout = findViewById(R.id.cardLayoutAddFollower);
         //openTimer = findViewById(R.id.openTimer);
@@ -91,7 +88,8 @@ public class NewActivityPage extends AppCompatActivity {
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
-        layoutEtd = (RelativeLayout) findViewById(R.id.layoutEtd);
+        layoutEtd = (LinearLayout) findViewById(R.id.layoutEtd);
+        layoutEtd.setVisibility(View.GONE);
         if (userData != null) {
             userName.setText(userData.getFirstName());
         }
@@ -168,8 +166,8 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                gpsIntent.putExtra("user_email", userData.email);
                 gpsIntent.putExtra("user_key", (Serializable) userData);
+                gpsIntent.putExtra("isThisDestinationSetup", true);
                 startActivityForResult(gpsIntent, DESTINATION_ADDED);
 //                DisplayTrack();
 //                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -240,8 +238,10 @@ public class NewActivityPage extends AppCompatActivity {
                 .setPositiveButton("Invite via Email", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
+                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                         myIntent.putExtra("user_key", (Serializable) userData);
+                        myIntent.putExtra("isThisDestinationSetup", false);
+
 
 ////                        startActivity(myIntent);
 ////                        TOPIC = "/topics/userABC"; //topic has to match what the receiver subscribed to
@@ -267,8 +267,9 @@ public class NewActivityPage extends AppCompatActivity {
                 .setNegativeButton("Invite via Text Message", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, StartJourney.class);
+                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                         myIntent.putExtra("user_key", (Serializable) userData);
+                        myIntent.putExtra("isThisDestinationSetup", false);
 
                         startActivity(myIntent);
                     }
