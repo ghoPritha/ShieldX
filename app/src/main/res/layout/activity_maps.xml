@@ -15,6 +15,38 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="140dp"
         tools:context=".MapsActivity" />
+    <LinearLayout
+        android:id="@+id/transportOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="150sp">
+
+        <ImageView
+            android:id="@+id/driving"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:background="@color/white"
+            android:padding="8sp"
+            android:src="@drawable/driving" />
+
+
+        <ImageView
+            android:id="@+id/cycling"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:padding="8sp"
+            android:src="@drawable/bicycle"
+            />
+
+        <ImageView
+            android:id="@+id/walking"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:padding="8sp"
+            android:src="@drawable/walking"
+            />
+    </LinearLayout>
 
     <!--    <fragment android:id="@+id/autocomplete_fragment"-->
     <!--        android:layout_width="350dp"-->
@@ -25,6 +57,7 @@
     <!--        />-->
 
     <LinearLayout
+        android:id="@+id/locationSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -78,40 +111,11 @@
             android:hint="Enter Destination"
             android:textColorHint="@color/cian" />
         </LinearLayout>
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
-
-<!--            <EditText-->
-<!--                android:id="@+id/etd"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="20dp"-->
-<!--                android:textSize="14dp"-->
-<!--                android:layout_alignParentBottom="true"-->
-<!--                android:background="@drawable/circular_background"-->
-<!--                android:gravity="center"-->
-<!--                android:hint=" Expected time duration"-->
-<!--                android:textColorHint="@color/white" />-->
-
-<!--        </LinearLayout>-->
-        <!--    android:onClick="updateLocation"-->
-
-        <!--    <ImageButton-->
-        <!--        android:id="@+id/imageButton"-->
-        <!--        android:layout_width="wrap_content"-->
-        <!--        android:layout_height="wrap_content"-->
-        <!--        android:src="@drawable/ic_search" />-->
-
-        <!--    <ImageButton-->
-        <!--        android:id="@+id/imageButton2"-->
-        <!--        android:layout_width="wrap_content"-->
-        <!--        android:layout_height="wrap_content"-->
-        <!--        android:src="@drawable/ic_search" />-->
     </LinearLayout>
 
 
     <ImageButton
-        android:id="@+id/searchButton"
+        android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:rotationX="2"
@@ -128,13 +132,69 @@
             android:layout_gravity="top"
             android:hint="Expected time"
             android:src="@drawable/ic_search"
-            android:background="@color/colorTrendingStart"
-            android:textColor="@color/white"
+            android:background="@color/teal_700"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:padding="20dp"
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/countDownTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/text_view_countdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="00:00"
+                android:textColor="@android:color/black"
+                android:textSize="24sp" />
+
+            <ImageButton
+                android:id="@+id/button_start_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_view_countdown"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_start" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/followerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+       app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="140sp"
+            tools:ignore="MissingConstraints"
+            tools:listitem="@layout/item_contact" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/alertButton"
+        android:layout_width="wrap_content"
+        android:layout_height="50sp"
+        android:src="@drawable/siren"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="460sp"/>
+
 </FrameLayout>

@@ -34,11 +34,11 @@ public class StartTimer extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_timer, container, false);
-        timerView = view.findViewById(R.id.showTimer);
+//
+//
+//        // Inflate the layout for this fragment
+//        view = inflater.inflate(R.layout.fragment_timer, container, false);
+//        timerView = view.findViewById(R.id.showTimer);
         rootNode =  FirebaseDatabase.getInstance();
        // activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 
