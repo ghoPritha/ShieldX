@@ -78,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView etd, timeDown;
     private DatabaseReference databasereference;
     private LocationListener locationListener;
-    LinearLayout locationSearch, followerLayout, countDownTimer;
+    LinearLayout locationSearch, followerLayout, countDownTimer, transportOptions;
     ImageButton backButton, startPauseButton;
     ImageView alertButton;
     String distance = "";
@@ -136,6 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mTextViewCountDown = findViewById(R.id.text_view_countdown);
         startPauseButton = findViewById(R.id.button_start_pause);
         alertButton = findViewById(R.id.alertButton);
+        transportOptions = findViewById(R.id.transportOptions);
         alertButton.setColorFilter(Color.parseColor("#a64452"));
         //onbutton = (Button)findViewById(R.id.onbutton);
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -157,6 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationSearch.setVisibility(View.GONE);
             etd.setVisibility(View.GONE);
             backButton.setVisibility(View.GONE);
+            transportOptions.setVisibility(View.GONE);
             alertButton.setVisibility(View.VISIBLE);
             followerLayout.setVisibility(View.VISIBLE);
             countDownTimer.setVisibility(View.VISIBLE);
@@ -479,7 +481,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     durationInSeconds = snapshot.child("durationInSeconds").getValue(Long.class);
-                    Log.d("onDataChange: ", mOrigin + " " + mDestination + " " + durationInSeconds);
+                    Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
 

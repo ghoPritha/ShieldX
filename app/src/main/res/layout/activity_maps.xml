@@ -16,6 +16,7 @@
         android:layout_marginBottom="140dp"
         tools:context=".MapsActivity" />
     <LinearLayout
+        android:id="@+id/transportOptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
