@@ -1,25 +1,26 @@
 package com.example.shieldx;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -39,6 +40,7 @@ import java.util.Locale;
 
 public class Login extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 0;
     DBHelper DB = new DBHelper(this);
     User userData = new User();
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -68,15 +70,6 @@ public class Login extends AppCompatActivity {
                 showHomePage();
 
                 getLocation(userData.encodedEmail());
-//                //Check permission
-//                if(ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
-//                    //When permission granted
-//                    getLocation();
-//                }
-//                else{
-//                    ActivityCompat.requestPermissions(Login.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},44);
-//
-//                }
             } else
                 Toast.makeText(Login.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
         });
@@ -90,9 +83,9 @@ public class Login extends AppCompatActivity {
 //        userData.setFirstName(firstname.getText().toString());
 //        userData.setLastName(lastname.getText().toString());
 
-        rootNode =  FirebaseDatabase.getInstance();
-        followerReference = rootNode.getReference("USERS").child(userData.encodedEmail());
-        followerReference.setValue(userData);
+        rootNode = FirebaseDatabase.getInstance();
+        // followerReference = rootNode.getReference("USERS").child(userData.encodedEmail());
+        //followerReference.setValue(userData);
 
         Intent myIntent = new Intent(Login.this, HomePage.class);
         myIntent.putExtra("user_key", (Serializable) userData);
@@ -112,8 +105,8 @@ public class Login extends AppCompatActivity {
     private void getLocation(String userMail) {
 
         //Check permission
-        if (ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            statusCheck();
             //When permission granted
             Context mContext = this;
 
@@ -165,16 +158,47 @@ public class Login extends AppCompatActivity {
             });
         }
         else {
-            ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            ActivityCompat.requestPermissions(Login.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
-//            getLocation(userData.getEmail());
-            getLocation(userData.getEmail());
+
+            askPermission();
+            // getLocation(userData.getEmail());
         }
+
 //        else {
 //            LatLng university = new LatLng(52.1205, 11.6276);
 //            mMap.addMarker(new MarkerOptions().position(university).title("Current location"));
 //            mMap.moveCamera(CameraUpdateFactory.newLatLng(university));
 //        }
+    }
+
+    private void askPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE);
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 //    @SuppressLint("MissingPermission")
 //    private void getLocation() {
@@ -198,5 +222,20 @@ public class Login extends AppCompatActivity {
 //            }
 //        });
 //    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocation(userData.getEmail());
+            } else {
+                // Toast.makeText(Login.this, "Permission Required", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(Login.this, "Permission Required", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 }

@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorTrendingStart"
     tools:context=".MapsActivity">
 
     <fragment
@@ -13,7 +12,6 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="140dp"
         tools:context=".MapsActivity" />
     <LinearLayout
         android:id="@+id/transportOptions"
@@ -24,28 +22,32 @@
 
         <ImageView
             android:id="@+id/driving"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
-            android:background="@color/white"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
+            android:layout_margin="2sp"
             android:src="@drawable/driving" />
 
 
         <ImageView
             android:id="@+id/cycling"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
-            android:src="@drawable/bicycle"
-            />
+            android:layout_margin="2sp"
+
+            android:src="@drawable/bicycle" />
 
         <ImageView
             android:id="@+id/walking"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
-            android:src="@drawable/walking"
-            />
+            android:layout_margin="2sp"
+            android:src="@drawable/walking" />
     </LinearLayout>
 
     <!--    <fragment android:id="@+id/autocomplete_fragment"-->
@@ -60,17 +62,17 @@
         android:id="@+id/locationSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorTrendingStart"
         android:layout_gravity="bottom"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
         android:orientation="vertical">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
         android:src="@drawable/ic_source"/>
         <EditText
             android:id="@+id/startlocation"
@@ -92,8 +94,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_destination"/>
 
         <EditText
@@ -133,7 +136,7 @@
             android:hint="Expected time"
             android:src="@drawable/ic_search"
             android:background="@color/teal_700"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:padding="20dp"
             android:textStyle="bold|italic"
@@ -177,7 +180,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-       app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 

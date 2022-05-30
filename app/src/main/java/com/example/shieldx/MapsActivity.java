@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -206,14 +207,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("bicycling");
         modeOfTransport.add("walking");
         selectedTravelMode = modeOfTransport.get(0);
-
+        ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(0);
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.walking)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
 
             }
         });
@@ -223,8 +224,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(1);
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.driving)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.walking)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 drawRoute(selectedTravelMode);
 
             }
@@ -235,8 +236,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(2);
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.driving)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 drawRoute(selectedTravelMode);
 
             }
@@ -264,6 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             destination = new MarkerOptions().position(place.getLatLng()).title("destination");
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
             new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
             // finish();
 
@@ -598,6 +600,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
                     activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
+                    activityReference.child("modeOfTransport").setValue(selectedTravelMode);
                     activityReference.child("duration").setValue(etd.getText().toString());
                     activityReference.child("journeyCompleted").setValue(false);
                     activityReference.child("destinationReached").setValue(false);
@@ -912,6 +915,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
         mTextViewCountDown.setText(timeLeftFormatted);
+
     }
+//    public void sendSMS(View view){
+//        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+//        String message = "dummy message";
+//        String number = editTextNumber.getText().toString();
+//
+//        SmsManager mySmsManager = SmsManager.getDefault();
+//        mySmsManager.sendTextMessage(number,null, message, null, null);
+//    }
+
 
 }
