@@ -52,6 +52,7 @@ public class NewActivityPage extends AppCompatActivity {
     LinearLayout expandedLayout, layoutEtd, addedFollower;
     CardView outerLayout;
     RecyclerView recyclerView;
+    String dest, duration, source,destination, username;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
@@ -192,7 +193,7 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     private void createPushNotification() {
-        String message = " this is a push notification";
+        String message = "Your journey has started from " + source + " to " + destination+ " expected duration: " + duration;
         Intent pushIntent = new Intent(NewActivityPage.this, Notification.class);
         pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pushIntent.putExtra("message", message);
@@ -225,7 +226,7 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-
+        fetchJourneyData();
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
                 .setMessage("How do you want to notify your followers ? ")
@@ -277,6 +278,54 @@ public class NewActivityPage extends AppCompatActivity {
 
 
 
+    }
+
+    private void fetchJourneyData() {
+
+
+        rootNode = FirebaseDatabase.getInstance();
+        username = userData.getFirstName();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
+        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //  ActivityLog a = new ActivityLog();
+                // a = snapshot.getValue(ActivityLog.class);
+                //sourceLo = snapshot.getValue(LatLng.class);
+                if (snapshot.exists()) {
+                    Log.d("followers", String.valueOf(snapshot));
+                    for (DataSnapshot d : snapshot.getChildren()) {
+                        Log.d("followers", String.valueOf(d));
+                        followerNumbers.add(d.child("follower_Number").getValue(String.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        fetchValueReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+
+        fetchValueReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Log.d("fetchValueReference", String.valueOf(snapshot));
+                    source = snapshot.child("sourceName").getValue(String.class);
+                    destination = snapshot.child("destinationName").getValue(String.class);
+                    duration = snapshot.child("duration").getValue(String.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 //    private void DisplayTrack() {
@@ -332,8 +381,8 @@ public class NewActivityPage extends AppCompatActivity {
             case (DESTINATION_ADDED): {
                 if (resultCode == RESULT_OK) {
                     // Get String data from Intent
-                    String dest = data.getStringExtra("destination");
-                    String duration = data.getStringExtra("duration");
+                    dest = data.getStringExtra("destination");
+                    duration = data.getStringExtra("duration");
                     searchDestination.setText(dest);
                     etd.setText(duration);
                     layoutEtd.setVisibility(View.VISIBLE);
@@ -385,57 +434,11 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void sendSMS() {
-        rootNode = FirebaseDatabase.getInstance();
-        final String[] source = new String[1];
-        final String[] destination = new String[1];
-        final String[] duration = new String[1];
-        String username = userData.getFirstName();
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
-        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //  ActivityLog a = new ActivityLog();
-                // a = snapshot.getValue(ActivityLog.class);
-                //sourceLo = snapshot.getValue(LatLng.class);
-                if (snapshot.exists()) {
-                    Log.d("followers", String.valueOf(snapshot));
-                    for (DataSnapshot d : snapshot.getChildren()) {
-                        Log.d("followers", String.valueOf(d));
-                        followerNumbers.add(d.child("follower_Number").getValue(String.class));
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        fetchValueReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-
-        fetchValueReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Log.d("fetchValueReference", String.valueOf(snapshot));
-                    source[0] = (String) snapshot.child("sourceName").getValue();
-                    destination[0] = (String) snapshot.child("destinationName").getValue();
-                    duration[0] = (String) snapshot.child("duration").getValue();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
         ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-        String message = username + " has started a journey from " + source[0] + " to " + destination[0] + " expected duration: " + duration[0];
+        String message = username + " has started a journey from " + source + " to " + destination+ " expected duration: " + duration;
 
         for (String number : followerNumbers) {
-            SmsManager mySmsManager = SmsManager.getDefault();
+             SmsManager mySmsManager = SmsManager.getDefault();
             mySmsManager.sendTextMessage(number, null, message, null, null);
         }
     }
