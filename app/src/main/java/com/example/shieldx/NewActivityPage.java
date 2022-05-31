@@ -35,6 +35,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
@@ -65,6 +66,8 @@ public class NewActivityPage extends AppCompatActivity {
     FirebaseDatabase rootNode;
     DatabaseReference activityReference, fetchValueReference;
     ArrayList<String> followerNumbers = new ArrayList<>();
+    ArrayList<String> followerEmails = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -294,10 +297,9 @@ public class NewActivityPage extends AppCompatActivity {
                 // a = snapshot.getValue(ActivityLog.class);
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
-                    Log.d("followers", String.valueOf(snapshot));
                     for (DataSnapshot d : snapshot.getChildren()) {
-                        Log.d("followers", String.valueOf(d));
                         followerNumbers.add(d.child("follower_Number").getValue(String.class));
+                        followerEmails.add(d.child("follower_Email").getValue(String.class));
                     }
                 }
             }
@@ -314,7 +316,6 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Log.d("fetchValueReference", String.valueOf(snapshot));
                     source = snapshot.child("sourceName").getValue(String.class);
                     destination = snapshot.child("destinationName").getValue(String.class);
                     duration = snapshot.child("duration").getValue(String.class);
@@ -434,11 +435,42 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void sendSMS() {
-        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-        String message = username + " has started a journey from " + source + " to " + destination+ " expected duration: " + duration;
+        String message = username + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
 
-        for (String number : followerNumbers) {
-             SmsManager mySmsManager = SmsManager.getDefault();
+
+        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+
+//        for (String number : followerNumbers) {
+//            SmsManager mySmsManager = SmsManager.getDefault();
+//            mySmsManager.sendTextMessage(number, null, message, null, null);
+//        }
+
+        for (String number : followerEmails) {
+            Log.d("snapshott", String.valueOf(number));
+
+            Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(number);
+            Log.d("snapshott", String.valueOf(query));
+
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for(DataSnapshot d: snapshot.getChildren()) {
+                            String usertoken = d.child("userToken").getValue(String.class);
+                            FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(),NewActivityPage.this);
+                            notificationsSender.SendNotifications();
+                        }
+                    } else {
+                        Log.d("snapshott", String.valueOf(snapshot));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            SmsManager mySmsManager = SmsManager.getDefault();
             mySmsManager.sendTextMessage(number, null, message, null, null);
         }
     }

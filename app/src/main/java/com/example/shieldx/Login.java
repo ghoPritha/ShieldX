@@ -30,6 +30,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -51,7 +53,12 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setApplicationId("1:143729797307:android:819a6322997745ff6d219e") // Required for Analytics.
+                .setProjectId("shieldx-67a7b") // Required for Firebase Installations.
+                .setApiKey("AIzaSyCceaYaJu6oOlhKRWcx8Q3yDv_342XOwCw") // Required for Auth.
+                .build();
+        FirebaseApp.initializeApp(this, options, "ShieldX");
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         EditText username = (EditText) findViewById(R.id.username);
         TextView password = (TextView) findViewById(R.id.password);
@@ -148,7 +155,7 @@ public class Login extends AppCompatActivity {
 //                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
 //                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
                             activityLog.setUserMail(userMail);
-                            FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(userMail);
+                          //  FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
