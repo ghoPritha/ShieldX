@@ -1,76 +1,72 @@
 package com.example.shieldx;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.telecom.Call;
-import android.transition.AutoTransition;
-import android.transition.TransitionManager;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.SendNotificationPack.APIService;
-import com.example.shieldx.SendNotificationPack.Client;
-import com.example.shieldx.SendNotificationPack.Data;
-import com.example.shieldx.SendNotificationPack.MyResponse;
-import com.example.shieldx.SendNotificationPack.NotificationSender;
-import com.example.shieldx.SendNotificationPack.Token;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class NewActivityPage extends AppCompatActivity {
 
     //Initialise variables
-    EditText searchDestination,etd;
+    EditText searchDestination, etd;
     EditText text;
     ImageView openAddFollower;
     ImageView openTimer;
     public static int PICK_CONTACT = 1;
     TextView userName;
-    LinearLayout expandedLayout, layoutEtd;
+    LinearLayout expandedLayout, layoutEtd, addedFollower;
     CardView outerLayout;
     RecyclerView recyclerView;
+    String dest, duration, source,destination, username;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
 
     Button startActivityButton;
-    private static int FOLLOWER_ADDED = 1;
+    private static final int FOLLOWER_ADDED = 1;
     private static int TIMER_ADDED = 1;
-    private static int DESTINATION_ADDED = 1;
+    private static final int DESTINATION_ADDED = 2;
     User userData;
     FirebaseDatabase rootNode;
-    DatabaseReference activityReference;
+    DatabaseReference activityReference, fetchValueReference;
+    ArrayList<String> followerNumbers = new ArrayList<>();
+    ArrayList<String> followerEmails = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +85,9 @@ public class NewActivityPage extends AppCompatActivity {
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
         layoutEtd = (LinearLayout) findViewById(R.id.layoutEtd);
+        addedFollower = (LinearLayout) findViewById(R.id.addedFollower);
         layoutEtd.setVisibility(View.GONE);
+        addedFollower.setVisibility(View.GONE);
         if (userData != null) {
             userName.setText(userData.getFirstName());
         }
@@ -198,7 +196,7 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     private void createPushNotification() {
-        String message = " this is a push notification";
+        String message = "Your journey has started from " + source + " to " + destination+ " expected duration: " + duration;
         Intent pushIntent = new Intent(NewActivityPage.this, Notification.class);
         pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pushIntent.putExtra("message", message);
@@ -231,7 +229,7 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-
+        fetchJourneyData();
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
                 .setMessage("How do you want to notify your followers ? ")
@@ -241,9 +239,11 @@ public class NewActivityPage extends AppCompatActivity {
                         Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                         myIntent.putExtra("user_key", (Serializable) userData);
                         myIntent.putExtra("isThisDestinationSetup", false);
+                        // startActivity(myIntent);
+                        sendSMS();
 
 
-////                        startActivity(myIntent);
+////
 ////                        TOPIC = "/topics/userABC"; //topic has to match what the receiver subscribed to
 ////                        NOTIFICATION_TITLE = edtTitle.getText().toString();
 ////                        NOTIFICATION_MESSAGE = edtMessage.getText().toString();
@@ -270,7 +270,8 @@ public class NewActivityPage extends AppCompatActivity {
                         Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                         myIntent.putExtra("user_key", (Serializable) userData);
                         myIntent.putExtra("isThisDestinationSetup", false);
-
+                        // startActivity(myIntent);
+                        sendSMS();
                         startActivity(myIntent);
                     }
                 })
@@ -280,6 +281,52 @@ public class NewActivityPage extends AppCompatActivity {
 
 
 
+    }
+
+    private void fetchJourneyData() {
+
+
+        rootNode = FirebaseDatabase.getInstance();
+        username = userData.getFirstName();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
+        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //  ActivityLog a = new ActivityLog();
+                // a = snapshot.getValue(ActivityLog.class);
+                //sourceLo = snapshot.getValue(LatLng.class);
+                if (snapshot.exists()) {
+                    for (DataSnapshot d : snapshot.getChildren()) {
+                        followerNumbers.add(d.child("follower_Number").getValue(String.class));
+                        followerEmails.add(d.child("follower_Email").getValue(String.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        fetchValueReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+
+        fetchValueReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    source = snapshot.child("sourceName").getValue(String.class);
+                    destination = snapshot.child("destinationName").getValue(String.class);
+                    duration = snapshot.child("duration").getValue(String.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 //    private void DisplayTrack() {
@@ -320,28 +367,30 @@ public class NewActivityPage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            if (requestCode == FOLLOWER_ADDED) {
-                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("contactList");
-                adapter = new MainAdapter(this, contactList);
-                // set adapter
-                recyclerView.setAdapter(adapter);
+        switch (requestCode) {
+            case (FOLLOWER_ADDED): {
+                addedFollower.setVisibility(View.VISIBLE);
+                if (resultCode == RESULT_OK) {
+                    contactList = (ArrayList<ContactModel>) data.getSerializableExtra("follower");
+                    adapter = new MainAdapter(this, contactList);
+                    // set adapter
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+
+
+            case (DESTINATION_ADDED): {
+                if (resultCode == RESULT_OK) {
+                    // Get String data from Intent
+                    dest = data.getStringExtra("destination");
+                    duration = data.getStringExtra("duration");
+                    searchDestination.setText(dest);
+                    etd.setText(duration);
+                    layoutEtd.setVisibility(View.VISIBLE);
+
+                }
             }
         }
-
-        if (requestCode == DESTINATION_ADDED) {
-            if (resultCode == RESULT_OK) {
-                // Get String data from Intent
-                String dest = data.getStringExtra("destination");
-                String duration =  data.getStringExtra("duration");
-                searchDestination.setText(dest);
-                etd.setText(duration);
-                layoutEtd.setVisibility(View.VISIBLE);
-
-            }
-        }
-
-
 //        if (requestCode==1) {
 //            if (resultCode == RESULT_OK) {
 //                Place place = PlacePicker.getPlace(data, this);
@@ -384,4 +433,45 @@ public class NewActivityPage extends AppCompatActivity {
 //            }
 //        });
 //    }
+
+    public void sendSMS() {
+        String message = username + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
+
+
+        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+
+//        for (String number : followerNumbers) {
+//            SmsManager mySmsManager = SmsManager.getDefault();
+//            mySmsManager.sendTextMessage(number, null, message, null, null);
+//        }
+
+        for (String number : followerEmails) {
+            Log.d("snapshott", String.valueOf(number));
+
+            Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(number);
+            Log.d("snapshott", String.valueOf(query));
+
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for(DataSnapshot d: snapshot.getChildren()) {
+                            String usertoken = d.child("userToken").getValue(String.class);
+                            FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(),NewActivityPage.this);
+                            notificationsSender.SendNotifications();
+                        }
+                    } else {
+                        Log.d("snapshott", String.valueOf(snapshot));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            SmsManager mySmsManager = SmsManager.getDefault();
+            mySmsManager.sendTextMessage(number, null, message, null, null);
+        }
+    }
 }

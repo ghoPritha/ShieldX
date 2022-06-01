@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     int UserId;
-    String firstName, lastName, number, email;
+    String firstName, lastName, number, email, userToken;
 
     public User() {
     }
@@ -58,4 +58,11 @@ public class User implements Serializable {
     }
     public String encodedEmail() { return this.email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
 
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
 }

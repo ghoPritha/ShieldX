@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorTrendingStart"
     tools:context=".MapsActivity">
 
     <fragment
@@ -13,7 +12,6 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="140dp"
         tools:context=".MapsActivity" />
     <LinearLayout
         android:id="@+id/transportOptions"
@@ -24,53 +22,73 @@
 
         <ImageView
             android:id="@+id/driving"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
-            android:background="@color/white"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
+            android:layout_margin="2sp"
             android:src="@drawable/driving" />
 
 
         <ImageView
             android:id="@+id/cycling"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
-            android:src="@drawable/bicycle"
-            />
+            android:layout_margin="2sp"
+
+            android:src="@drawable/bicycle" />
 
         <ImageView
             android:id="@+id/walking"
-            android:layout_width="35sp"
-            android:layout_height="35sp"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:background="@color/colorTrendingEnd"
             android:padding="8sp"
-            android:src="@drawable/walking"
-            />
+            android:layout_margin="2sp"
+            android:src="@drawable/walking" />
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="200sp">
 
-    <!--    <fragment android:id="@+id/autocomplete_fragment"-->
-    <!--        android:layout_width="350dp"-->
-    <!--        android:layout_height="44dp"-->
-    <!--        android:layout_marginTop="54dp"-->
-    <!--        android:layout_marginLeft="10dp"-->
-    <!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
-    <!--        />-->
+        <ImageView
+            android:id="@+id/alertButton"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:layout_alignParentStart="true"
+            android:padding="8sp"
+            android:src="@drawable/siren" />
+
+
+        <ImageView
+            android:id="@+id/abort"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:layout_alignParentEnd="true"
+            android:padding="8sp"
+            android:src="@drawable/multiply" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/locationSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorTrendingStart"
         android:layout_gravity="bottom"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
         android:orientation="vertical">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
         android:src="@drawable/ic_source"/>
         <EditText
             android:id="@+id/startlocation"
@@ -92,8 +110,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_destination"/>
 
         <EditText
@@ -113,29 +132,21 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:rotationX="2"
-        android:src="@drawable/ic_back" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/teal_700">
 
         <TextView
             android:id="@+id/etd"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:hint="Expected time"
             android:src="@drawable/ic_search"
-            android:background="@color/teal_700"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:padding="20dp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="24sp"
             android:textStyle="bold|italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -145,8 +156,8 @@
             android:id="@+id/countDownTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,10 +167,9 @@
                 android:id="@+id/text_view_countdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:textColor="@color/white"
                 android:text="00:00"
-                android:textColor="@android:color/black"
+                android:paddingEnd="20sp"
                 android:textSize="24sp" />
 
             <ImageButton
@@ -177,7 +187,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-       app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -189,12 +199,12 @@
             tools:listitem="@layout/item_contact" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/alertButton"
+    <ImageButton
+        android:id="@+id/backButton"
         android:layout_width="wrap_content"
-        android:layout_height="50sp"
-        android:src="@drawable/siren"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="460sp"/>
+        android:layout_height="wrap_content"
+        android:rotationX="2"
+        android:src="@drawable/ic_back" />
+
 
 </FrameLayout>

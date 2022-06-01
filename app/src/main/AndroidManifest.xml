@@ -11,7 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -81,8 +83,17 @@
         <activity
             android:name=".AddFollower"
             android:screenOrientation="portrait" />
+        <service
+            android:name=".FirebaseMessagingService"
+            android:permission="TODO"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
-<!--        <service android:name=".MyFirebaseInstanceIDService"-->
+
+        <!--        <service android:name=".MyFirebaseInstanceIDService"-->
 <!--            android:exported="true">-->
 <!--            <intent-filter>-->
 <!--                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->

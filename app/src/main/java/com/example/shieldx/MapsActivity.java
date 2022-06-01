@@ -1,7 +1,6 @@
 package com.example.shieldx;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DatabaseReference databasereference;
     private LocationListener locationListener;
     LinearLayout locationSearch, followerLayout, countDownTimer, transportOptions;
+    RelativeLayout buttons;
     ImageButton backButton, startPauseButton;
     ImageView alertButton;
     String distance = "";
@@ -137,6 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startPauseButton = findViewById(R.id.button_start_pause);
         alertButton = findViewById(R.id.alertButton);
         transportOptions = findViewById(R.id.transportOptions);
+        buttons = findViewById(R.id.buttons);
         alertButton.setColorFilter(Color.parseColor("#a64452"));
         //onbutton = (Button)findViewById(R.id.onbutton);
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -153,6 +154,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertButton.setVisibility(View.GONE);
             followerLayout.setVisibility(View.GONE);
             countDownTimer.setVisibility(View.GONE);
+            buttons.setVisibility(View.GONE);
             selectMode();
         } else {
             locationSearch.setVisibility(View.GONE);
@@ -162,6 +164,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertButton.setVisibility(View.VISIBLE);
             followerLayout.setVisibility(View.VISIBLE);
             countDownTimer.setVisibility(View.VISIBLE);
+            buttons.setVisibility(View.VISIBLE);
             startJourney();
         }
 
@@ -197,6 +200,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationUpdates();
         readChanges();
         autoCompleteDestination();
+        startPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTimerRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            }
+        });
+        updateCountDownText();
 
     }
 
@@ -206,14 +220,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("bicycling");
         modeOfTransport.add("walking");
         selectedTravelMode = modeOfTransport.get(0);
-
+        ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(0);
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.walking)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
 
             }
         });
@@ -223,8 +237,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(1);
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.driving)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.walking)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 drawRoute(selectedTravelMode);
 
             }
@@ -235,8 +249,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(2);
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundResource(android.R.color.transparent);
-                ((ImageView)findViewById(R.id.driving)).setBackgroundResource(android.R.color.transparent);
+                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 drawRoute(selectedTravelMode);
 
             }
@@ -264,7 +278,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             destination = new MarkerOptions().position(place.getLatLng()).title("destination");
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-            new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+            drawRoute(selectedTravelMode);
+//            new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
             // finish();
 
         }
@@ -313,7 +329,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMinZoomPreference(0.0f);
         mMap.setMaxZoomPreference(21.0f);
 
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
         //route changes
         Log.d("mylog", "Added Markers");
         //        mMap.addMarker(place1);
@@ -360,7 +376,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     } else {
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
                         databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
                         databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
                     }
@@ -478,9 +494,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // a = snapshot.getValue(ActivityLog.class);
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
+
                     source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     durationInSeconds = snapshot.child("durationInSeconds").getValue(Long.class);
+                    selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
+                    setMarkersDuration();
+
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -511,11 +531,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+    }
 
+    private void setMarkersDuration() {
         if (source != null && destination != null) {
-            new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), "driving"), "driving");
+            mMap.addMarker(source);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 12));
+
+            mMap.addMarker(destination);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 12));
+
+            drawRoute(selectedTravelMode);
+            mTimerRunning = false;
+            startCountdowneTimer();
+
         }
-        startCountdowneTimer(durationInSeconds);
     }
 
     public LatLng getLocationFromAddress(String strAddress) {
@@ -598,6 +628,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
                     activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
+                    activityReference.child("modeOfTransport").setValue(selectedTravelMode);
                     activityReference.child("duration").setValue(etd.getText().toString());
                     activityReference.child("journeyCompleted").setValue(false);
                     activityReference.child("destinationReached").setValue(false);
@@ -694,7 +725,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public class FetchURL extends AsyncTask<String, Void, String> {
         Context mContext;
-        String directionMode = "driving";
+        String directionMode = selectedTravelMode;
 
         public FetchURL(Context mContext) {
             this.mContext = mContext;
@@ -846,22 +877,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void startCountdowneTimer(Long durationInSeconds) {
-        startPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mTimerRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer(durationInSeconds);
-                }
-            }
-        });
+    private void startCountdowneTimer() {
+        mTimeLeftInMillis = durationInSeconds * 1000;
+        if (mTimerRunning) {
+            pauseTimer();
+        } else {
+            startTimer();
+        }
         updateCountDownText();
     }
 
-    private void startTimer(Long durationInSeconds) {
-        mTimeLeftInMillis = durationInSeconds;
+    private void startTimer() {
+
         mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -882,23 +909,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 });
-                startPauseButton.setVisibility(View.INVISIBLE);
+                //startPauseButton.setVisibility(View.INVISIBLE);
             }
         }.start();
 
         mTimerRunning = true;
+        startPauseButton.setBackgroundResource(R.drawable.ic_pause);
         //  mButtonStartPause.setText("pause");
     }
 
     private void pauseTimer() {
         mCountDownTimer.cancel();
         mTimerRunning = false;
+        startPauseButton.setBackgroundResource(R.drawable.ic_start);
         // mButtonStartPause.setText("Start");
         startPauseButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 startPauseButton.setImageResource(R.drawable.ic_pause);
 
             }
@@ -912,6 +939,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
         mTextViewCountDown.setText(timeLeftFormatted);
+
     }
+//    public void sendSMS(View view){
+//        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+//        String message = "dummy message";
+//        String number = editTextNumber.getText().toString();
+//
+//        SmsManager mySmsManager = SmsManager.getDefault();
+//        mySmsManager.sendTextMessage(number,null, message, null, null);
+//    }
+
 
 }

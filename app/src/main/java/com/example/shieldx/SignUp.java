@@ -1,15 +1,11 @@
 package com.example.shieldx;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -19,41 +15,63 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
 public class SignUp extends AppCompatActivity {
     DBHelper DB;
     FusedLocationProviderClient fusedLocationProviderClient;
     User userData = new User();
+    EditText firstname, lastname, phone, email, password, confirmpassword;
+    Button btn_SignUp;
     FirebaseDatabase rootNode;
     DatabaseReference followerReference;
+    FirebaseAuth mAuth;
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+       mAuth = FirebaseAuth.getInstance();
 
 
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TAG", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        token = task.getResult();
+                        userData.setUserToken(token);
+                        // Log and toast
+                        Log.d("TAG", token);
+                    }
+                });
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        EditText firstname = (EditText) findViewById(R.id.firstname);
-        EditText lastname = (EditText) findViewById(R.id.lastname);
-        EditText phone = (EditText) findViewById(R.id.phone);
-        EditText email = (EditText) findViewById(R.id.email);
-        TextView password = (TextView) findViewById(R.id.passwd);
-        EditText confirmpassword = (EditText) findViewById(R.id.confirmpasswd);
-        Button btn_SignUp = (Button) findViewById(R.id.btn_actual_signup);
+        firstname = (EditText) findViewById(R.id.firstname);
+        lastname = (EditText) findViewById(R.id.lastname);
+        phone = (EditText) findViewById(R.id.phone);
+        email = (EditText) findViewById(R.id.email);
+        password = (EditText) findViewById(R.id.passwd);
+        confirmpassword = (EditText) findViewById(R.id.confirmpasswd);
+        btn_SignUp = (Button) findViewById(R.id.btn_actual_signup);
         DB = new DBHelper(this);
 
         btn_SignUp.setOnClickListener(new View.OnClickListener() {
@@ -61,10 +79,10 @@ public class SignUp extends AppCompatActivity {
                                           public void onClick(View view) {
 
                                               if (!checkdetails()) {
-                                                  if (!DB.checkDataOnSignUp(phone.getText().toString(), email.getText().toString())) {
-                                                      DB.insertData(firstname.getText().toString(), lastname.getText().toString(),
-                                                              phone.getText().toString(), email.getText().toString(), password.getText().toString());
-                                                      Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString(), email.getText().toString());
+                                                  if (!DB.checkDataOnSignUp(phone.getText().toString().trim().toString(), email.getText().toString().trim().toString())) {
+                                                      DB.insertData(firstname.getText().toString().trim().toString(), lastname.getText().toString().trim().toString(),
+                                                              phone.getText().toString().trim().toString(), email.getText().toString().trim().toString(), password.getText().toString().trim().toString());
+                                                      Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString().trim().toString(), email.getText().toString().trim().toString());
                                                       if (c != null) {
 //                                                          try {
 //                                                              userData = DB.fetchUserData(c);
@@ -74,28 +92,19 @@ public class SignUp extends AppCompatActivity {
 //                                                              e.printStackTrace();
 //                                                          }
 
-                                                          userData.setEmail(email.getText().toString());
-                                                          userData.setNumber(phone.getText().toString());
-                                                          userData.setFirstName(firstname.getText().toString());
-                                                          userData.setLastName(lastname.getText().toString());
-
-                                                          rootNode =  FirebaseDatabase.getInstance();
-                                                          followerReference = rootNode.getReference().child("USERS");
-                                                          followerReference.push().setValue(userData);
 
                                                           Intent myIntent = new Intent(SignUp.this, HomePage.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
-                                                          startActivity(myIntent);
-
-//                                                          //Check permission
-//                                                          if (ActivityCompat.checkSelfPermission(SignUp.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                                                              //When permission granted
-//                                                              getLocation();
-//                                                          } else {
-//                                                              ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-//
-//                                                          }
+                                                         startActivity(myIntent);
                                                       }
+
+
+                                                      userData.setEmail(email.getText().toString().trim().toString());
+                                                      userData.setNumber(phone.getText().toString().trim().toString());
+                                                      userData.setFirstName(firstname.getText().toString().trim().toString());
+                                                      userData.setLastName(lastname.getText().toString().trim().toString());
+                                                      saveInFirebase();
+
                                                   } else {
                                                       Toast.makeText(SignUp.this, "This User already Exists !!!", Toast.LENGTH_SHORT).show();
                                                   }
@@ -104,63 +113,66 @@ public class SignUp extends AppCompatActivity {
 
                                           }
 
-//            @SuppressLint("MissingPermission")
-//            private void getLocation() {
-//                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
-//                    @Override
-//                    public void onComplete(@NonNull Task<Location> task){
-//                        //Initialize location
-//                        Location location = task.getResult();
-//                        if(location!=null) {
-//                            try {
-//                                //Initialise geocoder
-//                                Geocoder geocoder= new Geocoder(SignUp.this, Locale.getDefault());
-//                                //Initialise address list
-//                                List<Address> addresses = geocoder.getFromLocation(
-//                                        location.getLatitude(),location.getLongitude(),1);
-////                                FirebaseDatabase.getInstance().getReference()
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//                    }
-//                });
-//            }
-
-            private boolean checkdetails() {
+                                          private boolean checkdetails() {
                                               boolean flag = false;
-                                              if (TextUtils.isEmpty(firstname.getText())) {
+                                              if (TextUtils.isEmpty(firstname.getText().toString().trim())) {
                                                   firstname.setError(" Please Enter the First Name ");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(lastname.getText())) {
+                                              if (TextUtils.isEmpty(lastname.getText().toString().trim())) {
                                                   lastname.setError(" Please Enter the Last Name ");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(phone.getText())) {
+                                              if (TextUtils.isEmpty(phone.getText().toString().trim())) {
                                                   phone.setError(" Please Enter the Phone Number");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(email.getText()) || (!TextUtils.isEmpty(email.getText())
-                                                      && !Patterns.EMAIL_ADDRESS.matcher(email.getText().toString()).matches()))  //!EMAIL_ADDRESS_PATTERN.matcher(email.getText()).matches()
+                                              if (TextUtils.isEmpty(email.getText().toString().trim()) || (!TextUtils.isEmpty(email.getText().toString().trim())
+                                                      && !Patterns.EMAIL_ADDRESS.matcher(email.getText().toString().trim().toString()).matches()))  //!EMAIL_ADDRESS_PATTERN.matcher(email.getText().toString().trim()).matches()
                                               {
                                                   email.setError(" Please Enter the Email address correctly ");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(password.getText())) {
+                                              if (TextUtils.isEmpty(password.getText().toString().trim())) {
                                                   password.setError(" Please Enter the Password ");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(confirmpassword.getText()) || !confirmpassword.getText().toString().equals(password.getText().toString())) {
+                                              if (TextUtils.isEmpty(confirmpassword.getText().toString().trim()) || !confirmpassword.getText().toString().trim().toString().equals(password.getText().toString().trim().toString())) {
                                                   confirmpassword.setError(" Password does not matches the entered password ");
                                                   flag = true;
                                               }
-                return flag;
-            }
+
+                                              return flag;
+                                          }
                                       }
         );
 
+    }
+
+    @SuppressLint("LongLogTag")
+    private void saveInFirebase() {
+        FirebaseDatabase.getInstance().getReference("USERS").child(userData.encodedEmail()).setValue(userData);
+//        mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(),password.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if(task.isSuccessful()){
+//                    FirebaseDatabase.getInstance().getReference("USERS").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if(task.isSuccessful()){
+//                                Toast.makeText(SignUp.this,"User has been added successfully", Toast.LENGTH_SHORT).show();
+//                            }else{
+//                                Toast.makeText(SignUp.this,"User not added", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    });
+//                    followerReference.push().setValue(userData);
+//                }
+//                else{
+//                    Toast.makeText(SignUp.this,"User not added", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
     }
 
 }
