@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,12 +29,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,16 +53,21 @@ public class Login extends AppCompatActivity {
     ActivityLog activityLog = new ActivityLog();
     FirebaseDatabase rootNode;
     DatabaseReference followerReference;
+    String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setApplicationId("1:143729797307:android:819a6322997745ff6d219e") // Required for Analytics.
                 .setProjectId("shieldx-67a7b") // Required for Firebase Installations.
                 .setApiKey("AIzaSyCceaYaJu6oOlhKRWcx8Q3yDv_342XOwCw") // Required for Auth.
                 .build();
         FirebaseApp.initializeApp(this, options, "ShieldX");
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         EditText username = (EditText) findViewById(R.id.username);
         TextView password = (TextView) findViewById(R.id.password);
@@ -77,11 +86,35 @@ public class Login extends AppCompatActivity {
                 showHomePage();
 
                 getLocation(userData.encodedEmail());
+                statusCheck();
+
+                updateToken();
             } else
                 Toast.makeText(Login.this, "Login Failed !!!", Toast.LENGTH_SHORT).show();
         });
 
         showSignUp(signupBtn);
+    }
+
+    private void updateToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TAG", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        // Get new FCM registration token
+                        token = task.getResult();
+                        userData.setUserToken(token);
+                        FirebaseDatabase.getInstance().getReference("USERS").child(userData.encodedEmail()).child("userToken").setValue(token);
+                        // Log and toast
+                        Log.d("new token", token);
+                    }
+                });
+
+
     }
 
     private void showHomePage() {
@@ -113,7 +146,6 @@ public class Login extends AppCompatActivity {
 
         //Check permission
         if (ActivityCompat.checkSelfPermission(Login.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            statusCheck();
             //When permission granted
             Context mContext = this;
 
@@ -155,12 +187,14 @@ public class Login extends AppCompatActivity {
 //                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
 //                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
                             activityLog.setUserMail(userMail);
-                          //  FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child();
+
+                            //  FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
                     }
+
                 }
             });
         }
@@ -175,6 +209,7 @@ public class Login extends AppCompatActivity {
 //            mMap.addMarker(new MarkerOptions().position(university).title("Current location"));
 //            mMap.moveCamera(CameraUpdateFactory.newLatLng(university));
 //        }
+
     }
 
     private void askPermission() {

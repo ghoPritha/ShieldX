@@ -219,33 +219,27 @@ public class AddFollower extends AppCompatActivity {
                         rootNode =  FirebaseDatabase.getInstance();
                         nameList.add(contactName);
                         Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
-                        followerReference = rootNode.getReference("FOLLOWERS").child(follower.encodedEmail());
-                        followerReference.setValue(follower);
-                        followerReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
-                                // whenever data at this location is updated.
-                                Follower follower1 = dataSnapshot.getValue(Follower.class);
-
-                                // Log.d(TAG, "Value is: " + value);
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                // Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
+////                        followerReference = rootNode.getReference("FOLLOWERS").child(follower.encodedEmail());
+////                        followerReference.setValue(follower);
+//                        followerReference.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                // This method is called once with the initial value and again
+//                                // whenever data at this location is updated.
+//                                Follower follower1 = dataSnapshot.getValue(Follower.class);
+//
+//                                // Log.d(TAG, "Value is: " + value);
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError error) {
+//                                // Failed to read value
+//                                // Log.w(TAG, "Failed to read value.", error.toException());
+//                            }
+//                        });
 
                         followerList.add(follower);
-                        // followerReference.child(String.valueOf(maxId+1)).setValue(follower);
-//                        if (DB.insertDataInFollowers(userId, contactName, contactNumber, contactEmail)) {
-//                            Toast.makeText(AddFollower.this, "follower " + contactName + " added", Toast.LENGTH_SHORT).show();
-//                        }
-                        //add model to array list
-
-
+                        addFollowersToDB();
                     }
                     c.close();
                 }
@@ -255,7 +249,6 @@ public class AddFollower extends AppCompatActivity {
             // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
             //finish();
 
-            addFollowersToDB();
         }
 
 //        private void addFollowersToDB(){
