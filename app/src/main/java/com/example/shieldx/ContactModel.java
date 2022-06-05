@@ -1,6 +1,8 @@
 package com.example.shieldx;
 
-public class ContactModel {
+import java.io.Serializable;
+
+public class ContactModel implements Serializable {
 
     //Initialize variable
     String name, number, email;

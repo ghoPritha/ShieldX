@@ -4,18 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dashboardBackground"
     tools:context=".AddFollower">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/header_background"
         android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/ic_back" />
         <TextView
             android:id="@+id/testHello"
             android:layout_width="wrap_content"
@@ -25,8 +30,7 @@
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_centerInParent="true"/>
 
 
         <ImageView
@@ -36,13 +40,11 @@
             android:layout_marginEnd="15dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_menu"
-            app:layout_constraintBottom_toBottomOf="@id/testHello"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/testHello"
+            android:layout_alignParentEnd="true"
             app:tint="@color/white" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +80,7 @@
             app:layout_constraintTop_toBottomOf="@+id/scrollView">
 
             <RelativeLayout
-                android:id="@+id/fromCurrentFollower"
+                android:id="@+id/fromMyFollower"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/trending_background"
@@ -93,13 +95,13 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="15dp"
-                    android:text="Add from Current Follower"
+                    android:text="Add from My Follower"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/addFromCurrentFollower"
+                    android:id="@+id/addFromMyFollower"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_alignParentEnd="true"
@@ -120,7 +122,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/fromContact"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fromCurrentFollower" />
+                app:layout_constraintTop_toBottomOf="@+id/fromMyFollower" />
 
             <RelativeLayout
                 android:id="@+id/fromContact"
@@ -131,7 +133,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fromCurrentFollower">
+                app:layout_constraintTop_toBottomOf="@+id/fromMyFollower">
 
                 <TextView
                     android:id="@+id/addFromContactText"

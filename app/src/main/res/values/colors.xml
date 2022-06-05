@@ -7,6 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="cian">#C8E8E5</color>
     <color name="colorBackground">#419d9c</color>
     <color name="dashboardBackground">#EBEBEB</color>
     <color name="colorTrendingStart">#419d9c</color>

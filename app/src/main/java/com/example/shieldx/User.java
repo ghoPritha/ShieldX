@@ -5,7 +5,17 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     int UserId;
-    String firstName, lastName, number, email;
+    String firstName, lastName, number, email, userToken;
+
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String number, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.number = number;
+        this.email = email;
+    }
 
     public int getUserId() {
         return UserId;
@@ -45,5 +55,14 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public String encodedEmail() { return this.email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 }

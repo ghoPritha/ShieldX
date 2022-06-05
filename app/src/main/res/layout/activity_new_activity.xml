@@ -65,13 +65,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/layoutSearchDestination"
-                android:layout_width="0sp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/trending_background"
                 android:orientation="vertical"
@@ -132,70 +133,140 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/layoutExpectedTime"
-                android:layout_width="0sp"
+            <LinearLayout
+                android:id="@+id/layoutEtd"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
-                android:orientation="horizontal"
                 android:background="@drawable/trending_background"
-                app:layout_constraintEnd_toEndOf="@id/layoutSearchDestination"
-                app:layout_constraintStart_toStartOf="@id/layoutSearchDestination"
-                app:layout_constraintTop_toBottomOf="@id/layoutSearchDestination">
+                android:orientation="vertical"
+                android:padding="20sp"
+                android:layout_marginTop="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="60sp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:paddingStart="20sp"
                     android:text="@string/expectedTime"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/layoutSearchDestination"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/openTimer"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
-                    android:contentDescription="@string/app_name"
-                    android:layout_alignParentEnd="true"
-                    android:padding="5sp"
-                    android:src="@drawable/ic_double_arrow"
-                    app:tint="@color/white" />
-            </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:background="@drawable/rectangular_background"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
 
-            <RelativeLayout
+                    <EditText
+                        android:id="@+id/etd"
+                        android:layout_width="0sp"
+                        android:layout_height="48sp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:focusable="false"
+                        android:imeOptions="actionSearch"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:paddingStart="15sp"
+                        android:paddingEnd="15sp"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@color/dashboardBackground"
+                        android:contentDescription="@string/app_name"
+                        android:padding="5sp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/colorPrimaryDark" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+<!--            <RelativeLayout-->
+<!--                android:id="@+id/layoutEtd"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20sp"-->
+<!--                android:background="@drawable/trending_background"-->
+<!--                android:orientation="vertical">-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal">-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="60sp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:paddingStart="20sp"-->
+<!--                    android:text="@string/expectedTime"-->
+<!--                    android:textColor="@color/colorPrimaryLight"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+
+<!--                <TextView-->
+<!--                    android:id="@+id/etd"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="60sp"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:gravity="center"-->
+<!--                    android:hint="jbvdfsd"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold" />-->
+<!--                </LinearLayout>-->
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content">-->
+
+<!--                    <EditText-->
+<!--                        android:layout_width="0sp"-->
+<!--                        android:layout_height="48sp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@null"-->
+<!--                        android:focusable="false"-->
+<!--                        android:hint="Enter a destination"-->
+<!--                        android:imeOptions="actionSearch"-->
+<!--                        android:importantForAutofill="no"-->
+<!--                        android:inputType="text"-->
+<!--                        android:paddingStart="15sp"-->
+<!--                        android:paddingEnd="15sp"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:textSize="16sp" />-->
+<!--                </RelativeLayout>-->
+
+<!--            </RelativeLayout>-->
+
+            <LinearLayout
                 android:id="@+id/cardLayoutAddFollower"
-                android:layout_width="0sp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
+                android:orientation="vertical"
                 android:animateLayoutChanges="true"
                 android:background="@drawable/trending_background"
-                android:onClick="expandAddFollowers"
-                app:cardBackgroundColor="@null"
-                app:layout_constraintEnd_toEndOf="@id/layoutExpectedTime"
-                app:layout_constraintStart_toStartOf="@id/layoutExpectedTime"
-                app:layout_constraintTop_toBottomOf="@id/layoutExpectedTime">
-
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:scaleType="fitXY"-->
-<!--                    android:src="@drawable/trending_background" />-->
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                app:cardBackgroundColor="@null">
 
                     <RelativeLayout
                         android:id="@+id/layoutAddFollower"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toTopOf="@id/expandedAddFollower"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -220,74 +291,120 @@
                             android:padding="5sp"
                             android:src="@drawable/ic_double_arrow"
                             app:tint="@color/white" />
+
                     </RelativeLayout>
 
-                    <RelativeLayout
-                        android:id="@+id/expandedAddFollower"
-                        android:layout_width="0sp"
-                        android:layout_height="100sp"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/layoutAddFollower">
+                <LinearLayout
+                    android:id="@+id/addedFollower"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
+                    <ScrollView
+                        android:id="@+id/scrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="68sp"
+                        app:layout_constraintBottom_toTopOf="@+id/followerOptions">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerView"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="MissingConstraints"
                             tools:listitem="@layout/item_contact" />
-                    </RelativeLayout>
-                </RelativeLayout>
-            </RelativeLayout>
+                    </ScrollView>
+                </LinearLayout>
+            </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/activityType"
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
-                android:background="@drawable/trending_background"
-                app:layout_constraintEnd_toEndOf="@id/cardLayoutAddFollower"
-                app:layout_constraintStart_toStartOf="@id/cardLayoutAddFollower"
-                app:layout_constraintTop_toBottomOf="@id/cardLayoutAddFollower">
+<!--            <RelativeLayout-->
+<!--                android:id="@+id/activityType"-->
+<!--                android:layout_width="0sp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20sp"-->
+<!--                android:background="@drawable/trending_background"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/cardLayoutAddFollower"-->
+<!--                app:layout_constraintStart_toStartOf="@id/cardLayoutAddFollower"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/cardLayoutAddFollower">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="60sp"
-                    android:gravity="center"
-                    android:paddingStart="20sp"
-                    android:text="@string/activityType"
-                    android:textColor="@color/colorPrimaryLight"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="60sp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:paddingStart="20sp"-->
+<!--                    android:text="@string/activityType"-->
+<!--                    android:textColor="@color/colorPrimaryLight"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold" />-->
 
-                <ImageView
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
-                    android:contentDescription="@string/app_name"
-                    android:layout_alignParentEnd="true"
-                    android:padding="5sp"
-                    android:src="@drawable/ic_add"
-                    app:tint="@color/white" />
+<!--                <ImageView-->
+<!--                    android:layout_width="60sp"-->
+<!--                    android:layout_height="60sp"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:contentDescription="@string/app_name"-->
+<!--                    android:padding="5sp"-->
+<!--                    android:src="@drawable/ic_add"-->
+<!--                    app:tint="@color/white" />-->
 
-            </RelativeLayout>
+<!--            </RelativeLayout>-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </ScrollView>
 
-    <Button
-        android:id="@+id/startActivityButton"
+    <!--    <Button-->
+    <!--        android:id="@+id/startActivityButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="@drawable/circular_background"-->
+    <!--        android:text="@string/startActivity"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="30dp"-->
+    <!--        android:textStyle="bold|italic"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />-->
+    <RelativeLayout
+        android:id="@+id/bottom_sheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/circular_background"
-        android:text="@string/startActivity"
-        android:textColor="@color/white"
-        android:textSize="30dp"
-        android:textStyle="bold|italic"
+        app:behavior_hideable="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
+
+        <Button
+            android:id="@+id/startActivityButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/circular_background"
+            android:text="@string/startActivity" />
+    </RelativeLayout>
+
+<!--    <EditText-->
+<!--        android:id="@+id/text"-->
+<!--        android:layout_width="347dp"-->
+<!--        android:layout_height="63dp"-->
+<!--        android:layout_below="@id/layoutHeader"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingStart="20sp"-->
+<!--        android:text="text"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="20sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.723" />-->
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

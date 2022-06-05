@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.w3c.dom.Text;
 
 import java.util.Locale;
@@ -25,14 +28,19 @@ public class StartTimer extends Fragment {
     View view;
     TextView timerView;
 
+    FirebaseDatabase rootNode;
+    DatabaseReference activityReference;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_timer, container, false);
-        timerView = view.findViewById(R.id.showTimer);
+//
+//
+//        // Inflate the layout for this fragment
+//        view = inflater.inflate(R.layout.fragment_timer, container, false);
+//        timerView = view.findViewById(R.id.showTimer);
+        rootNode =  FirebaseDatabase.getInstance();
+       // activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 
 //        long duration = TimeUnit.MINUTES.toMillis(10000);
 //        new CountDownTimer(duration, 10000) {

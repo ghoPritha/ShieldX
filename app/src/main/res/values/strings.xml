@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ShieldX</string>
+    <string name="api_key">AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0</string>
+    <string name="journey_guardianAlerted">Guardian Alerted!</string>
+    <string name="guardianAdded_userInDanger">is in DANGER!</string>
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="confirmPassword_text">Confirm Password</string>
@@ -9,7 +12,7 @@
     <string name="signUp_text">Sign Up</string>
     <string name="firstname_text">First Name</string>
     <string name="lastname_text">Last Name</string>
-    <string name="home">Home</string>
+    <string name="tasks">Tasks</string>
     <string name="search_elements">search_elements</string>
     <string name="hello">Hello,</string>
     <string name="userName">John</string>
@@ -20,7 +23,7 @@
     <string name="newActivity">New Activity</string>
     <string name="addFollower">Add Follower</string>
     <string name="destination">Enter destination</string>
-    <string name="expectedTime">Expected duration of journey</string>
+    <string name="expectedTime">Expected journey duration</string>
     <string name="startActivity">START ACTIVITY</string>
     <string name="addToFavourite">ADD TO FAVOURITE</string>
     <string name="activityType">Activity Type</string>
@@ -42,5 +45,8 @@
     <string name="title_activity_start2">StartActivity2</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="msg_token_fmt" />
+    <string name="default_notification_channel_id" />
 
 </resources>
