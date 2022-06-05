@@ -184,6 +184,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
         if (isThisDestinationSetup) {
             locationSearch.setVisibility(View.VISIBLE);
             etd.setVisibility(View.VISIBLE);
@@ -204,9 +208,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buttons.setVisibility(View.VISIBLE);
             startJourney();
         }
-
-        // start route implementation
-        //        mMarkerPoints = new ArrayList<>();
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,17 +219,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 finish();
             }
         });
-        //27.658143,85.3199503
-        //27.667491,85.3208583
-        //        place1 = new MarkerOptions().position(new LatLng(27.658143, 85.3199503)).title("Location 1");
-        //        place2 = new MarkerOptions().position(new LatLng(27.667491, 85.3208583)).title("Location 2");
-        //        new FetchURL(MapsActivity.this).execute(getUrl(place1.getPosition(), place2.getPosition(), "driving"), "driving");
-        // end route implementation
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -979,14 +971,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mTextViewCountDown.setText(timeLeftFormatted);
 
     }
-//    public void sendSMS(View view){
-//        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-//        String message = "dummy message";
-//        String number = editTextNumber.getText().toString();
-//
-//        SmsManager mySmsManager = SmsManager.getDefault();
-//        mySmsManager.sendTextMessage(number,null, message, null, null);
-//    }
-
 
 }

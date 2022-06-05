@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -39,35 +40,17 @@ public class SignUp extends AppCompatActivity {
     FirebaseDatabase rootNode;
     DatabaseReference followerReference;
     FirebaseAuth mAuth;
-    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
        mAuth = FirebaseAuth.getInstance();
-
-
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("TAG", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        token = task.getResult();
-                        userData.setUserToken(token);
-                        // Log and toast
-                        Log.d("TAG", token);
-                    }
-                });
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         firstname = (EditText) findViewById(R.id.firstname);
         lastname = (EditText) findViewById(R.id.lastname);
         phone = (EditText) findViewById(R.id.phone);
+        phone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.passwd);
         confirmpassword = (EditText) findViewById(R.id.confirmpasswd);
@@ -93,7 +76,7 @@ public class SignUp extends AppCompatActivity {
 //                                                          }
 
 
-                                                          Intent myIntent = new Intent(SignUp.this, HomePage.class);
+                                                          Intent myIntent = new Intent(SignUp.this, Login.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
                                                          startActivity(myIntent);
                                                       }
