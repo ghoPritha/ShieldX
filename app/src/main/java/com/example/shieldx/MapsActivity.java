@@ -10,14 +10,12 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -55,6 +53,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
@@ -64,7 +63,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,6 +116,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<String> modeOfTransport = new ArrayList<String>();
     String selectedTravelMode;
     boolean toastCancel = true;
+
+    ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
+    ArrayList<String> guardiansEmailList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,45 +147,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buttons = findViewById(R.id.buttons);
         alertButton.setColorFilter(Color.parseColor("#a64452"));
         //onbutton = (Button)findViewById(R.id.onbutton);
-        alertButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-
-                activityReference.child(userData.encodedEmail()).child("sos").setValue(true);
-                ArrayList<String> guardiansList = new ArrayList<>();
-                activityReference.child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot d : snapshot.getChildren()) {
-//                            ContactModel model = new ContactModel();
-//                            model.setEmail(d.child("follower_Email").getValue(String.class));
-//                            model.setName(d.child("follower_Name").getValue(String.class));
-//                            model.setNumber(d.child("follower_Number").getValue(String.class));
-                            guardiansList.add(d.child("follower_Number").getValue(String.class));
-                        }
-                        String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
-                        if(guardiansList!= null)
-                            for(int i=0;i<guardiansList.size();i++){
-
-                                String number = guardiansList.get(i);
-
-                                SmsManager mySmsManager = SmsManager.getDefault();
-                                mySmsManager.sendTextMessage(number,null, message, null, null);
-                                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
-                            }
-                        Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
-
-                return false;
-            }
-        });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -240,7 +203,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         updateCountDownText();
+        alertButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
+                sendPushNotification(message);
+                sendNotificationViaSmS(message);
+                return false;
+            }
+        });
 
+
+    }
+
+    private void sendPushNotification(String message) {
+        if (guardiansEmailList != null) {
+            for (String email : guardiansEmailList) {
+                Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
+                Log.d("snapshott", String.valueOf(query));
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot d : snapshot.getChildren()) {
+                                String usertoken = d.child("userToken").getValue(String.class);
+                                FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(), MapsActivity.this);
+                                notificationsSender.SendNotifications();
+                            }
+                        } else {
+                            Log.d("snapshott", String.valueOf(snapshot));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        }
+        Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void sendNotificationViaSmS(String message) {
+        if (guardiansPhoneNoList != null) {
+            for (int i = 0; i < guardiansPhoneNoList.size(); i++) {
+
+                String number = guardiansPhoneNoList.get(i);
+
+                SmsManager mySmsManager = SmsManager.getDefault();
+                mySmsManager.sendTextMessage(number, null, message, null, null);
+                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void selectMode() {
@@ -249,14 +265,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("bicycling");
         modeOfTransport.add("walking");
         selectedTravelMode = modeOfTransport.get(0);
-        ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
+        ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectedTravelMode = modeOfTransport.get(0);
-                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 drawRoute(selectedTravelMode);
             }
         });
@@ -530,7 +546,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     durationInSeconds = snapshot.child("durationInSeconds").getValue(Long.class);
                     selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
                     setMarkersDuration();
-
+                    String message = userData.getFirstName() + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
+                    sendPushNotification(message);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -553,6 +570,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     adapter = new MainAdapter(MapsActivity.this, contactList);
                     // set adapter
                     recyclerView.setAdapter(adapter);
+                    guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
+                    guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+
                 }
             }
 
@@ -966,6 +986,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 
+        if (durationInSeconds * 0.75 == mTimeLeftInMillis) {
+
+        }
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
         mTextViewCountDown.setText(timeLeftFormatted);
