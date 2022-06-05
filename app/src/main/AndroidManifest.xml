@@ -64,7 +64,7 @@
             android:name=".StartJourney"
             android:exported="false" />
         <activity
-            android:name=".ExpectedDurationJourney"
+            android:name=".AddNewFollowerContact"
             android:exported="false" />
         <activity
             android:name=".MyFollower"

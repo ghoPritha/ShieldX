@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.collection.ArraySet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,7 +33,7 @@ import java.util.ArrayList;
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact, addFromMyFollower;
+    ImageView addFromContact, addFromMyFollower, addfromNewFoollower;
     ImageButton backButton;
     User userData;
     int userId;
@@ -66,6 +65,7 @@ public class AddFollower extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
         addFromMyFollower = findViewById(R.id.addFromMyFollower);
+        addfromNewFoollower = findViewById(R.id.addfromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
 
         if (userData != null)
@@ -88,6 +88,15 @@ public class AddFollower extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
+                startActivity(myIntent);
+            }
+        });
+
+        addfromNewFoollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(AddFollower.this, AddNewFollowerContact.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
                 startActivity(myIntent);
             }
@@ -216,27 +225,11 @@ public class AddFollower extends AppCompatActivity {
                         adapter = new MainAdapter(this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);
-                        rootNode =  FirebaseDatabase.getInstance();
+                        rootNode = FirebaseDatabase.getInstance();
                         nameList.add(contactName);
-                        Follower follower = new Follower(userId, contactName, contactNumber, contactEmail, null);
-////                        followerReference = rootNode.getReference("FOLLOWERS").child(follower.encodedEmail());
-////                        followerReference.setValue(follower);
-//                        followerReference.addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                // This method is called once with the initial value and again
-//                                // whenever data at this location is updated.
-//                                Follower follower1 = dataSnapshot.getValue(Follower.class);
-//
-//                                // Log.d(TAG, "Value is: " + value);
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError error) {
-//                                // Failed to read value
-//                                // Log.w(TAG, "Failed to read value.", error.toException());
-//                            }
-//                        });
+                        Follower follower = new Follower(contactName, contactNumber, contactEmail, null);
+
+                        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
 
                         followerList.add(follower);
                         addFollowersToDB();

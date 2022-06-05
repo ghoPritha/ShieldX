@@ -28,7 +28,7 @@
             android:layout_marginStart="100dp"
             android:text="@string/addFollower"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_centerInParent="true"/>
 
@@ -73,7 +73,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/followerOptions"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="313dp"
             android:layout_gravity="bottom"
             android:layout_margin="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -94,16 +94,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:padding="15dp"
+                    android:padding="10dp"
                     android:text="Add from My Follower"
                     android:textColor="@color/colorPrimaryLight"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/addFromMyFollower"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
                     android:layout_alignParentEnd="true"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
@@ -111,13 +111,12 @@
             </RelativeLayout>
 
             <TextView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="10dp"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
                 android:gravity="center"
                 android:text="OR"
                 android:textColor="@color/colorGrey"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/fromContact"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/trending_background"
                 android:padding="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/fromNewFoollower"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fromMyFollower">
@@ -140,20 +139,64 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:padding="15dp"
+                    android:padding="10dp"
                     android:text="Add From Contact"
                     android:textColor="@color/colorPrimaryLight"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/addFromContact"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
                     android:layout_alignParentEnd="true"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_add"
                     app:layout_constraintStart_toEndOf="@+id/addFromContactText"
+                    app:tint="@color/white" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:gravity="center"
+                android:text="OR"
+                android:textColor="@color/colorGrey"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/fromNewFoollower"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fromContact" />
+
+            <RelativeLayout
+                android:id="@+id/fromNewFoollower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/trending_background"
+                android:padding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fromContact">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="Add New Follower"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/addfromNewFoollower"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_add"
                     app:tint="@color/white" />
             </RelativeLayout>
 

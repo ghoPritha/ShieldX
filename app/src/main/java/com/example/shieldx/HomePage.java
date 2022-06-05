@@ -66,6 +66,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             public void onClick(View v) {
                 Intent myIntent = new Intent(HomePage.this, MyFollower.class);
                 myIntent.putExtra("user_key", userData);
+                myIntent.putExtra("comingFromNeworExisting", false);
                 startActivity(myIntent);
             }
         });

@@ -182,7 +182,6 @@ public class DBHelper extends SQLiteOpenHelper {
             Follower follower = new Follower();
             follower.setFollower_ID(c.getInt(0));
             follower.setFollower_Name(c.getString(1));
-            follower.setUser_ID(c.getInt(2));
             follower.setFollower_Number(c.getString(3));
             follower.setFollower_Email(c.getString(4));
             follower.setFollower_About(c.getString(5));

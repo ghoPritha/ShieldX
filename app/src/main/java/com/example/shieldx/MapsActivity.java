@@ -1,6 +1,9 @@
 package com.example.shieldx;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -90,7 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final long Min_dist = 1;  //1 meter
     private static final String TAG = "Info: ";
     Location loc;
-    String userEmail;
+    String userEmail, sourceName, destinatioName;
     ActivityLog activityLog = new ActivityLog();
     private Marker currentMarker;
     private LatLng mOrigin;
@@ -109,12 +113,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
     private long mTimeLeftInMillis;
-    Long durationInSeconds;
+    long durationInSeconds;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
-    MainAdapter adapter;
     ArrayList<String> modeOfTransport = new ArrayList<String>();
     String selectedTravelMode;
+    MainAdapter adapter;
     boolean toastCancel = true;
 
     ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
@@ -207,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onLongClick(View v) {
                 String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
-                sendPushNotification(message);
+                sendPushNotificationToFollower(message);
                 sendNotificationViaSmS(message);
                 return false;
             }
@@ -216,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void sendPushNotification(String message) {
+    private void sendPushNotificationToFollower(String message) {
         if (guardiansEmailList != null) {
             for (String email : guardiansEmailList) {
                 Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
@@ -243,7 +247,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
-
     }
 
     private void sendNotificationViaSmS(String message) {
@@ -257,6 +260,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void sendPushNotificationToUser(String message) {
+        Intent pushIntent = new Intent(MapsActivity.this, Notification.class);
+        pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pushIntent.putExtra("message", message);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle("Notification Title")
+                .setContentText(message)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId("com.example.shieldx");
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "com.example.shieldx",
+                    "ShieldX",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+        notificationManager.notify(1, builder.build());
     }
 
     private void selectMode() {
@@ -540,14 +575,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // a = snapshot.getValue(ActivityLog.class);
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
+                    if (snapshot.child("source").exists()) {
+                        source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                    }
+                    if (snapshot.child("sourceName").exists()) {
+                        sourceName = snapshot.child("sourceName").getValue(String.class);
+                    }
+                    if (snapshot.child("destination").exists()) {
+                        destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                    }
 
-                    source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
-                    destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
-                    durationInSeconds = snapshot.child("durationInSeconds").getValue(Long.class);
-                    selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
+                    if (snapshot.child("destinationName").exists()) {
+                        destinatioName = snapshot.child("destinationName").getValue(String.class);
+                    }
+                    if (snapshot.child("durationInSeconds").exists()) {
+                        durationInSeconds = snapshot.child("durationInSeconds").getValue(long.class);
+                    }
+                    if (snapshot.child("modeOfTransport").exists()) {
+                        selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
+                    }
+                    if (snapshot.child("followersList").exists()) {
+                        for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
+                            ContactModel model = new ContactModel();
+                            model.setEmail(d.child("follower_Email").getValue(String.class));
+                            model.setName(d.child("follower_Name").getValue(String.class));
+                            model.setNumber(d.child("follower_Number").getValue(String.class));
+                            contactList.add(model);
+                            adapter = new MainAdapter(MapsActivity.this, contactList);
+                            // set adapter
+                            recyclerView.setAdapter(adapter);
+                            guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
+                            guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+
+                        }
+                    }
+
+                    String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
+                    sendPushNotificationToFollower(message);
                     setMarkersDuration();
-                    String message = userData.getFirstName() + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
-                    sendPushNotification(message);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -558,29 +623,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        activityReference.child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot d : snapshot.getChildren()) {
-                    ContactModel model = new ContactModel();
-                    model.setEmail(d.child("follower_Email").getValue(String.class));
-                    model.setName(d.child("follower_Name").getValue(String.class));
-                    model.setNumber(d.child("follower_Number").getValue(String.class));
-                    contactList.add(model);
-                    adapter = new MainAdapter(MapsActivity.this, contactList);
-                    // set adapter
-                    recyclerView.setAdapter(adapter);
-                    guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
-                    guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        activityReference.child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if(snapshot.exists()){
+//
+//                    for (DataSnapshot d : snapshot.getChildren()) {
+//                        ContactModel model = new ContactModel();
+//                        model.setEmail(d.child("follower_Email").getValue(String.class));
+//                        model.setName(d.child("follower_Name").getValue(String.class));
+//                        model.setNumber(d.child("follower_Number").getValue(String.class));
+//                        contactList.add(model);
+//                        adapter = new MainAdapter(MapsActivity.this, contactList);
+//                        // set adapter
+//                        recyclerView.setAdapter(adapter);
+//                        guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
+//                        guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+//
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
     }
 
     private void setMarkersDuration() {
@@ -986,8 +1055,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 
-        if (durationInSeconds * 0.75 == mTimeLeftInMillis) {
-
+        if (((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
+            String message = "You have " + minutes + " : " + seconds + " left to complete the journey";
+            sendPushNotificationToUser(message);
+            sendPushNotificationToFollower(message);
         }
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
