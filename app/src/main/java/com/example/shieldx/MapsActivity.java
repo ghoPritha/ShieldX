@@ -85,6 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     RelativeLayout buttons;
     ImageButton backButton, startPauseButton;
     ImageView alertButton;
+    ImageView abortButton;
     String distance = "";
     String duration = "";
     private LocationManager locationManager;
@@ -141,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mTextViewCountDown = findViewById(R.id.text_view_countdown);
         startPauseButton = findViewById(R.id.button_start_pause);
         alertButton = findViewById(R.id.alertButton);
+        abortButton = findViewById(R.id.abort);
         transportOptions = findViewById(R.id.transportOptions);
         buttons = findViewById(R.id.buttons);
         alertButton.setColorFilter(Color.parseColor("#a64452"));
@@ -149,7 +151,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onLongClick(View v) {
 
-                activityReference.child(userData.encodedEmail()).child("sos").setValue(true);
+//                activityReference.child(userData.encodedEmail()).child("sos").setValue(true);
+                FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("sos").setValue(true);
                 ArrayList<String> guardiansList = new ArrayList<>();
                 activityReference.child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
