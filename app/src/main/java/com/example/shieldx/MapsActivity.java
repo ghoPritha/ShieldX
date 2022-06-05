@@ -161,7 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                            model.setNumber(d.child("follower_Number").getValue(String.class));
                             guardiansList.add(d.child("follower_Number").getValue(String.class));
                         }
-                        String message = (activityLog.getUserName() + " " + getString(R.string.guardianAdded_userInDanger));
+                        String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
                         if(guardiansList!= null)
                             for(int i=0;i<guardiansList.size();i++){
 
