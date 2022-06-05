@@ -10,11 +10,14 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -61,6 +64,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     MainAdapter adapter;
     ArrayList<String> modeOfTransport = new ArrayList<String>();
     String selectedTravelMode;
+    boolean toastCancel = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +148,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Toast.makeText(MapsActivity.this, "Button pressed", Toast.LENGTH_SHORT).show();
+
+                activityReference.child(userData.encodedEmail()).child("sos").setValue(true);
+                ArrayList<String> guardiansList = new ArrayList<>();
+                activityReference.child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot d : snapshot.getChildren()) {
+//                            ContactModel model = new ContactModel();
+//                            model.setEmail(d.child("follower_Email").getValue(String.class));
+//                            model.setName(d.child("follower_Name").getValue(String.class));
+//                            model.setNumber(d.child("follower_Number").getValue(String.class));
+                            guardiansList.add(d.child("follower_Number").getValue(String.class));
+                        }
+                        String message = (activityLog.getUserName() + " " + getString(R.string.guardianAdded_userInDanger));
+                        if(guardiansList!= null)
+                            for(int i=0;i<guardiansList.size();i++){
+
+                                String number = guardiansList.get(i);
+
+                                SmsManager mySmsManager = SmsManager.getDefault();
+                                mySmsManager.sendTextMessage(number,null, message, null, null);
+                                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
+                            }
+                        Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
                 return false;
             }
         });
@@ -228,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-
+                drawRoute(selectedTravelMode);
             }
         });
 
@@ -373,6 +410,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //                    mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString() + " , " + destination.getText().toString()));
                     source = new MarkerOptions().position(latLng).title("Source");
                     if (sourceMarker != null) {
+                        sourceMarker.setPosition(latLng);              /////to update marker on location
 
                     } else {
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));

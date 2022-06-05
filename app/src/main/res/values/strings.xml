@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ShieldX</string>
     <string name="api_key">AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0</string>
+    <string name="journey_guardianAlerted">Guardian Alerted!</string>
+    <string name="guardianAdded_userInDanger">is in DANGER!</string>
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="confirmPassword_text">Confirm Password</string>

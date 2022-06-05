@@ -240,7 +240,8 @@ public class NewActivityPage extends AppCompatActivity {
                         myIntent.putExtra("user_key", (Serializable) userData);
                         myIntent.putExtra("isThisDestinationSetup", false);
                         // startActivity(myIntent);
-                        sendSMS();
+//                        sendSMS();
+                        fetchJourneyData();
 
 
 ////
@@ -271,12 +272,13 @@ public class NewActivityPage extends AppCompatActivity {
                         myIntent.putExtra("user_key", (Serializable) userData);
                         myIntent.putExtra("isThisDestinationSetup", false);
                         // startActivity(myIntent);
-                        sendSMS();
+//                        sendSMS();
+                        fetchJourneyData();
                         startActivity(myIntent);
                     }
                 })
                 .show();
-        createPushNotification();
+//        createPushNotification();
 
 
 
@@ -302,6 +304,8 @@ public class NewActivityPage extends AppCompatActivity {
                         followerEmails.add(d.child("follower_Email").getValue(String.class));
                     }
                 }
+                sendSMS();
+                createPushNotification();
             }
 
             @Override
