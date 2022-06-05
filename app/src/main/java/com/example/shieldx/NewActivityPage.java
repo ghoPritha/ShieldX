@@ -196,7 +196,7 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     private void createPushNotification() {
-        String message = "Your journey has started from " + source + " to " + destination+ " expected duration: " + duration;
+        String message = username + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
         Intent pushIntent = new Intent(NewActivityPage.this, Notification.class);
         pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pushIntent.putExtra("message", message);
@@ -226,6 +226,33 @@ public class NewActivityPage extends AppCompatActivity {
             }
         }
         notificationManager.notify(1,builder.build());
+//
+//
+//        for (String email : followerEmails) {
+//
+//            Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
+//            Log.d("snapshott", String.valueOf(query));
+//
+//            query.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    if (snapshot.exists()) {
+//                        for(DataSnapshot d: snapshot.getChildren()) {
+//                            String usertoken = d.child("userToken").getValue(String.class);
+//                            FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(),NewActivityPage.this);
+//                            notificationsSender.SendNotifications();
+//                        }
+//                    } else {
+//                        Log.d("snapshott", String.valueOf(snapshot));
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+//        }
     }
 
     private void proceedToStartJourney() {
@@ -304,8 +331,6 @@ public class NewActivityPage extends AppCompatActivity {
                         followerEmails.add(d.child("follower_Email").getValue(String.class));
                     }
                 }
-                sendSMS();
-                createPushNotification();
             }
 
             @Override
@@ -323,6 +348,9 @@ public class NewActivityPage extends AppCompatActivity {
                     source = snapshot.child("sourceName").getValue(String.class);
                     destination = snapshot.child("destinationName").getValue(String.class);
                     duration = snapshot.child("duration").getValue(String.class);
+
+                    sendSMS();
+                    createPushNotification();
                 }
             }
 
@@ -448,34 +476,5 @@ public class NewActivityPage extends AppCompatActivity {
 //            SmsManager mySmsManager = SmsManager.getDefault();
 //            mySmsManager.sendTextMessage(number, null, message, null, null);
 //        }
-
-        for (String number : followerEmails) {
-            Log.d("snapshott", String.valueOf(number));
-
-            Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(number);
-            Log.d("snapshott", String.valueOf(query));
-
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        for(DataSnapshot d: snapshot.getChildren()) {
-                            String usertoken = d.child("userToken").getValue(String.class);
-                            FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(),NewActivityPage.this);
-                            notificationsSender.SendNotifications();
-                        }
-                    } else {
-                        Log.d("snapshott", String.valueOf(snapshot));
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-            SmsManager mySmsManager = SmsManager.getDefault();
-            mySmsManager.sendTextMessage(number, null, message, null, null);
-        }
     }
 }

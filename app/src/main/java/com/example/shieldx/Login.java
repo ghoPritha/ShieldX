@@ -65,7 +65,9 @@ public class Login extends AppCompatActivity {
                 .setProjectId("shieldx-67a7b") // Required for Firebase Installations.
                 .setApiKey("AIzaSyCceaYaJu6oOlhKRWcx8Q3yDv_342XOwCw") // Required for Auth.
                 .build();
-        FirebaseApp.initializeApp(this, options, "ShieldX");
+        if(FirebaseApp.getApps(this).isEmpty()){
+            FirebaseApp.initializeApp(this, options, "ShieldX");
+        }
         FirebaseMessaging.getInstance().subscribeToTopic("all");
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
