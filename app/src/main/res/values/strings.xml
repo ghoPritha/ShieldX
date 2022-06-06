@@ -12,7 +12,7 @@
     <string name="signUp_text">Sign Up</string>
     <string name="firstname_text">First Name</string>
     <string name="lastname_text">Last Name</string>
-    <string name="tasks">Tasks</string>
+    <string name="setting">Settings</string>
     <string name="search_elements">search_elements</string>
     <string name="hello">Hello,</string>
     <string name="userName">John</string>

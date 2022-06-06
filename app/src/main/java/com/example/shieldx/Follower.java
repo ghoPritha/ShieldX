@@ -3,14 +3,13 @@ package com.example.shieldx;
 public class Follower {
 
 
-    int Follower_ID, User_ID;
+    int Follower_ID;
     String Follower_Name, Follower_Number, Follower_Email, Follower_About;
 
     public Follower() {
     }
 
-    public Follower(int user_ID, String follower_Name, String follower_Number, String follower_Email, String follower_About) {
-        User_ID = user_ID;
+    public Follower( String follower_Name, String follower_Number, String follower_Email, String follower_About) {
         Follower_Name = follower_Name;
         Follower_Number = follower_Number;
         Follower_Email = follower_Email;
@@ -23,14 +22,6 @@ public class Follower {
 
     public void setFollower_ID(int follower_ID) {
         this.Follower_ID = follower_ID;
-    }
-
-    public int getUser_ID() {
-        return User_ID;
-    }
-
-    public void setUser_ID(int user_ID) {
-        this.User_ID = user_ID;
     }
 
     public String getFollower_Name() {
@@ -52,7 +43,7 @@ public class Follower {
     public String getFollower_Email() {
         return Follower_Email;
     }
-
+    public String encodedfollowerEmail() { return this.Follower_Email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
     public void setFollower_Email(String follower_Email) {
         this.Follower_Email = follower_Email;
     }

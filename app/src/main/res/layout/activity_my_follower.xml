@@ -42,7 +42,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/layoutHeader"
         app:layout_constraintBottom_toBottomOf="parent">
         <androidx.recyclerview.widget.RecyclerView
@@ -51,6 +51,7 @@
             android:layout_height="wrap_content"
             tools:listitem="@layout/item_contact"
             tools:ignore="MissingConstraints"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp">
+        </androidx.recyclerview.widget.RecyclerView>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
