@@ -77,52 +77,40 @@ import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, TaskLoadedCallback {
 
-
+    //map definition
     private GoogleMap mMap;
-    EditText startlocation, destinationLocation;
-    TextView etd, timeDown;
-    private DatabaseReference databasereference;
-    private LocationListener locationListener;
+    //layout definitions
+    EditText sourceTextBox, destinationTextBox;
+    TextView etd;
     LinearLayout locationSearch, followerLayout, countDownTimer, transportOptions;
     RelativeLayout buttons;
     ImageButton backButton, startPauseButton;
     ImageView alertButton;
-    String distance = "";
-    String duration = "";
-    private LocationManager locationManager;
-    private final long Min_Time = 1000;  //1 second
-    private final long Min_dist = 1;  //1 meter
-    private static final String TAG = "Info: ";
-    Location loc;
-    String userEmail, sourceName, destinatioName;
-    ActivityLog activityLog = new ActivityLog();
-    private Marker currentMarker;
-    private LatLng mOrigin;
-    private LatLng mDestination, markerDestination;
-    //    private Polyline mPolyline;
-    Marker sourceMarker;
-    ArrayList<LatLng> mMarkerPoints;
-    private MarkerOptions place1, place2, source, destination;
-    private Polyline currentPolyline;
-    FirebaseDatabase rootNode;
-    DatabaseReference activityReference;
-    User userData = new User();
-    Boolean isThisDestinationSetup;
-    private static final long START_TIME_IN_MILLIS = 600000;
     private TextView mTextViewCountDown;
     private CountDownTimer mCountDownTimer;
-    private boolean mTimerRunning;
-    private long mTimeLeftInMillis;
-    long durationInSeconds;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     ArrayList<String> modeOfTransport = new ArrayList<String>();
-    String selectedTravelMode;
     MainAdapter adapter;
-    boolean toastCancel = true;
 
-    ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
-    ArrayList<String> guardiansEmailList = new ArrayList<>();
+    FirebaseDatabase rootNode;
+    private DatabaseReference databasereference, activityReference;
+
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+    Location loc;
+    Marker sourceMarker;
+    private MarkerOptions source, destination;
+    private Polyline currentPolyline;
+
+    User userData = new User();
+
+    private final long Min_Time = 1000 , Min_dist = 1;  //1 meter
+    String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
+    Boolean isThisDestinationSetup;
+    private boolean mTimerRunning;
+    private long mTimeLeftInMillis, durationInSeconds;
+    ArrayList<String> guardiansPhoneNoList, guardiansEmailList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,10 +120,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
         isThisDestinationSetup = (Boolean) intent.getSerializableExtra("isThisDestinationSetup");
+
+        IntializeView();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("duration", etd.getText().toString());
+                intent.putExtra("destination", destinationTextBox.getText().toString());
+                setResult(RESULT_OK, intent);
+                updateLocation();
+                finish();
+            }
+        });
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        databasereference = FirebaseDatabase.getInstance().getReference("Location");
+
+        checkLocationPermissions();
+        readChanges();
+        autoCompleteDestination();
+        startPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTimerRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            }
+        });
+        updateCountDownText();
+        alertButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
+                sendPushNotificationToFollower(message);
+                sendNotificationViaSmS(message);
+                return false;
+            }
+        });
+    }
+
+    private void IntializeView() {
         //setup source destination view
         etd = findViewById(R.id.etd);
-        startlocation = findViewById(R.id.startlocation);
-        destinationLocation = findViewById(R.id.destinationLocation);
+        sourceTextBox = findViewById(R.id.startlocation);
+        destinationTextBox = findViewById(R.id.destinationLocation);
         locationSearch = findViewById(R.id.locationSearch);
         backButton = findViewById(R.id.backButton);
         //start journey view
@@ -175,49 +210,73 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buttons.setVisibility(View.VISIBLE);
             startJourney();
         }
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.putExtra("duration", etd.getText().toString());
-                intent.putExtra("destination", destinationLocation.getText().toString());
-                setResult(RESULT_OK, intent);
-                updateLocation();
-                finish();
-            }
-        });
+    }
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+    private void autoCompleteDestination() {
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        databasereference = FirebaseDatabase.getInstance().getReference("Location");
-
-        getLocationUpdates();
-        readChanges();
-        autoCompleteDestination();
-        startPauseButton.setOnClickListener(new View.OnClickListener() {
+        /**
+         * Initialize Places. For simplicity, the API key is hard-coded. In a production
+         * environment we recommend using a secure mechanism to manage API keys.
+         */
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.api_key));
+        }
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+        findViewById(R.id.destinationLocation).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTimerRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
+                List<Place.Field> placeList = Arrays.asList(Place.Field.ADDRESS_COMPONENTS, Place.Field.NAME, Place.Field.LAT_LNG);
+                Intent myIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeList).build(MapsActivity.this);
+                startActivityForResult(myIntent, 100);
             }
         });
-        updateCountDownText();
-        alertButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
-                sendPushNotificationToFollower(message);
-                sendNotificationViaSmS(message);
-                return false;
+        // Initialize the AutocompleteSupportFragment.
+        //        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+        //                getSupportFragmentManager().findFragmentById(R.id.destination);
+        //
+        //        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        //
+        //        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        //            @Override
+        //            public void onPlaceSelected(Place place) {
+        //                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+        ////                mMap.clear();
+        //                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())));
+        //                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+        //                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
+        //                LatLng latLng = place.getLatLng();
+        //                String mStringLatitude = String.valueOf(latLng.latitude);
+        //                String mStringLongitude = String.valueOf(latLng.longitude);
+        //            }
+        //
+        //            @Override
+        //            public void onError(@NonNull Status status) {
+        //                // TODO: Handle the error.
+        //                Log.i(TAG, "An error occurred: " + status);
+        //            }
+        //        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Status status = Autocomplete.getStatusFromIntent(data);
+        Log.e("SomLogcat", status.toString());
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            try {
+                destinationTextBox.setText(String.valueOf(getAddressFromLatLng(place.getLatLng().latitude, place.getLatLng().longitude)));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-
-
+            destination = new MarkerOptions().position(place.getLatLng()).title("destination");
+            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+            createRoute(selectedTravelMode);
+        }
     }
 
     private void sendPushNotificationToFollower(String message) {
@@ -299,8 +358,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("driving");
         modeOfTransport.add("bicycling");
         modeOfTransport.add("walking");
-        selectedTravelMode = modeOfTransport.get(0);
-        ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
+        selectedTravelMode = modeOfTransport.get(2);
+        ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                drawRoute(selectedTravelMode);
+                createRoute(selectedTravelMode);
             }
         });
 
@@ -319,7 +378,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                drawRoute(selectedTravelMode);
+                createRoute(selectedTravelMode);
 
             }
         });
@@ -331,42 +390,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                drawRoute(selectedTravelMode);
+                createRoute(selectedTravelMode);
 
             }
         });
     }
 
-    private void drawRoute(String selectedTravelMode) {
+    private void createRoute(String selectedTravelMode) {
 
         new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Status status = Autocomplete.getStatusFromIntent(data);
-        Log.e("SomLogcat", status.toString());
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == RESULT_OK) {
-            Place place = Autocomplete.getPlaceFromIntent(data);
-            try {
-                destinationLocation.setText(String.valueOf(getAddressFromLatLng(place.getLatLng().latitude, place.getLatLng().longitude)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            destination = new MarkerOptions().position(place.getLatLng()).title("destination");
-            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
-            drawRoute(selectedTravelMode);
-//            new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
-            // finish();
-
-        }
-    }
-
-    private void getLocationUpdates() {
+    private void checkLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (locationManager != null) {
@@ -387,7 +422,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getLocationUpdates();
+            checkLocationPermissions();
         } else {
             Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
         }
@@ -445,18 +480,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 databasereference.setValue(location);
                 loc = location;
                 if (isThisDestinationSetup) {
-                    startlocation.setText(getAddress(location));
-                    //                    startlocation.setText(Double.toString(location.getLongitude()));
-                    //                    destination.setText(Double.toString(location.getLongitude()));
-
+                    sourceTextBox.setText(getAddress(location));
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    //                    mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString() + " , " + destination.getText().toString()));
                     source = new MarkerOptions().position(latLng).title("Source");
                     if (sourceMarker != null) {
                         sourceMarker.setPosition(latLng);              /////to update marker on location
-
                     } else {
-                        sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));
+                        sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
                         databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
                         databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
@@ -468,58 +498,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
                 }
-            } else {
-                Toast.makeText(MapsActivity.this, "No Location Access", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
 
-    private void autoCompleteDestination() {
-
-        /**
-         * Initialize Places. For simplicity, the API key is hard-coded. In a production
-         * environment we recommend using a secure mechanism to manage API keys.
-         */
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.api_key));
-        }
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-        findViewById(R.id.destinationLocation).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Place.Field> placeList = Arrays.asList(Place.Field.ADDRESS_COMPONENTS, Place.Field.NAME, Place.Field.LAT_LNG);
-                Intent myIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeList).build(MapsActivity.this);
-                startActivityForResult(myIntent, 100);
-            }
-        });
-        // Initialize the AutocompleteSupportFragment.
-        //        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-        //                getSupportFragmentManager().findFragmentById(R.id.destination);
-        //
-        //        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-        //
-        //        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-        //            @Override
-        //            public void onPlaceSelected(Place place) {
-        //                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-        ////                mMap.clear();
-        //                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())));
-        //                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-        //                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
-        //                LatLng latLng = place.getLatLng();
-        //                String mStringLatitude = String.valueOf(latLng.latitude);
-        //                String mStringLongitude = String.valueOf(latLng.longitude);
-        //            }
-        //
-        //            @Override
-        //            public void onError(@NonNull Status status) {
-        //                // TODO: Handle the error.
-        //                Log.i(TAG, "An error occurred: " + status);
-        //            }
-        //        });
     }
 
     private void readChanges() {
@@ -565,7 +548,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void startJourney() {
         rootNode = FirebaseDatabase.getInstance();
-
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -575,13 +557,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // a = snapshot.getValue(ActivityLog.class);
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
-                    if (snapshot.child("source").exists()) {
+                    if (snapshot.child("source").exists() && snapshot.child("source").child("latitude").exists() && snapshot.child("source").child("longitude").exists()) {
                         source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     }
                     if (snapshot.child("sourceName").exists()) {
                         sourceName = snapshot.child("sourceName").getValue(String.class);
                     }
-                    if (snapshot.child("destination").exists()) {
+                    if (snapshot.child("destination").exists() && snapshot.child("destination").child("latitude").exists() && snapshot.child("destination").child("longitude").exists()) {
                         destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
                     }
 
@@ -660,7 +642,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(destination);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 12));
 
-            drawRoute(selectedTravelMode);
+            createRoute(selectedTravelMode);
             mTimerRunning = false;
             startCountdowneTimer();
 
@@ -742,8 +724,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     convertToSeconds(duration);
-                    activityReference.child("destinationName").setValue(destinationLocation.getText().toString());
-                    activityReference.child("sourceName").setValue(startlocation.getText().toString());
+                    activityReference.child("destinationName").setValue(destinationTextBox.getText().toString());
+                    activityReference.child("sourceName").setValue(sourceTextBox.getText().toString());
                     activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
                     activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
@@ -1046,7 +1028,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 startPauseButton.setImageResource(R.drawable.ic_pause);
-
+                String message = userData.getFirstName() +" has paused the journey ";
+                sendPushNotificationToFollower(message);
             }
         });
     }
@@ -1056,9 +1039,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 
         if (((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
-            String message = "You have " + minutes + " : " + seconds + " left to complete the journey";
-            sendPushNotificationToUser(message);
-            sendPushNotificationToFollower(message);
+            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
+            sendPushNotificationToUser(message1);
+            String message2 = userData.getFirstName() +" have " + minutes + " : " + seconds + " left to complete the journey";
+            sendPushNotificationToFollower(message2);
         }
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
