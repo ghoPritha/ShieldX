@@ -54,24 +54,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="200sp">
+        android:layout_marginTop="420sp">
 
         <ImageView
             android:id="@+id/alertButton"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_alignParentStart="true"
-            android:padding="8sp"
-            android:src="@drawable/siren" />
+            android:background="@drawable/siren"
+            android:layout_margin="8sp" />
 
 
         <ImageView
             android:id="@+id/abort"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_alignParentEnd="true"
-            android:padding="8sp"
-            android:src="@drawable/multiply" />
+            android:layout_margin="8sp"
+            android:layout_marginStart="8sp"
+            android:layout_marginTop="8sp"
+            android:layout_marginEnd="8sp"
+            android:layout_marginBottom="8sp"
+            android:background="@drawable/multiply" />
     </RelativeLayout>
 
     <LinearLayout
@@ -84,6 +88,7 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="6dp"
     android:orientation="horizontal">
     <ImageView
         android:layout_width="40dp"
@@ -97,8 +102,7 @@
             android:backgroundTint="@color/white"
             android:background="@drawable/circular_background"
             android:gravity="center"
-            android:layout_marginBottom="6dp"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:textColor="@color/black"
             android:textStyle="bold"
             android:hint=" Enter Start Location"
@@ -108,6 +112,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="6dp"
             android:orientation="horizontal">
             <ImageView
                 android:layout_width="40dp"
@@ -120,10 +125,9 @@
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:layout_marginBottom="6dp"
             android:backgroundTint="@color/white"
             android:background="@drawable/circular_background"
             android:gravity="center"
@@ -135,11 +139,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20sp"
         android:background="@color/teal_700">
 
         <TextView
             android:id="@+id/etd"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:hint="Expected time"
@@ -186,6 +191,7 @@
         android:id="@+id/followerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorTrendingStart"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -194,8 +200,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="140sp"
-            tools:ignore="MissingConstraints"
+            android:layout_height="120sp"
+            android:layout_margin="10sp"
             tools:listitem="@layout/item_contact" />
     </LinearLayout>
 
@@ -204,6 +210,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:rotationX="2"
+        android:layout_margin="20sp"
         android:src="@drawable/ic_back" />
 
 
