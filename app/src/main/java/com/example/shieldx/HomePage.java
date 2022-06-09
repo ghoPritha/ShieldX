@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.shieldx.DAO.User;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 

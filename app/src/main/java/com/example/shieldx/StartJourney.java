@@ -11,7 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.shieldx.SendNotificationPack.APIService;
+import com.example.shieldx.Utility.ContactModel;
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.DAO.User;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

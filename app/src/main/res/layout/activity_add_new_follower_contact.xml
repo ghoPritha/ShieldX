@@ -19,12 +19,11 @@
             android:id="@+id/testHello"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/expectedTime"
+            android:text="@string/addNewFollower"
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_centerInParent="true"/>
 
 
         <ImageView
@@ -35,9 +34,7 @@
             android:layout_marginEnd="15dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_menu"
-            app:layout_constraintBottom_toBottomOf="@id/testHello"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/testHello"
+            android:layout_alignParentRight="true"
             app:tint="@color/white" />
 
 
@@ -165,7 +162,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Enter Follower Name"
+                android:text="@string/enterName"
                 android:textColor="@color/colorPrimaryLight"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -210,7 +207,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Enter Follower Phone number"
+                android:text="@string/enterNumber"
                 android:textColor="@color/colorPrimaryLight"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -254,7 +251,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Enter Follower Email"
+                android:text="@string/enterEmail"
                 android:textColor="@color/colorPrimaryLight"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -303,6 +300,6 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/circular_background"
-            android:text="SAVE" />
+            android:text="@string/Save" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

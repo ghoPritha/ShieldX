@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.DAO;
 
 import com.google.android.gms.maps.model.LatLng;
 

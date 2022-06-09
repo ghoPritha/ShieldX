@@ -22,20 +22,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/header_background"
-            android:padding="20sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/scrollHome"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/testHello"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="120sp"
+                android:layout_centerInParent="true"
                 android:text="@string/hello"
                 android:textColor="@color/white"
                 android:textSize="25sp"
@@ -46,8 +47,9 @@
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4sp"
                 android:textColor="@color/white"
+                android:layout_toEndOf="@+id/testHello"
+                android:layout_centerInParent="true"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/testHello"
@@ -56,16 +58,13 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end
-"
-                app:layout_constraintStart_toEndOf="@id/userName"
-                app:layout_wrapBehaviorInParent="horizontal_only"
-                app:navigationIcon="@drawable/ic_menu"
-                tools:layout_editor_absoluteY="-12dp" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                app:navigationIcon="@drawable/ic_menu" />
 
 
-        </LinearLayout>
+        </RelativeLayout>
 
     <ScrollView
         android:id="@+id/scrollHome"
@@ -131,7 +130,7 @@
                     android:layout_width="100sp"
                     android:layout_height="100sp"
                     android:layout_margin="8sp"
-                    android:src="@drawable/contacts"
+                    android:src="@drawable/ic_contacts"
                     tools:ignore="MissingConstraints" />
 
                 <TextView
@@ -161,7 +160,7 @@
                     android:layout_width="100sp"
                     android:layout_height="100sp"
                     android:layout_margin="8sp"
-                    android:src="@drawable/favourites"
+                    android:src="@drawable/ic_favourites"
                     tools:ignore="MissingConstraints" />
 
                 <TextView
@@ -192,7 +191,7 @@
                     android:layout_width="100sp"
                     android:layout_height="100sp"
                     android:layout_margin="8sp"
-                    android:src="@drawable/followers"
+                    android:src="@drawable/ic_followers"
                     tools:ignore="MissingConstraints" />
 
                 <TextView
@@ -217,7 +216,7 @@
             <LinearLayout
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="144sp"
+                android:layout_marginTop="120sp"
                 android:background="@drawable/trending_background"
                 android:padding="5sp"
                 app:layout_constraintEnd_toEndOf="@id/layoutMyFollower"

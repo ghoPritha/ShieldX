@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.example.shieldx.Utility.ContactModel;
+import com.example.shieldx.Utility.DBHelper;
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.DAO.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

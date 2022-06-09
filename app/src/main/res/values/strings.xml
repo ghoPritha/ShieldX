@@ -48,5 +48,13 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="msg_token_fmt" />
     <string name="default_notification_channel_id" />
+    <string name="addFromMyFollower">Add from My Follower</string>
+    <string name="OR">OR</string>
+    <string name="addFromContact">Add From Contact</string>
+    <string name="addNewFollower">Add New Follower</string>
+    <string name="enterName">Enter Follower Name</string>
+    <string name="enterNumber">Enter Follower Phone number</string>
+    <string name="enterEmail">Enter Follower Email</string>
+    <string name="Save">SAVE</string>
 
 </resources>

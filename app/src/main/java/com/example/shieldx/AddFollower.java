@@ -21,6 +21,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shieldx.Utility.ContactModel;
+import com.example.shieldx.Utility.DBHelper;
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.DAO.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

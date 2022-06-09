@@ -27,7 +27,7 @@
             android:background="@color/colorTrendingEnd"
             android:padding="8sp"
             android:layout_margin="2sp"
-            android:src="@drawable/driving" />
+            android:src="@drawable/ic_driving" />
 
 
         <ImageView
@@ -38,7 +38,7 @@
             android:padding="8sp"
             android:layout_margin="2sp"
 
-            android:src="@drawable/bicycle" />
+            android:src="@drawable/ic_bicycle" />
 
         <ImageView
             android:id="@+id/walking"
@@ -47,7 +47,7 @@
             android:background="@color/colorTrendingEnd"
             android:padding="8sp"
             android:layout_margin="2sp"
-            android:src="@drawable/walking" />
+            android:src="@drawable/ic_walking" />
     </LinearLayout>
     <RelativeLayout
         android:id="@+id/buttons"
@@ -61,7 +61,7 @@
             android:layout_width="70sp"
             android:layout_height="70sp"
             android:layout_alignParentStart="true"
-            android:background="@drawable/siren"
+            android:background="@drawable/ic_siren"
             android:layout_margin="8sp" />
 
 
@@ -75,7 +75,7 @@
             android:layout_marginTop="8sp"
             android:layout_marginEnd="8sp"
             android:layout_marginBottom="8sp"
-            android:background="@drawable/multiply" />
+            android:background="@drawable/ic_multiply" />
     </RelativeLayout>
 
     <LinearLayout

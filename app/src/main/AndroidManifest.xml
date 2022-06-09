@@ -91,7 +91,7 @@
             android:name=".AddFollower"
             android:screenOrientation="portrait" />
         <service
-            android:name=".FirebaseMessagingService"
+            android:name=".Utility.FirebaseMessagingService"
             android:permission="TODO"
             android:exported="true"
             android:directBootAware="true">

@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.DAO;
 
 import java.io.Serializable;
 

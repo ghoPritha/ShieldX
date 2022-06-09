@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.Utility;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -15,6 +15,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.example.shieldx.MapsActivity;
+import com.example.shieldx.R;
 import com.google.firebase.messaging.RemoteMessage;
 
 
@@ -54,7 +56,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            builder.setSmallIcon(R.drawable.icontrans);
-            builder.setSmallIcon(R.drawable.solid_logo);
+            builder.setSmallIcon(R.drawable.ic_solid_logo);
         } else {
 //            builder.setSmallIcon(R.drawable.icon_kritikar);
             builder.setSmallIcon(resourceImage);

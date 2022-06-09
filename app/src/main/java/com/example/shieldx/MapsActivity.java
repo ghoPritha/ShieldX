@@ -37,6 +37,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shieldx.Utility.ContactModel;
+import com.example.shieldx.Utility.DataParser;
+import com.example.shieldx.Utility.FcmNotificationsSender;
+import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.Utility.TaskLoadedCallback;
+import com.example.shieldx.DAO.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -130,7 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 intent.putExtra("duration", etd.getText().toString());
                 intent.putExtra("destination", destinationTextBox.getText().toString());
                 setResult(RESULT_OK, intent);
-                updateLocation();
+                addLocationtoDatabase();
                 finish();
             }
         });
@@ -709,7 +715,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return addr;
     }
 
-    public void updateLocation() {
+    public void addLocationtoDatabase() {
         //        activityLog.setSource(getLocationFromAddress(startlocation.getText().toString()));
         //        activityLog.setSourceName(startlocation.getText().toString());
         //        activityLog.setDestinationName(destinationLocation.getText().toString());
