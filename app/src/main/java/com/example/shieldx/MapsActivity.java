@@ -37,11 +37,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.shieldx.Utility.ContactModel;
-import com.example.shieldx.Utility.DataParser;
-import com.example.shieldx.Utility.FcmNotificationsSender;
-import com.example.shieldx.Utility.MainAdapter;
-import com.example.shieldx.Utility.TaskLoadedCallback;
+import com.example.shieldx.Util.ContactModel;
+import com.example.shieldx.Util.DataParser;
+import com.example.shieldx.Util.FcmNotificationsSender;
+import com.example.shieldx.Util.MainAdapter;
+import com.example.shieldx.Util.TaskLoadedCallback;
 import com.example.shieldx.DAO.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;

@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.shieldx.Utility.ContactModel;
+import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.DAO.Follower;
-import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.DAO.User;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -63,9 +63,9 @@ public class StartJourney extends AppCompatActivity {
                     }
                     for (int i = 0; i < followerList.size(); i++) {
                         ContactModel model = new ContactModel();
-                        model.setEmail(followerList.get(i).getFollower_Email());
-                        model.setName(followerList.get(i).getFollower_Name());
-                        model.setNumber(followerList.get(i).getFollower_Number());
+                        model.setEmail(followerList.get(i).getFollowerEmail());
+                        model.setName(followerList.get(i).getFollowerName());
+                        model.setNumber(followerList.get(i).getFollowerNumber());
                         contactList.add(model);
                     }
 

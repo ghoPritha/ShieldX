@@ -1,4 +1,4 @@
-package com.example.shieldx.Utility;
+package com.example.shieldx.Util;
 
 import java.io.Serializable;
 

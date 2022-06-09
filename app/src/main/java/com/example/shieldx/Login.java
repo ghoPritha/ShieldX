@@ -24,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.shieldx.DAO.ActivityLog;
-import com.example.shieldx.Utility.DBHelper;
+import com.example.shieldx.Util.DBHelper;
 import com.example.shieldx.DAO.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;

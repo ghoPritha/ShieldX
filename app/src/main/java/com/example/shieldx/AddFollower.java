@@ -21,10 +21,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.shieldx.Utility.ContactModel;
-import com.example.shieldx.Utility.DBHelper;
+import com.example.shieldx.Util.ContactModel;
+import com.example.shieldx.Util.DBHelper;
 import com.example.shieldx.DAO.Follower;
-import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.DAO.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact, addFromMyFollower, addfromNewFoollower;
+    ImageView addFromContact, addFromMyFollower, addFromNewFollower;
     ImageButton backButton;
     User userData;
     int userId;
@@ -70,7 +70,7 @@ public class AddFollower extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
         addFromMyFollower = findViewById(R.id.addFromMyFollower);
-        addfromNewFoollower = findViewById(R.id.addfromNewFoollower);
+        addFromNewFollower = findViewById(R.id.addfromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
 
         if (userData != null)
@@ -98,7 +98,7 @@ public class AddFollower extends AppCompatActivity {
             }
         });
 
-        addfromNewFoollower.setOnClickListener(new View.OnClickListener() {
+        addFromNewFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(AddFollower.this, AddNewFollowerContact.class);

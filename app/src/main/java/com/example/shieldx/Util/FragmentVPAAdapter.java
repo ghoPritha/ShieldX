@@ -1,4 +1,4 @@
-package com.example.shieldx.Utility;
+package com.example.shieldx.Util;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

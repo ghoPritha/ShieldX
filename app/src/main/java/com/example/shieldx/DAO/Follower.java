@@ -3,58 +3,58 @@ package com.example.shieldx.DAO;
 public class Follower {
 
 
-    int Follower_ID;
-    String Follower_Name, Follower_Number, Follower_Email, Follower_About;
+    int followerID;
+    String followerName, followerNumber, followerEmail, followerAbout;
 
     public Follower() {
     }
 
     public Follower( String follower_Name, String follower_Number, String follower_Email, String follower_About) {
-        Follower_Name = follower_Name;
-        Follower_Number = follower_Number;
-        Follower_Email = follower_Email;
-        Follower_About = follower_About;
+        followerName = follower_Name;
+        followerNumber = follower_Number;
+        followerEmail = follower_Email;
+        followerAbout = follower_About;
     }
 
-    public int getFollower_ID() {
-        return Follower_ID;
+    public int getFollowerID() {
+        return followerID;
     }
 
-    public void setFollower_ID(int follower_ID) {
-        this.Follower_ID = follower_ID;
+    public void setFollowerID(int followerID) {
+        this.followerID = followerID;
     }
 
-    public String getFollower_Name() {
-        return Follower_Name;
+    public String getFollowerName() {
+        return followerName;
     }
 
-    public void setFollower_Name(String follower_Name) {
-        this.Follower_Name = follower_Name;
+    public void setFollowerName(String followerName) {
+        this.followerName = followerName;
     }
 
-    public String getFollower_Number() {
-        return Follower_Number;
+    public String getFollowerNumber() {
+        return followerNumber;
     }
 
-    public void setFollower_Number(String follower_Number) {
-        this.Follower_Number = follower_Number;
+    public void setFollowerNumber(String followerNumber) {
+        this.followerNumber = followerNumber;
     }
 
-    public String getFollower_Email() {
-        return Follower_Email;
+    public String getFollowerEmail() {
+        return followerEmail;
     }
-    public String encodedfollowerEmail() { return this.Follower_Email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
-    public void setFollower_Email(String follower_Email) {
-        this.Follower_Email = follower_Email;
-    }
-
-    public String getFollower_About() {
-        return Follower_About;
+    public String encodedfollowerEmail() { return this.followerEmail.replace(".","%2E").replace("_","%5F").replace("@","%40");}
+    public void setFollowerEmail(String followerEmail) {
+        this.followerEmail = followerEmail;
     }
 
-    public void setFollower_About(String follower_About) {
-        this.Follower_About = follower_About;
+    public String getFollowerAbout() {
+        return followerAbout;
     }
 
-    public String encodedEmail() { return this.Follower_Email.replace(".","%2E").replace("_","%5F").replace("@","%40");}
+    public void setFollowerAbout(String followerAbout) {
+        this.followerAbout = followerAbout;
+    }
+
+    public String encodedEmail() { return this.followerEmail.replace(".","%2E").replace("_","%5F").replace("@","%40");}
 }

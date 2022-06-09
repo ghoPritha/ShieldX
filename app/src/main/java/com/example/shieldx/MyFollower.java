@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 
-import com.example.shieldx.Utility.ContactModel;
-import com.example.shieldx.Utility.DBHelper;
+import com.example.shieldx.Util.ContactModel;
+import com.example.shieldx.Util.DBHelper;
 import com.example.shieldx.DAO.Follower;
-import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.DAO.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

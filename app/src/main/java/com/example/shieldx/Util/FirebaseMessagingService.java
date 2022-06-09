@@ -1,4 +1,4 @@
-package com.example.shieldx.Utility;
+package com.example.shieldx.Util;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

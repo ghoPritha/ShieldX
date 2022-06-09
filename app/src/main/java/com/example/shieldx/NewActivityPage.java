@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.DAO.ActivityLog;
-import com.example.shieldx.Utility.ContactModel;
-import com.example.shieldx.Utility.MainAdapter;
+import com.example.shieldx.Util.ContactModel;
+import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.DAO.User;
 import com.example.shieldx.SendNotificationPack.APIService;
 import com.google.firebase.database.DataSnapshot;
