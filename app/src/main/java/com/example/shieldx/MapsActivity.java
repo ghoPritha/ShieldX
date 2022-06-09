@@ -172,6 +172,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    public void QuitApp(View view) {
+        this.finishAffinity();
+        System.exit(0);
+    }
+
     private void IntializeView() {
         //setup source destination view
         etd = findViewById(R.id.etd);
@@ -491,6 +496,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     source = new MarkerOptions().position(latLng).title("Source");
                     if (sourceMarker != null) {
                         sourceMarker.setPosition(latLng);              /////to update marker on location
+                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     } else {
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
