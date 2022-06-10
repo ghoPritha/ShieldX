@@ -2,12 +2,16 @@ package com.example.shieldx;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +28,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     ImageView newActivityButton;
     TextView userName;
     LinearLayout myFollower;
+    LinearLayout addFollower;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     androidx.appcompat.widget.Toolbar toolbar;
@@ -38,6 +43,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
         newActivityButton = (ImageView) findViewById(R.id.newActivityButton);
         myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
+        addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navView);
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
@@ -58,7 +64,38 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
         newActivitySetup((Serializable) userData);
         showMyFollowers((Serializable) userData);
+
+        addFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(HomePage.this, HomepageAddFollower.class);
+                myIntent.putExtra("user_key", userData);
+                myIntent.putExtra("comingFromNeworExisting", false);
+                startActivity(myIntent);
+            }
+        });
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.main_menu,menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch(item.getItemId()){
+//            case R.id.logout:
+//                logOut();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+//
+//    private void logOut() {
+//        finish();
+//        startActivity(new Intent(getApplicationContext(), Login.class));
+//        Toast.makeText(HomePage.this,"Logout Successful", Toast.LENGTH_SHORT).show();
+//    }
 
     private void showMyFollowers(Serializable userData) {
         myFollower.setOnClickListener(new View.OnClickListener() {
