@@ -30,10 +30,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.DAO.ActivityLog;
-import com.example.shieldx.Util.ContactModel;
-import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.DAO.User;
 import com.example.shieldx.SendNotificationPack.APIService;
+import com.example.shieldx.Util.ContactModel;
+import com.example.shieldx.Util.MainAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -128,10 +128,24 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void startJourney() {
+
+
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proceedToStartJourney();
+                fetchJourneyData();
+                if (followerEmails.size() > 0 && followerNumbers.size() > 0) {
+                    if (source != null) {
+                        if (destination != null) {
+                            proceedToStartJourney();
+                        } else {
+                            Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
+                }
             }
         });
         //UpdateToken();
@@ -243,8 +257,6 @@ public class NewActivityPage extends AppCompatActivity {
                         myIntent.putExtra("isThisDestinationSetup", false);
                         // startActivity(myIntent);
 //                        sendSMS();
-                        fetchJourneyData();
-
                     }
                 })
                 .setNegativeButton("Invite via Text Message", new DialogInterface.OnClickListener() {

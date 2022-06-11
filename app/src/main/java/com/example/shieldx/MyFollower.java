@@ -1,19 +1,20 @@
 package com.example.shieldx;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
-
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DBHelper;
-import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.Util.MainAdapter;
-import com.example.shieldx.DAO.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,14 +42,8 @@ public class MyFollower extends AppCompatActivity {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
-        comingFromNeworExisting = (Boolean) intent.getSerializableExtra("comingFromNeworExisting");
+        showExistingfollowers();
 
-        if(comingFromNeworExisting){
-            addNewNumber();
-        }
-        else{
-            showExistingfollowers();
-        }
 
     }
 
@@ -72,6 +67,7 @@ public class MyFollower extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot d : snapshot.getChildren()) {
                     ContactModel model = new ContactModel();
+                    Log.i("followersss", String.valueOf(d));
                     model.setEmail(d.child("follower_Email").getValue(String.class));
                     model.setName(d.child("follower_Name").getValue(String.class));
                     model.setNumber(d.child("follower_Number").getValue(String.class));
@@ -90,6 +86,4 @@ public class MyFollower extends AppCompatActivity {
         });
     }
 
-    private void addNewNumber() {
-    }
 }

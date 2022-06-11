@@ -108,7 +108,7 @@ public class AddFollower extends AppCompatActivity {
         addFromNewFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(AddFollower.this, AddNewFollowerContact.class);
+                Intent myIntent = new Intent(AddFollower.this, NewFollowerManually.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
                 startActivity(myIntent);
             }
