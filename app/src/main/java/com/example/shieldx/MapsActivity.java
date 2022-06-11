@@ -284,8 +284,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             destination = new MarkerOptions().position(place.getLatLng()).title("destination");
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),17));
+//            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
             createRoute(selectedTravelMode);
         }
     }
@@ -455,7 +455,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMinZoomPreference(0.0f);
         mMap.setMaxZoomPreference(21.0f);
 
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
         //route changes
         Log.d("mylog", "Added Markers");
         //        mMap.addMarker(place1);
@@ -500,7 +500,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     } else {
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                         databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
                         databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
                     }
@@ -545,7 +545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         // mMap.addMarker(new MarkerOptions().position(latLng).title(latitude + " , " + longitude));
 
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -571,13 +571,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
                     if (snapshot.child("source").exists() && snapshot.child("source").child("latitude").exists() && snapshot.child("source").child("longitude").exists()) {
-                        source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                        source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("source"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                     }
                     if (snapshot.child("sourceName").exists()) {
                         sourceName = snapshot.child("sourceName").getValue(String.class);
                     }
                     if (snapshot.child("destination").exists() && snapshot.child("destination").child("latitude").exists() && snapshot.child("destination").child("longitude").exists()) {
-                        destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                        destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("destination"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                     }
 
                     if (snapshot.child("destinationName").exists()) {
@@ -589,6 +589,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (snapshot.child("modeOfTransport").exists()) {
                         selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
                     }
+                    createRoute(selectedTravelMode);
                     if (snapshot.child("followersList").exists()) {
                         for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                             ContactModel model = new ContactModel();
@@ -650,10 +651,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setMarkersDuration() {
         if (source != null && destination != null) {
             mMap.addMarker(source);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 12));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 15));
 
             mMap.addMarker(destination);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 12));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
 
             createRoute(selectedTravelMode);
             mTimerRunning = false;

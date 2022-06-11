@@ -77,26 +77,26 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main_menu,menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch(item.getItemId()){
-//            case R.id.logout:
-//                logOut();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//    private void logOut() {
-//        finish();
-//        startActivity(new Intent(getApplicationContext(), Login.class));
-//        Toast.makeText(HomePage.this,"Logout Successful", Toast.LENGTH_SHORT).show();
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.logout:
+                logOut();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logOut() {
+        finish();
+        startActivity(new Intent(getApplicationContext(), Login.class));
+        Toast.makeText(HomePage.this,"Logout Successful", Toast.LENGTH_SHORT).show();
+    }
 
     private void showMyFollowers(Serializable userData) {
         myFollower.setOnClickListener(new View.OnClickListener() {
