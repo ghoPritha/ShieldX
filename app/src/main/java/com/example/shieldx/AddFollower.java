@@ -4,12 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +23,12 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.shieldx.DAO.Follower;
-import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DBHelper;
+import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.Util.MainAdapter;
+import com.example.shieldx.DAO.User;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +50,6 @@ public class AddFollower extends AppCompatActivity {
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     public static int PICK_CONTACT = 1;
-    public static int ADD_FOLLOWER_MANUALLY = 2;
     public static int CONTACT_PERMISSION_CODE = 1;
     DBHelper DB;
     FirebaseDatabase rootNode;
@@ -55,6 +57,7 @@ public class AddFollower extends AppCompatActivity {
     int maxId = 0;
     ArrayList<Follower> followerList = new ArrayList<>();
     ArrayList<String> nameList = new ArrayList<>();
+    Boolean isTheAddFollowerfromActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +70,15 @@ public class AddFollower extends AppCompatActivity {
         DB = new DBHelper(this);
 
         //assign variable
-        backButton = findViewById(R.id.backButton);
-        recyclerView = findViewById(R.id.recyclerView);
-        addFromContact = findViewById(R.id.addFromContact);
-        addFromMyFollower = findViewById(R.id.addFromMyFollower);
-        addFromNewFollower = findViewById(R.id.addfromNewFoollower);
-        userName = (TextView) findViewById(R.id.userName);
+//        backButton = findViewById(R.id.backButton);
+//        recyclerView = findViewById(R.id.recyclerView);
+//        addFromContact = findViewById(R.id.addFromContact);
+//        addFromMyFollower = findViewById(R.id.addFromMyFollower);
+//        addFromNewFollower = findViewById(R.id.addfromNewFoollower);
+//        userName = (TextView) findViewById(R.id.userName);
+        isTheAddFollowerfromActivity = (Boolean) intent.getSerializableExtra("isTheAddFollowerfromActivity");
+
+        IntializeView();
 
         if (userData != null)
             userId = userData.getUserId();
@@ -102,9 +108,9 @@ public class AddFollower extends AppCompatActivity {
         addFromNewFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(AddFollower.this, NewFollowerManually.class);
+                Intent myIntent = new Intent(AddFollower.this, AddNewFollowerContact.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
-                startActivityForResult(myIntent, ADD_FOLLOWER_MANUALLY);
+                startActivity(myIntent);
             }
         });
 
@@ -180,9 +186,11 @@ public class AddFollower extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_CONTACT) {
+
                 Cursor c, phoneCursor, emailCursor = null;
                 Uri contactData = data.getData();
                 c = getContentResolver().query(contactData, null, null, null, null);
+
                 if (c.moveToFirst()) {
                     String contactId = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
                     String contactThumbnail = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
@@ -212,41 +220,56 @@ public class AddFollower extends AppCompatActivity {
                             emailCursor.close();
                         }
                         phoneCursor.close();
+
+                        // @SuppressLint("Range") String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
                         ContactModel model = new ContactModel();
                         //set name
                         model.setName(contactName);
                         //set number
                         model.setNumber(contactNumber);
-                        //set email
+
                         model.setEmail(contactEmail);
 
                         contactList.add(model);
+                        //close phone cursor
+                        //initialize adapter
+                        adapter = new MainAdapter(this, contactList);
+                        // set adapter
+                        recyclerView.setAdapter(adapter);
+                        rootNode = FirebaseDatabase.getInstance();
+                        nameList.add(contactName);
                         Follower follower = new Follower(contactName, contactNumber, contactEmail, null);
+
+                        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
+
                         followerList.add(follower);
-                        addFollowersToDB(follower);
+                        addFollowersToDB();
                     }
                     c.close();
                 }
+            } else {
+                // calls when user click back button
             }
-            if (requestCode == ADD_FOLLOWER_MANUALLY) {
-                contactList = (ArrayList<ContactModel>) data.getSerializableExtra("addedFollower");
-            }
-            //initialize adapter
-            adapter = new MainAdapter(this, contactList);
-            // set adapter
-            recyclerView.setAdapter(adapter);
+            // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
+            //finish();
+
         }
+
+//        private void addFollowersToDB(){
+//
+//
+//        }
     }
 
-    private void addFollowersToDB(Follower follower) {
-        rootNode = FirebaseDatabase.getInstance();
-        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
+    private void addFollowersToDB() {
+
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                activityReference.setValue(followerList);
+                    activityReference.setValue(followerList);
             }
 
             @Override
@@ -255,5 +278,21 @@ public class AddFollower extends AppCompatActivity {
             }
         });
 
+    }
+    private void IntializeView() {
+        //assign variable
+        backButton = findViewById(R.id.backButton);
+        recyclerView = findViewById(R.id.recyclerView);
+        addFromContact = findViewById(R.id.addFromContact);
+        addFromMyFollower = findViewById(R.id.addFromMyFollower);
+        RelativeLayout fromMyFollower = findViewById(R.id.fromMyFollower);
+        TextView extraOR = findViewById(R.id.extraOR);
+        addFromNewFollower = findViewById(R.id.addfromNewFoollower);
+        userName = (TextView) findViewById(R.id.userName);
+        if (!isTheAddFollowerfromActivity) {
+            addFromMyFollower.setVisibility(View.GONE);
+            fromMyFollower.setVisibility(View.GONE);
+            extraOR.setVisibility(View.GONE);
+        }
     }
 }

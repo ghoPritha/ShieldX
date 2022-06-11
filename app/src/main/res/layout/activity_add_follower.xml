@@ -111,6 +111,7 @@
             </RelativeLayout>
 
             <TextView
+                android:id="@+id/extraOR"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
                 android:gravity="center"

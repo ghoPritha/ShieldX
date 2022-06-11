@@ -90,6 +90,7 @@
         <activity
             android:name=".AddFollower"
             android:screenOrientation="portrait" />
+
         <service
             android:name=".Util.FirebaseMessagingService"
             android:permission="TODO"
