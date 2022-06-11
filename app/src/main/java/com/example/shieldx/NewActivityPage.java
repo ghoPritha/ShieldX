@@ -140,7 +140,7 @@ public class NewActivityPage extends AppCompatActivity {
         openTimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(NewActivityPage.this, AddNewFollowerContact.class);
+                Intent myIntent = new Intent(NewActivityPage.this, NewFollowerManually.class);
                 startActivityForResult(myIntent, TIMER_ADDED);
             }
         });
@@ -271,7 +271,7 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    toReference.setValue(snapshot.getValue(), new DatabaseReference.CompletionListener() {
+                    toReference.push().setValue(snapshot.getValue(), new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
                             if (firebaseError != null) {
@@ -409,7 +409,7 @@ public class NewActivityPage extends AppCompatActivity {
 
         for (String number : followerNumbers) {
             SmsManager mySmsManager = SmsManager.getDefault();
-            mySmsManager.sendTextMessage(number, null, message, null, null);
+            //mySmsManager.sendTextMessage(number, null, message, null, null);
         }
     }
 }

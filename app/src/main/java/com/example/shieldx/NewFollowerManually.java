@@ -19,7 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class AddNewFollowerContact extends AppCompatActivity {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class NewFollowerManually extends AppCompatActivity {
 
     TextView showtime1, showtime3, showtime2;
     NumberPicker timePickerHour;
@@ -32,6 +35,7 @@ public class AddNewFollowerContact extends AppCompatActivity {
 
     FirebaseDatabase rootNode;
     DatabaseReference activityReference;
+    private ArrayList<Follower> followerslist = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class AddNewFollowerContact extends AppCompatActivity {
 
         userData = (User) intent.getSerializableExtra("user_key");
 
-        setContentView(R.layout.activity_add_new_follower_contact);
+        setContentView(R.layout.activity_new_follower_manually);
         putname = (EditText) findViewById(R.id.putname);
         putnumber = (EditText) findViewById(R.id.putnumber);
         putemail = (EditText) findViewById(R.id.putemail);
@@ -90,17 +94,21 @@ public class AddNewFollowerContact extends AppCompatActivity {
 //            }
 //        });
 
+        Follower follower = new Follower(putname.getText().toString(), putnumber.getText().toString(), putemail.getText().toString(), null);
+        followerslist.add(follower);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addToFirebase();
+                addToFirebase(follower);
+                Intent intent = new Intent();
+                intent.putExtra("addedFollower", (Serializable) followerslist);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
     }
 
-    private void addToFirebase() {
-        Follower follower = new Follower(putname.getText().toString(), putnumber.getText().toString(), putemail.getText().toString(), null);
+    private void addToFirebase(Follower follower) {
 
         rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
 

@@ -56,5 +56,6 @@
     <string name="enterNumber">Enter Follower Phone number</string>
     <string name="enterEmail">Enter Follower Email</string>
     <string name="Save">SAVE</string>
+    <string name="newUser">Are you a New User ?</string>
 
 </resources>

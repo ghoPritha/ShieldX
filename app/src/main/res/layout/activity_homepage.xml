@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/header_background"
+            android:padding="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/scrollHome"
@@ -57,10 +58,11 @@
             <!--            app:tint="@color/white" />-->
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
+                android:backgroundTint="@color/white"
                 app:navigationIcon="@drawable/ic_menu" />
 
 

@@ -71,7 +71,6 @@ public class Login extends AppCompatActivity {
         if(FirebaseApp.getApps(this).isEmpty()){
             FirebaseApp.initializeApp(this, options, "ShieldX");
         }
-        FirebaseMessaging.getInstance().subscribeToTopic("all");
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         EditText username = (EditText) findViewById(R.id.username);
