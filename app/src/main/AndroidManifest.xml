@@ -90,10 +90,7 @@
         <activity
             android:name=".AddFollower"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".HomepageAddFollower"
-            android:exported="false"
-            android:label="HomepageAddFollower" />
+
         <service
             android:name=".Util.FirebaseMessagingService"
             android:permission="TODO"
