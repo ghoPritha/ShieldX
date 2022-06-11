@@ -59,6 +59,7 @@ public class NewActivityPage extends AppCompatActivity {
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
+    Boolean isTheAddFollowerfromActivity;
 
     Button startActivityButton;
     private static final int FOLLOWER_ADDED = 1;
@@ -152,6 +153,7 @@ public class NewActivityPage extends AppCompatActivity {
             public void onClick(View view) {
                 Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
+                myIntent.putExtra("isTheAddFollowerfromActivity", true);
                 startActivityForResult(myIntent, FOLLOWER_ADDED);
             }
         });

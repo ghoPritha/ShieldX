@@ -68,9 +68,10 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         addFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(HomePage.this, HomepageAddFollower.class);
+                Intent myIntent = new Intent(HomePage.this, AddFollower.class);
                 myIntent.putExtra("user_key", userData);
                 myIntent.putExtra("comingFromNeworExisting", false);
+                myIntent.putExtra("isTheAddFollowerfromActivity", false);
                 startActivity(myIntent);
             }
         });
