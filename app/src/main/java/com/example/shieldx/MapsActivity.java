@@ -213,7 +213,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void QuitApp(View view) {
-        this.finishAffinity();
+//        this.finishAffinity();
+        Intent intent = new Intent(MapsActivity.this,HomePage.class);
+        intent.putExtra("user_key",userData);
+        startActivity(intent);
+        this.finish();
         System.exit(0);
     }
 
