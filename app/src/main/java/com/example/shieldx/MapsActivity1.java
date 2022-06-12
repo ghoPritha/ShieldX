@@ -24,7 +24,6 @@
 //import android.widget.ImageButton;
 //import android.widget.ImageView;
 //import android.widget.LinearLayout;
-//import android.widget.RelativeLayout;
 //import android.widget.TextView;
 //import android.widget.Toast;
 //
@@ -88,8 +87,8 @@
 //    //layout definitions
 //    EditText sourceTextBox, destinationTextBox;
 //    TextView etd;
-//    LinearLayout locationSearch, followerLayout, countDownTimer, transportOptions;
-//    RelativeLayout buttons;
+//    LinearLayout locationSearch, countDownTimer, transportOptions;
+//    LinearLayout buttons;
 //    ImageButton backButton, startPauseButton;
 //    ImageView alertButton;
 //    private TextView mTextViewCountDown;
@@ -111,12 +110,13 @@
 //
 //    User userData = new User();
 //
-//    private final long Min_Time = 1000 , Min_dist = 1;  //1 meter
+//    private final long MIN_TIME = 1000 , MIN_DIST = 1;  //1 meter
 //    String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
 //    Boolean isThisDestinationSetup;
 //    private boolean mTimerRunning;
 //    private long mTimeLeftInMillis, durationInSeconds;
-//    ArrayList<String> guardiansPhoneNoList, guardiansEmailList = new ArrayList<>();
+//    ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
+//    ArrayList<String> guardiansEmailList = new ArrayList<>();
 //
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -173,7 +173,11 @@
 //    }
 //
 //    public void QuitApp(View view) {
-//        this.finishAffinity();
+////        this.finishAffinity();
+//        Intent intent = new Intent(MapsActivity.this,HomePage.class);
+//        intent.putExtra("user_key",userData);
+//        startActivity(intent);
+//        this.finish();
 //        System.exit(0);
 //    }
 //
@@ -185,7 +189,6 @@
 //        locationSearch = findViewById(R.id.locationSearch);
 //        backButton = findViewById(R.id.backButton);
 //        //start journey view
-//        followerLayout = findViewById(R.id.followerLayout);
 //        recyclerView = findViewById(R.id.recyclerView);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //
@@ -206,7 +209,8 @@
 //            etd.setVisibility(View.VISIBLE);
 //            backButton.setVisibility(View.VISIBLE);
 //            alertButton.setVisibility(View.GONE);
-//            followerLayout.setVisibility(View.GONE);
+//            //followerLayout.setVisibility(View.GONE);
+//            recyclerView.setVisibility(View.GONE);
 //            countDownTimer.setVisibility(View.GONE);
 //            buttons.setVisibility(View.GONE);
 //            selectMode();
@@ -216,7 +220,7 @@
 //            backButton.setVisibility(View.GONE);
 //            transportOptions.setVisibility(View.GONE);
 //            alertButton.setVisibility(View.VISIBLE);
-//            followerLayout.setVisibility(View.VISIBLE);
+//            recyclerView.setVisibility(View.VISIBLE);
 //            countDownTimer.setVisibility(View.VISIBLE);
 //            buttons.setVisibility(View.VISIBLE);
 //            startJourney();
@@ -326,7 +330,7 @@
 //                String number = guardiansPhoneNoList.get(i);
 //
 //                SmsManager mySmsManager = SmsManager.getDefault();
-//                mySmsManager.sendTextMessage(number, null, message, null, null);
+//                //mySmsManager.sendTextMessage(number, null, message, null, null);
 //                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
 //            }
 //        }
@@ -417,9 +421,9 @@
 //                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 //            if (locationManager != null) {
 //                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-//                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Min_Time, Min_dist, this);
+//                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DIST, this);
 //                } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Min_Time, Min_dist, this);
+//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, this);
 //                } else {
 //
 //                }
@@ -500,7 +504,7 @@
 //                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
 //                    } else {
 //                        sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 //                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    }
@@ -545,7 +549,7 @@
 //                        }
 //                        // mMap.addMarker(new MarkerOptions().position(latLng).title(latitude + " , " + longitude));
 //
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
 //                    } catch (Exception e) {
 //                        e.printStackTrace();
 //                    }
@@ -607,8 +611,8 @@
 //                    }
 //
 //                    String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
+//                    setMarkersAndDuration();
 //                    sendPushNotificationToFollower(message);
-//                    setMarkersDuration();
 //                    Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
 //                }
 //            }
@@ -648,13 +652,13 @@
 ////        });
 //    }
 //
-//    private void setMarkersDuration() {
+//    private void setMarkersAndDuration() {
 //        if (source != null && destination != null) {
 //            mMap.addMarker(source);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 17));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 15));
 //
 //            mMap.addMarker(destination);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 17));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
 //
 //            createRoute(selectedTravelMode);
 //            mTimerRunning = false;
@@ -1052,10 +1056,10 @@
 //        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
 //        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 //
-//        if (((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
+//        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
 //            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
 //            sendPushNotificationToUser(message1);
-//            String message2 = userData.getFirstName() +" have " + minutes + " : " + seconds + " left to complete the journey";
+//            String message2 = userData.getFirstName() +" has " + minutes + " : " + seconds + " left to complete the journey";
 //            sendPushNotificationToFollower(message2);
 //        }
 //        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);

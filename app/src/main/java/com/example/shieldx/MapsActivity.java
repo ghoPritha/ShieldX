@@ -105,6 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     Location loc;
     Marker sourceMarker;
+    Marker currentMarker;
+    Location sourcelocation;   //for threshold implementation
+    Location destinationlocation= new Location(" ");  //for threshold implementation
     private MarkerOptions source, destination;
     private Polyline currentPolyline;
 
@@ -283,6 +286,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Place place = Autocomplete.getPlaceFromIntent(data);
             try {
                 destinationTextBox.setText(String.valueOf(getAddressFromLatLng(place.getLatLng().latitude, place.getLatLng().longitude)));
+                destinationlocation.setLatitude(place.getLatLng().latitude);//your coords
+                destinationlocation.setLongitude(place.getLatLng().longitude);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -494,26 +499,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (location != null) {
                 databasereference.setValue(location);
                 loc = location;
+                sourceTextBox.setText(getAddress(location));
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                source = new MarkerOptions().position(latLng).title("Source");
                 if (isThisDestinationSetup) {
-                    sourceTextBox.setText(getAddress(location));
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    source = new MarkerOptions().position(latLng).title("Source");
-                    if (sourceMarker != null) {
-                        sourceMarker.setPosition(latLng);              /////to update marker on location
-                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
-                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
-                    } else {
+//                    sourceTextBox.setText(getAddress(location));
+//                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    source = new MarkerOptions().position(latLng).title("Source");
+
+//                    if (currentMarker == null) {
+//                        //Create a new marker
+//                        MarkerOptions markerOptions = new MarkerOptions();
+//                        markerOptions.position(latLng);
+//                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+////                        markerOptions.rotation(location.getBearing());
+//                        markerOptions.anchor((float) 0.5, (float) 0.5);
+//                        currentMarker = mMap.addMarker(markerOptions);      /////to update marker on location
+//                        databasereference.child("currentlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        databasereference.child("currentlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+//                    } else  {
+//                        //use the previously created marker
+//                        currentMarker.setPosition(latLng);
+////                        currentMarker.setRotation(location.getBearing());
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+//                        databasereference.child("currentlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        databasereference.child("currentlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                    }
+//                    if (sourceMarker != null) {
+//                        sourceMarker.setPosition(latLng);              /////to update marker on location
+//                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                    } else {
+                        sourcelocation = location;
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                         databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
                         databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
-                    }
+//                    }
 //                    source = new MarkerOptions().position(latLng).title("Source");
 //                    sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));
 //                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 //                    databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
+                }
+                else{
+                    if (currentMarker == null) {
+                        //Create a new marker
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(latLng);
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+//                        markerOptions.rotation(location.getBearing());
+                        markerOptions.anchor((float) 0.5, (float) 0.5);
+                        currentMarker = mMap.addMarker(markerOptions);      /////to update marker on location
+                        databasereference.child("currentlatitude").push().setValue(Double.toString(location.getLatitude()));
+                        databasereference.child("currentlongitude").push().setValue(Double.toString(location.getLongitude()));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                    } else  {
+                        //use the previously created marker
+                        currentMarker.setPosition(latLng);
+//                        currentMarker.setRotation(location.getBearing());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                        databasereference.child("currentlatitude").push().setValue(Double.toString(location.getLatitude()));
+                        databasereference.child("currentlongitude").push().setValue(Double.toString(location.getLongitude()));
+                    }
                 }
             }
         } catch (Exception e) {
