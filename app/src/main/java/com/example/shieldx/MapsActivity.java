@@ -43,6 +43,8 @@ import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.Util.TaskLoadedCallback;
 import com.example.shieldx.DAO.User;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,6 +66,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.EncodedPolyline;
+import com.google.maps.model.TravelMode;
 
 import org.json.JSONObject;
 
@@ -81,6 +93,8 @@ import java.util.Locale;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, TaskLoadedCallback {
+
+    String apiKey = "AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0";
 
     //map definition
     private GoogleMap mMap;
@@ -103,20 +117,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LocationListener locationListener;
     private LocationManager locationManager;
-    Location loc;
     Marker sourceMarker;
     private MarkerOptions source, destination;
+    Location sourceLoc, destinationLoc, loc, mLocation;
+    LatLng sourceLatLng, destinationLatLng;
     private Polyline currentPolyline;
+    LocationCallback mLocationCallback;
+    GeoApiContext geoApiContext = new GeoApiContext.Builder()
+            .apiKey(apiKey)
+            .build();
+    List<List<LatLng>> polylineList;
+    ArrayList<Polyline> sourceDestinationPolylineList;
+    List<LatLng> sourceDestinationLatLngList;
+    List<Long> journeyDurationList;
+
+    private boolean reachedDestination = false;
+    private boolean routeDeviation = false;
+    private Long journeyDuration = 0L;
+    EncodedPolyline sourceDestinationEncodedPolyline;
+    Polyline sourceDestinationPolyline;
+    List<EncodedPolyline> sourceDestinationEncodedPolylineList;
+
 
     User userData = new User();
 
     private final long MIN_TIME = 1000 , MIN_DIST = 1;  //1 meter
+    private static final float SAFE_REACH_THRESHOLD = 40f;
     String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
     Boolean isThisDestinationSetup;
     private boolean mTimerRunning;
     private long mTimeLeftInMillis, durationInSeconds;
     ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
     ArrayList<String> guardiansEmailList = new ArrayList<>();
+    private TravelMode travelMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +203,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                onNewLocation(locationResult.getLastLocation());
+            }
+        };
     }
 
     public void QuitApp(View view) {
@@ -209,7 +249,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             recyclerView.setVisibility(View.GONE);
             countDownTimer.setVisibility(View.GONE);
             buttons.setVisibility(View.GONE);
-            selectMode();
         } else {
             locationSearch.setVisibility(View.GONE);
             etd.setVisibility(View.GONE);
@@ -283,9 +322,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
             destination = new MarkerOptions().position(place.getLatLng()).title("destination");
+            destinationLoc = new Location(LocationManager.GPS_PROVIDER);
+            destinationLoc.setLatitude(place.getLatLng().latitude);
+            destinationLoc.setLongitude(place.getLatLng().longitude);
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),17));
 //            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+            selectMode();
             createRoute(selectedTravelMode);
         }
     }
@@ -374,6 +417,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                travelMode = TravelMode.DRIVING;
                 selectedTravelMode = modeOfTransport.get(0);
                 ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -385,6 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ((ImageView) findViewById(R.id.cycling)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                travelMode = TravelMode.BICYCLING;
                 selectedTravelMode = modeOfTransport.get(1);
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -397,6 +442,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ((ImageView) findViewById(R.id.walking)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                travelMode = TravelMode.WALKING;
                 selectedTravelMode = modeOfTransport.get(2);
                 ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -405,10 +451,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+        getRoutes(travelMode);
+
     }
 
     private void createRoute(String selectedTravelMode) {
-
         new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
     }
 
@@ -493,6 +540,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (isThisDestinationSetup) {
                     sourceTextBox.setText(getAddress(location));
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    sourceLoc = location;
                     source = new MarkerOptions().position(latLng).title("Source");
                     if (sourceMarker != null) {
                         sourceMarker.setPosition(latLng);              /////to update marker on location
@@ -589,22 +637,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (snapshot.child("modeOfTransport").exists()) {
                         selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
                     }
-                    createRoute(selectedTravelMode);
                     if (snapshot.child("followersList").exists()) {
                         for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                             ContactModel model = new ContactModel();
-                            model.setEmail(d.child("follower_Email").getValue(String.class));
-                            model.setName(d.child("follower_Name").getValue(String.class));
-                            model.setNumber(d.child("follower_Number").getValue(String.class));
+                            Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+
+                            model.setEmail(d.child("followerEmail").getValue(String.class));
+                            model.setName(d.child("followerName").getValue(String.class));
+                            model.setNumber(d.child("followerNumber").getValue(String.class));
                             contactList.add(model);
                             adapter = new MainAdapter(MapsActivity.this, contactList);
                             // set adapter
                             recyclerView.setAdapter(adapter);
-                            guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
-                            guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+                            guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+                            guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
 
                         }
                     }
+                    createRoute(selectedTravelMode);
 
                     String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
                     setMarkersAndDuration();
@@ -626,15 +676,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //
 //                    for (DataSnapshot d : snapshot.getChildren()) {
 //                        ContactModel model = new ContactModel();
-//                        model.setEmail(d.child("follower_Email").getValue(String.class));
-//                        model.setName(d.child("follower_Name").getValue(String.class));
-//                        model.setNumber(d.child("follower_Number").getValue(String.class));
+//                        model.setEmail(d.child("followerEmail").getValue(String.class));
+//                        model.setName(d.child("followerName").getValue(String.class));
+//                        model.setNumber(d.child("followerNumber").getValue(String.class));
 //                        contactList.add(model);
 //                        adapter = new MainAdapter(MapsActivity.this, contactList);
 //                        // set adapter
 //                        recyclerView.setAdapter(adapter);
-//                        guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
-//                        guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+//                        guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+//                        guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
 //
 //
 //                    }
@@ -978,6 +1028,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lineOptions.color(Color.RED);
                 }
                 Log.d("mylog", "onPostExecute lineoptions decoded");
+                sourceDestinationLatLngList = points;
+                Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
             }
 
             // Drawing polyline in the Google Map for the i-th route
@@ -1019,7 +1071,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onClick(View v) {
-
+//                        if(distance < SAFE_REACH_THRESHOLD) {
+//                            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
+//                            activityReference.child("reachedDestination").setValue("true");
+//                            reachedDestination = true;
+//                            String message = userData.getFirstName() + " has reached destination" ;
+//                            sendPushNotificationToFollower(message);
+//
+//                        }
+                        mTimeLeftInMillis = 60000;
+                        startTimer();
                         startPauseButton.setImageResource(R.drawable.ic_start);
 
                     }
@@ -1052,16 +1113,167 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 
-        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
-            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
-            sendPushNotificationToUser(message1);
-            String message2 = userData.getFirstName() +" has " + minutes + " : " + seconds + " left to complete the journey";
-            sendPushNotificationToFollower(message2);
-        }
+//        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
+//            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
+//            sendPushNotificationToUser(message1);
+//            String message2 = userData.getFirstName() +" has " + minutes + " : " + seconds + " left to complete the journey";
+//            sendPushNotificationToFollower(message2);
+//        }
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
         mTextViewCountDown.setText(timeLeftFormatted);
 
     }
+
+    void getRoutes(TravelMode travelMode) {
+        DirectionsApiRequest req = DirectionsApi.getDirections(geoApiContext, source.getPosition().latitude + "," + source.getPosition().longitude, destination.getPosition().latitude + "," + destination.getPosition().longitude).alternatives(true).mode(TravelMode.DRIVING);
+
+        try {
+            polylineList = new ArrayList<List<LatLng>>();
+            sourceDestinationPolylineList = new ArrayList<Polyline>();
+            //sourceDestinationEncodedPolylineList = new ArrayList<EncodedPolyline>();
+            DirectionsResult res = req.await();
+            Log.i("GuardActivity", String.valueOf(res.routes));
+
+            //Loop through legs and steps to get encoded polylines of each step
+            if (res.routes != null && res.routes.length > 0) {
+                Log.i("GuardActivity", "Number of routes: " + res.routes.length);
+                for (DirectionsRoute route : res.routes) {
+//                            DirectionsRoute route = res.routes[0];
+                    sourceDestinationEncodedPolylineList.add(route.overviewPolyline);
+
+                    //String routePolylineString = route.overviewPolyline.toString();
+
+                    //"shg}Hal`fAdEEr@Ch@C~@E?M@_@FkBDiALyD\\WLWBGDW`Ai_@HHLCFQ@WE]|DKCrB"
+                    List<LatLng> path = new ArrayList();
+                    List<com.google.maps.model.LatLng> coords1 = route.overviewPolyline.decodePath();
+                    for (com.google.maps.model.LatLng coord1 : coords1) {
+                        path.add(new LatLng(coord1.lat, coord1.lng));
+                    }
+                    polylineList.add(path);
+                    if (route.legs != null) {
+                        for (int i = 0; i < route.legs.length; i++) {
+                            DirectionsLeg leg = route.legs[i];
+                            journeyDuration = leg.duration.inSeconds;
+                            journeyDurationList.add(journeyDuration);
+                        }
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            Log.e("GuardActivity", ex.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        boolean routeSelected;
+        if (polylineList.size() > 1) {
+            routeSelected = false;
+            Log.i("GuardActivity", "Total Polylines: " + polylineList.size());
+            for (List<LatLng> polyline : polylineList) {
+                Log.i("GuardianActivity", "Adding a polyline to map");
+                PolylineOptions opts = new PolylineOptions().addAll(polyline).color(0xFF6A2D57).width(8);
+                Polyline sourceDestinationPolyline = mMap.addPolyline(opts);
+                sourceDestinationPolyline.setClickable(true);
+                sourceDestinationPolylineList.add(sourceDestinationPolyline);
+            }
+        } else if (polylineList.size() > 0) {
+            routeSelected = true;
+            PolylineOptions opts = new PolylineOptions().addAll(polylineList.get(0)).color(0xFF6A2D57).width(8);
+            sourceDestinationPolyline = mMap.addPolyline(opts);
+            journeyDuration = journeyDurationList.get(0);
+            sourceDestinationEncodedPolyline = sourceDestinationEncodedPolylineList.get(0);
+        }
+    }
+
+
+    private void onNewLocation(Location location) {
+        Log.i("LocationTrackingService", "New location: " + location);
+
+        mLocation = location;
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        // Notify anyone listening for broadcasts about the new location.
+        Intent intent = new Intent("LocationTrackingService.broadcast");
+        intent.putExtra("LocationTrackingService.location", location);
+
+        // Update notification content if running as a foreground service.
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference activityReference = database.getReference("journeys/" + email);
+//
+//        activityReference.child("currentLocation").setValue(new LatLng(location.getLatitude(), location.getLongitude()));
+
+        float distance = location.distanceTo(destinationLoc);
+        float finalWarning = sourceLoc.distanceTo(destinationLoc)*0.75F;
+        float secondWarning = sourceLoc.distanceTo(destinationLoc)*0.50F;
+        float firstWarning = sourceLoc.distanceTo(destinationLoc)*0.25F;
+        //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
+
+        Log.i("LocationTrackingService", "Distance: " + distance);
+        Log.i("LocationTrackingService", "distance: " + sourceLoc.distanceTo(destinationLoc));
+        Log.i("LocationTrackingService", "finalWarning " + finalWarning);
+        Log.i("LocationTrackingService", "secondWarning " + secondWarning);
+        Log.i("LocationTrackingService", "firstWarning " + firstWarning);
+        if(distance < SAFE_REACH_THRESHOLD) {
+            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
+            activityReference.child("reachedDestination").setValue("true");
+            reachedDestination = true;
+            String message = userData.getFirstName() + " has reached destination" ;
+            sendPushNotificationToFollower(message);
+
+        }
+        if(distance < firstWarning) {
+            activityReference.child("firstWarning").setValue("true");
+        }
+        if(distance < secondWarning) {
+            activityReference.child("secondWarning").setValue("true");
+        }
+        if(distance < finalWarning) {
+            activityReference.child("finalWarning").setValue("true");
+        }
+
+        //500m tolerance is used for detecting devaition in route
+        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 500)) {
+            activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        if(dataSnapshot.getValue(String.class).equals("true")) {
+                            routeDeviation = false;
+                            activityReference.child("routeDeviation").setValue("false");
+
+//                            if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
+//                                NotificationCompat.Builder builder = new NotificationCompat.Builder(LocationTrackingService.this, CHANNEL_ID)
+//                                        .setSmallIcon(R.drawable.user_location)
+//                                        .setContentTitle(getString(R.string.locationTracking_routeDeviation))
+//                                        .setContentText(getString(R.string.locationTracking_backToSelectedRoute))
+//                                        .setPriority(Notification.PRIORITY_HIGH);
+//                                mNotificationManager.notify(8, builder.build());
+//                            }
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else {
+            if(!routeDeviation) {
+                routeDeviation = true;
+                activityReference.child("routeDeviation").setValue("true");
+//                if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
+//                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                            .setSmallIcon(R.drawable.user_location)
+//                            .setContentTitle(getString(R.string.locationTracking_routeDeviation))
+//                            .setContentText(getString(R.string.locationTracking_deviatedFromSelectedRoute))
+//                            .setPriority(Notification.PRIORITY_HIGH);
+//                    mNotificationManager.notify(7, builder.build());
+//                }
+            }
+        }
+    }
+
 
 }
