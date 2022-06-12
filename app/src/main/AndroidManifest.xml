@@ -42,7 +42,8 @@
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-
+        <uses-library
+            android:name="com.google.android.maps" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0" />

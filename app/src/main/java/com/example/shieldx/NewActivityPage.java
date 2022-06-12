@@ -123,31 +123,31 @@ public class NewActivityPage extends AppCompatActivity {
         enterDestiantion();
         addFollower();
         //addExpectedTime();
+        fetchJourneyData();
+
         startJourney();
 
     }
 
     private void startJourney() {
-
-
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchJourneyData();
-                if (followerEmails.size() > 0 && followerNumbers.size() > 0) {
-                    if (source != null) {
-                        if (destination != null) {
-                            proceedToStartJourney();
-                        } else {
-                            Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
-                        }
-                    }
-                }
-                else {
-                    Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
-                }
+                proceedToStartJourney();
             }
         });
+        if (followerEmails.size() > 0 && followerNumbers.size() > 0) {
+            if (source != null) {
+                if (destination != null) {
+
+                } else {
+                    Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
+                }
+            }
+        }
+        else {
+            Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
+        }
         //UpdateToken();
     }
 
@@ -279,31 +279,31 @@ public class NewActivityPage extends AppCompatActivity {
         rootNode = FirebaseDatabase.getInstance();
         username = userData.getFirstName();
         DatabaseReference fromReference, toReference;
-        fromReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-        toReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("Activity history");
-        fromReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    toReference.push().setValue(snapshot.getValue(), new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
-                            if (firebaseError != null) {
-                                Toast.makeText(NewActivityPage.this, "copy Failed ", Toast.LENGTH_LONG);
-                            } else {
-                                Toast.makeText(NewActivityPage.this, "copy succeeded ", Toast.LENGTH_LONG);
-
-                            }
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        fromReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+//       // toReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+//        fromReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    fromReference.child("Activity history").push().setValue(snapshot.getValue(), new DatabaseReference.CompletionListener() {
+//                        @Override
+//                        public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+//                            if (firebaseError != null) {
+//                                Toast.makeText(NewActivityPage.this, "copy Failed ", Toast.LENGTH_LONG);
+//                            } else {
+//                                Toast.makeText(NewActivityPage.this, "copy succeeded ", Toast.LENGTH_LONG);
+//
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -336,7 +336,7 @@ public class NewActivityPage extends AppCompatActivity {
                     duration = snapshot.child("duration").getValue(String.class);
 
                     sendSMS();
-                    createPushNotification();
+                    //createPushNotification();
                 }
             }
 
