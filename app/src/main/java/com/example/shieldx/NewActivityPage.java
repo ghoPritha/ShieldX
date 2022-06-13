@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,10 +31,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.DAO.ActivityLog;
+import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.DAO.User;
 import com.example.shieldx.SendNotificationPack.APIService;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.MainAdapter;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,7 +59,7 @@ public class NewActivityPage extends AppCompatActivity {
     LinearLayout expandedLayout, layoutEtd, addedFollower;
     CardView outerLayout;
     RecyclerView recyclerView;
-    String dest, duration, source,destination, username;
+    String duration, source, destination, username;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
@@ -67,7 +71,7 @@ public class NewActivityPage extends AppCompatActivity {
     private static final int DESTINATION_ADDED = 2;
     User userData;
     FirebaseDatabase rootNode;
-    DatabaseReference activityReference, fetchValueReference;
+    DatabaseReference activityReference, followerReference;
     ArrayList<String> followerNumbers = new ArrayList<>();
     ArrayList<String> followerEmails = new ArrayList<>();
 
@@ -102,13 +106,12 @@ public class NewActivityPage extends AppCompatActivity {
         newActivity.setUserMail(userData.encodedEmail());
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(NewActivityPage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
-
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-
+                    createActivityHistory(snapshot);
                 } else {
                     activityReference.setValue(newActivity);
                 }
@@ -122,11 +125,39 @@ public class NewActivityPage extends AppCompatActivity {
 
         enterDestiantion();
         addFollower();
-        //addExpectedTime();
         fetchJourneyData();
-
         startJourney();
 
+    }
+
+    private void createActivityHistory(DataSnapshot snapshot) {
+        if (snapshot.child("destinationReached").getValue(Boolean.class)) {
+
+        } else {
+            ActivityLog pastActivities = new ActivityLog();
+            ArrayList<Follower> listOffollower = new ArrayList<>();
+            pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
+            pastActivities.setCurrentLocation(snapshot.child("currentLocation").getValue(LatLng.class));
+            pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+            pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
+            pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+            pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
+            pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
+            pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
+            pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
+            pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
+            pastActivities.setDestinationReached(snapshot.child("destinationReached").getValue(Boolean.class));
+            for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
+                Follower model = new Follower();
+                Log.i("followersss", String.valueOf(d));
+                model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
+                model.setFollowerName(d.child("follower_Name").getValue(String.class));
+                model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
+                listOffollower.add(model);
+            }
+            pastActivities.setFollowersList(listOffollower);
+            activityReference.child("Activity History").push().setValue(pastActivities);
+        }
     }
 
     private void startJourney() {
@@ -136,19 +167,6 @@ public class NewActivityPage extends AppCompatActivity {
                 proceedToStartJourney();
             }
         });
-        if (followerEmails.size() > 0 && followerNumbers.size() > 0) {
-            if (source != null) {
-                if (destination != null) {
-
-                } else {
-                    Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
-                }
-            }
-        }
-        else {
-            Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
-        }
-        //UpdateToken();
     }
 
     private void addExpectedTime() {
@@ -215,33 +233,6 @@ public class NewActivityPage extends AppCompatActivity {
             }
         }
         notificationManager.notify(1,builder.build());
-//
-//
-//        for (String email : followerEmails) {
-//
-//            Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
-//            Log.d("snapshott", String.valueOf(query));
-//
-//            query.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if (snapshot.exists()) {
-//                        for(DataSnapshot d: snapshot.getChildren()) {
-//                            String usertoken = d.child("userToken").getValue(String.class);
-//                            FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(),NewActivityPage.this);
-//                            notificationsSender.SendNotifications();
-//                        }
-//                    } else {
-//                        Log.d("snapshott", String.valueOf(snapshot));
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
-//        }
     }
 
     private void proceedToStartJourney() {
@@ -249,17 +240,17 @@ public class NewActivityPage extends AppCompatActivity {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
                 .setMessage("How do you want to notify your followers ? ")
-                .setPositiveButton("Invite via Email", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                         myIntent.putExtra("user_key", (Serializable) userData);
                         myIntent.putExtra("isThisDestinationSetup", false);
-                        // startActivity(myIntent);
-//                        sendSMS();
+                        sendSMS();
+                        startActivity(myIntent);
                     }
                 })
-                .setNegativeButton("Invite via Text Message", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
@@ -267,7 +258,7 @@ public class NewActivityPage extends AppCompatActivity {
                         myIntent.putExtra("isThisDestinationSetup", false);
                         // startActivity(myIntent);
 //                        sendSMS();
-                        fetchJourneyData();
+                        // fetchJourneyData();
                         startActivity(myIntent);
                     }
                 })
@@ -304,9 +295,9 @@ public class NewActivityPage extends AppCompatActivity {
 //
 //            }
 //        });
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
+        followerReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
-        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        followerReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //  ActivityLog a = new ActivityLog();
@@ -319,24 +310,20 @@ public class NewActivityPage extends AppCompatActivity {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-
-        fetchValueReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-        fetchValueReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     source = snapshot.child("sourceName").getValue(String.class);
                     destination = snapshot.child("destinationName").getValue(String.class);
                     duration = snapshot.child("duration").getValue(String.class);
-
-                    sendSMS();
-                    //createPushNotification();
+                    searchDestination.setText(destination);
+                    etd.setText(duration);
                 }
             }
 
@@ -345,6 +332,19 @@ public class NewActivityPage extends AppCompatActivity {
 
             }
         });
+        if (followerEmails.size() > 0 && followerNumbers.size() > 0) {
+            if (source != null) {
+                if (searchDestination != null) {
+                    startActivityButton.setVisibility(View.VISIBLE);
+                } else {
+                    //startActivityButton.setVisibility(View.GONE);
+                    Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
+                }
+            }
+        } else {
+            //startActivityButton.setVisibility(View.GONE);
+            Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
+        }
     }
 
     public void expandAddFollowers(View view) {
@@ -373,10 +373,10 @@ public class NewActivityPage extends AppCompatActivity {
             case (DESTINATION_ADDED): {
                 if (resultCode == RESULT_OK) {
                     // Get String data from Intent
-                    dest = data.getStringExtra("destination");
+                    destination = data.getStringExtra("destination");
                     duration = data.getStringExtra("duration");
                     etd.setText(duration);
-                    searchDestination.setText(dest);
+                    searchDestination.setText(destination);
                     if(layoutEtd != null) {
                         layoutEtd.setVisibility(View.VISIBLE);
                     }
@@ -423,7 +423,7 @@ public class NewActivityPage extends AppCompatActivity {
 
         for (String number : followerNumbers) {
             SmsManager mySmsManager = SmsManager.getDefault();
-            //mySmsManager.sendTextMessage(number, null, message, null, null);
+            mySmsManager.sendTextMessage(number, null, message, null, null);
         }
     }
 }

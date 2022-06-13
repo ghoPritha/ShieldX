@@ -8,7 +8,8 @@ import java.util.List;
 public class ActivityLog {
 
     LatLng currentLocation, destination, source;
-    String userMail, userName, destinationName, sourceName, typeOfActivity;
+    String userMail, userName, destinationName, sourceName, modeOfTransport, duration;
+    Long durationInSeconds;
     Boolean journeyCompleted, destinationReached;
     Time expectedTime;
     List<Follower> followersList;
@@ -32,7 +33,7 @@ public class ActivityLog {
         this.userName = userName;
         this.destinationName = destinationName;
         this.sourceName = sourceName;
-        this.typeOfActivity = typeOfActivity;
+        this.modeOfTransport = typeOfActivity;
         this.journeyCompleted = journeyCompleted;
         this.destinationReached = destinationReached;
         this.expectedTime = expectedTime;
@@ -95,12 +96,12 @@ public class ActivityLog {
         this.sourceName = sourceName;
     }
 
-    public String getTypeOfActivity() {
-        return typeOfActivity;
+    public String getModeOfTransport() {
+        return modeOfTransport;
     }
 
-    public void setTypeOfActivity(String typeOfActivity) {
-        this.typeOfActivity = typeOfActivity;
+    public void setModeOfTransport(String modeOfTransport) {
+        this.modeOfTransport = modeOfTransport;
     }
 
     public Boolean getJourneyCompleted() {
@@ -133,5 +134,21 @@ public class ActivityLog {
 
     public void setFollowersList(List<Follower> followersList) {
         this.followersList = followersList;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public Long getDurationInSeconds() {
+        return durationInSeconds;
+    }
+
+    public void setDurationInSeconds(Long durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
     }
 }

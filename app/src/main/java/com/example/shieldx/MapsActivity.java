@@ -36,12 +36,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DataParser;
 import com.example.shieldx.Util.FcmNotificationsSender;
 import com.example.shieldx.Util.MainAdapter;
 import com.example.shieldx.Util.TaskLoadedCallback;
-import com.example.shieldx.DAO.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
@@ -70,10 +70,6 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.android.PolyUtil;
-import com.google.maps.errors.ApiException;
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsRoute;
-import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.EncodedPolyline;
 import com.google.maps.model.TravelMode;
 
@@ -117,9 +113,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LocationListener locationListener;
     private LocationManager locationManager;
-    Marker sourceMarker;
+    Marker sourceMarker, currentMarker;
     private MarkerOptions source, destination;
-    Location sourceLoc, destinationLoc, loc, mLocation;
+    Location sourceLoc, destinationLoc, loc, mLocation, currentLoc;
     LatLng sourceLatLng, destinationLatLng;
     private Polyline currentPolyline;
     LocationCallback mLocationCallback;
@@ -476,17 +472,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            checkLocationPermissions();
-        } else {
-            Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkLocationPermissions();
+            } else {
+                Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -545,17 +543,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     sourceTextBox.setText(getAddress(location));
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     sourceLoc = location;
+                    currentLoc = location;
                     source = new MarkerOptions().position(latLng).title("Source");
-                    if (sourceMarker != null) {
-                        sourceMarker.setPosition(latLng);              /////to update marker on location
-                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
-                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
-                    } else {
+//                    if (sourceMarker != null) {
+//                        sourceMarker.setPosition(latLng);              /////to update marker on location
+//                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                    } else {
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
-                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
-                    }
+//                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
+//                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
+//                    }
 //                    source = new MarkerOptions().position(latLng).title("Source");
 //                    sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));
 //                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
@@ -593,7 +592,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         Location location = snapshot.getValue(Location.class);
                         if (location != null) {
-                            sourceMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                            currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
                         }
                         // mMap.addMarker(new MarkerOptions().position(latLng).title(latitude + " , " + longitude));
 
@@ -1132,63 +1131,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     void getRoutes(TravelMode travelMode) {
         DirectionsApiRequest req = DirectionsApi.getDirections(geoApiContext, source.getPosition().latitude + "," + source.getPosition().longitude, destination.getPosition().latitude + "," + destination.getPosition().longitude).alternatives(true).mode(TravelMode.DRIVING);
 
-        try {
-            polylineList = new ArrayList<List<LatLng>>();
-            sourceDestinationPolylineList = new ArrayList<Polyline>();
-            //sourceDestinationEncodedPolylineList = new ArrayList<EncodedPolyline>();
-            DirectionsResult res = req.await();
-            Log.i("GuardActivity", String.valueOf(res.routes));
-
-            //Loop through legs and steps to get encoded polylines of each step
-            if (res.routes != null && res.routes.length > 0) {
-                Log.i("GuardActivity", "Number of routes: " + res.routes.length);
-                for (DirectionsRoute route : res.routes) {
-//                            DirectionsRoute route = res.routes[0];
-                    sourceDestinationEncodedPolylineList.add(route.overviewPolyline);
-
-                    //String routePolylineString = route.overviewPolyline.toString();
-
-                    //"shg}Hal`fAdEEr@Ch@C~@E?M@_@FkBDiALyD\\WLWBGDW`Ai_@HHLCFQ@WE]|DKCrB"
-                    List<LatLng> path = new ArrayList();
-                    List<com.google.maps.model.LatLng> coords1 = route.overviewPolyline.decodePath();
-                    for (com.google.maps.model.LatLng coord1 : coords1) {
-                        path.add(new LatLng(coord1.lat, coord1.lng));
-                    }
-                    polylineList.add(path);
-                    if (route.legs != null) {
-                        for (int i = 0; i < route.legs.length; i++) {
-                            DirectionsLeg leg = route.legs[i];
-                            journeyDuration = leg.duration.inSeconds;
-                            journeyDurationList.add(journeyDuration);
-                        }
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            Log.e("GuardActivity", ex.getMessage());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        boolean routeSelected;
-        if (polylineList.size() > 1) {
-            routeSelected = false;
-            Log.i("GuardActivity", "Total Polylines: " + polylineList.size());
-            for (List<LatLng> polyline : polylineList) {
-                Log.i("GuardianActivity", "Adding a polyline to map");
-                PolylineOptions opts = new PolylineOptions().addAll(polyline).color(0xFF6A2D57).width(8);
-                Polyline sourceDestinationPolyline = mMap.addPolyline(opts);
-                sourceDestinationPolyline.setClickable(true);
-                sourceDestinationPolylineList.add(sourceDestinationPolyline);
-            }
-        } else if (polylineList.size() > 0) {
-            routeSelected = true;
-            PolylineOptions opts = new PolylineOptions().addAll(polylineList.get(0)).color(0xFF6A2D57).width(8);
-            sourceDestinationPolyline = mMap.addPolyline(opts);
-            journeyDuration = journeyDurationList.get(0);
-            sourceDestinationEncodedPolyline = sourceDestinationEncodedPolylineList.get(0);
-        }
+//        try {
+//            polylineList = new ArrayList<List<LatLng>>();
+//            sourceDestinationPolylineList = new ArrayList<Polyline>();
+//            //sourceDestinationEncodedPolylineList = new ArrayList<EncodedPolyline>();
+//            DirectionsResult res = req.await();
+//            Log.i("GuardActivity", String.valueOf(res.routes));
+//
+//            //Loop through legs and steps to get encoded polylines of each step
+//            if (res.routes != null && res.routes.length > 0) {
+//                Log.i("GuardActivity", "Number of routes: " + res.routes.length);
+//                for (DirectionsRoute route : res.routes) {
+////                            DirectionsRoute route = res.routes[0];
+//                    sourceDestinationEncodedPolylineList.add(route.overviewPolyline);
+//
+//                    //String routePolylineString = route.overviewPolyline.toString();
+//
+//                    //"shg}Hal`fAdEEr@Ch@C~@E?M@_@FkBDiALyD\\WLWBGDW`Ai_@HHLCFQ@WE]|DKCrB"
+//                    List<LatLng> path = new ArrayList();
+//                    List<com.google.maps.model.LatLng> coords1 = route.overviewPolyline.decodePath();
+//                    for (com.google.maps.model.LatLng coord1 : coords1) {
+//                        path.add(new LatLng(coord1.lat, coord1.lng));
+//                    }
+//                    polylineList.add(path);
+//                    if (route.legs != null) {
+//                        for (int i = 0; i < route.legs.length; i++) {
+//                            DirectionsLeg leg = route.legs[i];
+//                            journeyDuration = leg.duration.inSeconds;
+//                            journeyDurationList.add(journeyDuration);
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (IOException ex) {
+//            Log.e("GuardActivity", ex.getMessage());
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+//        boolean routeSelected;
+//        if (polylineList.size() > 1) {
+//            routeSelected = false;
+//            Log.i("GuardActivity", "Total Polylines: " + polylineList.size());
+//            for (List<LatLng> polyline : polylineList) {
+//                Log.i("GuardianActivity", "Adding a polyline to map");
+//                PolylineOptions opts = new PolylineOptions().addAll(polyline).color(0xFF6A2D57).width(8);
+//                Polyline sourceDestinationPolyline = mMap.addPolyline(opts);
+//                sourceDestinationPolyline.setClickable(true);
+//                sourceDestinationPolylineList.add(sourceDestinationPolyline);
+//            }
+//        } else if (polylineList.size() > 0) {
+//            routeSelected = true;
+//            PolylineOptions opts = new PolylineOptions().addAll(polylineList.get(0)).color(0xFF6A2D57).width(8);
+//            sourceDestinationPolyline = mMap.addPolyline(opts);
+//            journeyDuration = journeyDurationList.get(0);
+//            sourceDestinationEncodedPolyline = sourceDestinationEncodedPolylineList.get(0);
+//        }
     }
 
 

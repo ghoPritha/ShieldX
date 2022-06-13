@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -23,12 +22,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DBHelper;
-import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.Util.MainAdapter;
-import com.example.shieldx.DAO.User;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +48,7 @@ public class AddFollower extends AppCompatActivity {
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     public static int PICK_CONTACT = 1;
+    public static int ADD_FOLLOWER_MANUALLY = 2;
     public static int CONTACT_PERMISSION_CODE = 1;
     DBHelper DB;
     FirebaseDatabase rootNode;
@@ -110,7 +109,7 @@ public class AddFollower extends AppCompatActivity {
             public void onClick(View v) {
                 Intent myIntent = new Intent(AddFollower.this, NewFollowerManually.class);
                 myIntent.putExtra("user_key", (Serializable) userData);
-                startActivity(myIntent);
+                startActivityForResult(myIntent, ADD_FOLLOWER_MANUALLY);
             }
         });
 
@@ -232,38 +231,45 @@ public class AddFollower extends AppCompatActivity {
                         model.setEmail(contactEmail);
 
                         contactList.add(model);
-                        //close phone cursor
-                        //initialize adapter
-                        adapter = new MainAdapter(this, contactList);
-                        // set adapter
-                        recyclerView.setAdapter(adapter);
-                        rootNode = FirebaseDatabase.getInstance();
                         nameList.add(contactName);
                         Follower follower = new Follower(contactName, contactNumber, contactEmail, null);
-
-                        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
-
                         followerList.add(follower);
-                        addFollowersToDB();
                     }
                     c.close();
                 }
-            } else {
-                // calls when user click back button
+            } else if (requestCode == ADD_FOLLOWER_MANUALLY) {
+                followerList = (ArrayList<Follower>) data.getSerializableExtra("addedFollower");
+
+                for (Follower f : followerList) {
+                    ContactModel model = new ContactModel();
+                    //set name
+                    model.setName(f.getFollowerName());
+                    //set number
+                    model.setNumber(f.getFollowerNumber());
+                    model.setEmail(f.getFollowerEmail());
+                    contactList.add(model);
+                }
             }
-            // setResult(RESULT_OK, new Intent().putExtra("contactList",contactList));
-            //finish();
-
         }
-
-//        private void addFollowersToDB(){
-//
-//
-//        }
+        adapter = new MainAdapter(this, contactList);
+        // set adapter
+        recyclerView.setAdapter(adapter);
+        addFollowersToDB();
     }
 
     private void addFollowersToDB() {
+        rootNode = FirebaseDatabase.getInstance();
+        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").setValue(followerList);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
