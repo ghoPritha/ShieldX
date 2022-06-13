@@ -2,6 +2,8 @@ package com.example.shieldx;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,11 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.DAO.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class NewFollowerManually extends AppCompatActivity {
 
     FirebaseDatabase rootNode;
     DatabaseReference activityReference;
-    private ArrayList<Follower> followerslist = new ArrayList<>();
+    ArrayList<Follower> followerslist = new ArrayList<>();
+    private boolean flag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,23 @@ public class NewFollowerManually extends AppCompatActivity {
         putnumber = (EditText) findViewById(R.id.putnumber);
         putemail = (EditText) findViewById(R.id.putemail);
         saveButton  = findViewById(R.id.saveButton);
+
+        if (!putemail.getText().toString().isEmpty() && TextUtils.isEmpty(putemail.getText().toString().trim()) || (!TextUtils.isEmpty(putemail.getText().toString().trim())
+                && !Patterns.EMAIL_ADDRESS.matcher(putemail.getText().toString().trim().toString()).matches()))  //!EMAIL_ADDRESS_PATTERN.matcher(email.getText().toString().trim()).matches()
+        {
+            putemail.setError(" Please Enter the Email address correctly ");
+            flag = true;
+        }
+        else{
+            flag = false;
+        }
+
+        if(flag){
+            saveButton.isEnabled();
+
+        }
+        else{
+        }
         rootNode = FirebaseDatabase.getInstance();
 
 //        showtime1 = findViewById(R.id.showTime);
@@ -93,13 +112,12 @@ public class NewFollowerManually extends AppCompatActivity {
 //                //  showtime.setText(hour);
 //            }
 //        });
-
-        Follower follower = new Follower(putname.getText().toString(), putnumber.getText().toString(), putemail.getText().toString(), null);
-        followerslist.add(follower);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addToFirebase(follower);
+                Follower follower = new Follower(putname.getText().toString(), putnumber.getText().toString(), putemail.getText().toString(), null);
+                followerslist.add(follower);
+                //addToFirebase(follower);
                 Intent intent = new Intent();
                 intent.putExtra("addedFollower", (Serializable) followerslist);
                 setResult(RESULT_OK, intent);
@@ -108,23 +126,23 @@ public class NewFollowerManually extends AppCompatActivity {
         });
     }
 
-    private void addToFirebase(Follower follower) {
-
-        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
-
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
-        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                activityReference.setValue(follower);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
+//    private void addToFirebase(Follower follower) {
+//
+//        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
+//
+//        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
+//        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+//        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                activityReference.setValue(follower);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//
+//    }
 }
