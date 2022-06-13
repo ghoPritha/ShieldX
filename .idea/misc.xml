@@ -10,20 +10,23 @@
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_back.xml" value="0.1325" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.1325" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_destination.xml" value="0.1325" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_settings.xml" value="0.184" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_source.xml" value="0.1325" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/ic_start.xml" value="0.184" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/rectangular_background.xml" value="0.184" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/drawable/trending_background.xml" value="0.1725" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_follower.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_new.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_add_new_follower_contact.xml" value="0.14266304347826086" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_dahsboard.xml" value="0.1796875" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_expected_duration_journey.xml" value="0.16666666666666666" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_homepage.xml" value="0.22" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_homepage.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_launch_screen.xml" value="0.1796875" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_login.xml" value="0.14266304347826086" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_login.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_maps.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_maps.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_my_follower.xml" value="0.17552083333333332" />
-        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_new_activity.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_new_activity.xml" value="0.22" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_notification.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_side_bar.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/activity_signup.xml" value="0.1453804347826087" />
@@ -43,6 +46,8 @@
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/layout/nav_header_side_bar.xml" value="0.6" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/menu/activity_main_drawer.xml" value="0.4466666666666667" />
         <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/menu/main_menu.xml" value="0.1" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1325" />
+        <entry key="..\:/Users/Pritha/AndroidStudioProjects/shieldx/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1325" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.191" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/drawable/ic_baseline_lock_open_24.xml" value="0.2265" />
         <entry key="..\:/Users/Shimony/AndroidStudioProjects/ShieldX/app/src/main/res/drawable/ic_baseline_perm_identity_24.xml" value="0.1" />

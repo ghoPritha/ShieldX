@@ -1,26 +1,22 @@
-package com.example.shieldx;
+package com.example.shieldx.Util;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
+import com.example.shieldx.MapsActivity;
+import com.example.shieldx.R;
 import com.google.firebase.messaging.RemoteMessage;
 
 
@@ -60,21 +56,19 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            builder.setSmallIcon(R.drawable.icontrans);
-            builder.setSmallIcon(resourceImage);
+            builder.setSmallIcon(R.drawable.ic_solid_logo);
         } else {
 //            builder.setSmallIcon(R.drawable.icon_kritikar);
             builder.setSmallIcon(resourceImage);
         }
 
-
-
         Intent resultIntent = new Intent(this, MapsActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         builder.setContentTitle(remoteMessage.getNotification().getTitle());
         builder.setContentText(remoteMessage.getNotification().getBody());
-      //g@ghosal  builder.setContentIntent(pendingIntent);
+        builder.setContentIntent(pendingIntent);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()));
         builder.setAutoCancel(true);
         builder.setPriority(Notification.PRIORITY_MAX);

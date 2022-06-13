@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.Util;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.shieldx.R;
 
 import java.util.ArrayList;
 

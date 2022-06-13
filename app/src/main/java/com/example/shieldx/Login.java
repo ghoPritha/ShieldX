@@ -23,6 +23,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.shieldx.DAO.ActivityLog;
+import com.example.shieldx.Util.DBHelper;
+import com.example.shieldx.DAO.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -68,7 +71,6 @@ public class Login extends AppCompatActivity {
         if(FirebaseApp.getApps(this).isEmpty()){
             FirebaseApp.initializeApp(this, options, "ShieldX");
         }
-        FirebaseMessaging.getInstance().subscribeToTopic("all");
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         EditText username = (EditText) findViewById(R.id.username);

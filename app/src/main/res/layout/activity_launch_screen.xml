@@ -13,7 +13,7 @@
         android:layout_height="300dp"
         android:layout_marginEnd="15dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/solid_logo"
+        android:src="@drawable/ic_solid_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.Util;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.shieldx.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +49,7 @@ public class FcmNotificationsSender  {
             JSONObject notiObject = new JSONObject();
             notiObject.put("title", title);
             notiObject.put("body", body);
-            notiObject.put("icon", R.drawable.ic_home); // enter icon that exists in drawable only
+            notiObject.put("icon", R.drawable.ic_solid_logo); // enter icon that exists in drawable only
 
 
 

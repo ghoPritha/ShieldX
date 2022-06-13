@@ -1,4 +1,4 @@
-package com.example.shieldx;
+package com.example.shieldx.Util;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import com.example.shieldx.DAO.Follower;
+import com.example.shieldx.DAO.User;
 
 import java.util.ArrayList;
 
@@ -180,12 +183,11 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Follower> followerList = new ArrayList<>();
         while(c.moveToNext()) {
             Follower follower = new Follower();
-            follower.setFollower_ID(c.getInt(0));
-            follower.setFollower_Name(c.getString(1));
-            follower.setUser_ID(c.getInt(2));
-            follower.setFollower_Number(c.getString(3));
-            follower.setFollower_Email(c.getString(4));
-            follower.setFollower_About(c.getString(5));
+            follower.setFollowerID(c.getInt(0));
+            follower.setFollowerName(c.getString(1));
+            follower.setFollowerNumber(c.getString(3));
+            follower.setFollowerEmail(c.getString(4));
+            follower.setFollowerAbout(c.getString(5));
             followerList.add(follower);
         }
         return followerList;

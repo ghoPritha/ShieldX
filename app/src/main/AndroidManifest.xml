@@ -42,7 +42,8 @@
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-
+        <uses-library
+            android:name="com.google.android.maps" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0" />
@@ -64,7 +65,7 @@
             android:name=".StartJourney"
             android:exported="false" />
         <activity
-            android:name=".ExpectedDurationJourney"
+            android:name=".NewFollowerManually"
             android:exported="false" />
         <activity
             android:name=".MyFollower"
@@ -90,8 +91,9 @@
         <activity
             android:name=".AddFollower"
             android:screenOrientation="portrait" />
+
         <service
-            android:name=".FirebaseMessagingService"
+            android:name=".Util.FirebaseMessagingService"
             android:permission="TODO"
             android:exported="true"
             android:directBootAware="true">
