@@ -7,7 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -137,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     User userData = new User();
 
-    private final long MIN_TIME = 1000 , MIN_DIST = 1;  //1 meter
+    private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
     private static final float SAFE_REACH_THRESHOLD = 40f;
     String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
     Boolean isThisDestinationSetup;
@@ -535,13 +537,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         try {
             if (location != null) {
                 databasereference.setValue(location);
                 loc = location;
                 if (isThisDestinationSetup) {
                     sourceTextBox.setText(getAddress(location));
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     sourceLoc = location;
                     currentLoc = location;
                     source = new MarkerOptions().position(latLng).title("Source");
@@ -550,8 +552,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
 //                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
 //                    } else {
+
+                    if(sourceMarker== null){
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    }
 //                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    }
@@ -561,6 +566,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
+                }else{
+                    if (currentMarker != null) {
+                        currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                    } else {
+                        int height = 100;
+                        int width = 100;
+                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+                        Bitmap b = bitmapdraw.getBitmap();
+                        Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userData.getFirstName() + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
+                    }
                 }
             }
         } catch (Exception e) {
