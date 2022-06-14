@@ -7,7 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -109,11 +111,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     MainAdapter adapter;
 
     FirebaseDatabase rootNode;
-    private DatabaseReference databasereference, activityReference;
+    private DatabaseReference locationDatabasereference, activityReference;
 
     private LocationListener locationListener;
     private LocationManager locationManager;
-    Marker sourceMarker, currentMarker;
+    Marker sourceMarker, currentMarker, destinationMarker;
     private MarkerOptions source, destination;
     Location sourceLoc, destinationLoc, loc, mLocation, currentLoc;
     LatLng sourceLatLng, destinationLatLng;
@@ -137,8 +139,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     User userData = new User();
 
-    private final long MIN_TIME = 1000 , MIN_DIST = 1;  //1 meter
-    private static final float SAFE_REACH_THRESHOLD = 40f;
+    private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
+    private static final float IN_PROXIMITY_OF_DESTINATION = 40f;
     String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
     Boolean isThisDestinationSetup;
     private boolean mTimerRunning;
@@ -174,7 +176,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        databasereference = FirebaseDatabase.getInstance().getReference("Location");
+        locationDatabasereference = FirebaseDatabase.getInstance().getReference("Location");
 
         checkLocationPermissions();
         readChanges();
@@ -218,6 +220,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void IntializeView() {
+        rootNode = FirebaseDatabase.getInstance();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         //setup source destination view
         etd = findViewById(R.id.etd);
         sourceTextBox = findViewById(R.id.startlocation);
@@ -325,8 +329,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             destinationLoc = new Location(LocationManager.GPS_PROVIDER);
             destinationLoc.setLatitude(place.getLatLng().latitude);
             destinationLoc.setLongitude(place.getLatLng().longitude);
-            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),17));
+            if (destinationMarker == null) {
+                destinationMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 17));
+            }
 //            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
             selectMode();
             createRoute(selectedTravelMode);
@@ -535,13 +541,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         try {
             if (location != null) {
-                databasereference.setValue(location);
+                locationDatabasereference.setValue(location);
+                activityReference.child("currentLocation").setValue(location);
                 loc = location;
                 if (isThisDestinationSetup) {
                     sourceTextBox.setText(getAddress(location));
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     sourceLoc = location;
                     currentLoc = location;
                     source = new MarkerOptions().position(latLng).title("Source");
@@ -550,8 +557,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
 //                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
 //                    } else {
+
+                    if(sourceMarker== null){
                         sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    }
 //                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    }
@@ -561,6 +571,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
+                }else{
+                    if (currentMarker != null) {
+                        currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                    } else {
+                        int height = 120;
+                        int width = 120;
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_pin);
+                        Bitmap b = bitmapdraw.getBitmap();
+                        Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userData.getFirstName() + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
+                    }
+                    onNewLocation(location);
                 }
             }
         } catch (Exception e) {
@@ -571,7 +593,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void readChanges() {
 
-        databasereference.addValueEventListener(new ValueEventListener() {                          //read changes from Firebase
+        locationDatabasereference.addValueEventListener(new ValueEventListener() {                          //read changes from Firebase
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -611,8 +633,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void startJourney() {
-        rootNode = FirebaseDatabase.getInstance();
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -782,8 +802,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //        activityLog.setDestinationName(destinationLocation.getText().toString());
         //        activityLog.setDestination(getLocationFromAddress(destinationLocation.getText().toString()));
         //        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
-        rootNode = FirebaseDatabase.getInstance();
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -1020,16 +1038,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                if (directionMode.equalsIgnoreCase("walking")) {
-                    lineOptions.width(10);
+                lineOptions.width(10);
                     lineOptions.color(Color.MAGENTA);
-                } else if (directionMode.equalsIgnoreCase("driving")) {
-                    lineOptions.width(20);
-                    lineOptions.color(Color.BLUE);
-                } else {
-                    lineOptions.width(20);
-                    lineOptions.color(Color.RED);
-                }
+//                if (directionMode.equalsIgnoreCase("walking")) {
+//                    lineOptions.width(10);
+//                    lineOptions.color(Color.MAGENTA);
+//                } else if (directionMode.equalsIgnoreCase("driving")) {
+//                    lineOptions.width(20);
+//                    lineOptions.color(Color.BLUE);
+//                } else {
+//                    lineOptions.width(20);
+//                    lineOptions.color(Color.RED);
+//                }
                 Log.d("mylog", "onPostExecute lineoptions decoded");
                 sourceDestinationLatLngList = points;
                 Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
@@ -1195,7 +1215,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("LocationTrackingService", "New location: " + location);
 
         mLocation = location;
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         // Notify anyone listening for broadcasts about the new location.
         Intent intent = new Intent("LocationTrackingService.broadcast");
         intent.putExtra("LocationTrackingService.location", location);
@@ -1217,7 +1236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("LocationTrackingService", "finalWarning " + finalWarning);
         Log.i("LocationTrackingService", "secondWarning " + secondWarning);
         Log.i("LocationTrackingService", "firstWarning " + firstWarning);
-        if(distance < SAFE_REACH_THRESHOLD) {
+        if(distance < IN_PROXIMITY_OF_DESTINATION) {
             Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
             activityReference.child("reachedDestination").setValue("true");
             reachedDestination = true;
@@ -1236,7 +1255,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //500m tolerance is used for detecting devaition in route
-        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 500)) {
+        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 50)) {
             activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

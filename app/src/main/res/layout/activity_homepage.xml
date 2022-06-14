@@ -215,7 +215,7 @@
 
             <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="120sp"
@@ -232,7 +232,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="15sp"
-                    android:text="@string/newActivity"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -244,13 +243,12 @@
                     android:id="@+id/newActivityButton"
                     android:layout_width="60sp"
                     android:layout_height="60sp"
-                    android:layout_marginStart="150sp"
-                    android:src="@drawable/ic_add"
+                    android:layout_alignParentEnd="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/newActivity"
                     app:layout_constraintTop_toTopOf="parent"
                     app:tint="@color/white" />
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

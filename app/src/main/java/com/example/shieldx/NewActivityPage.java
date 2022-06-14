@@ -107,21 +107,21 @@ public class NewActivityPage extends AppCompatActivity {
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(NewActivityPage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    createActivityHistory(snapshot);
-                } else {
-                    activityReference.setValue(newActivity);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    //createActivityHistory(snapshot);
+//                } else {
+//                    activityReference.setValue(newActivity);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
         enterDestiantion();
         addFollower();
@@ -305,6 +305,18 @@ public class NewActivityPage extends AppCompatActivity {
                 //sourceLo = snapshot.getValue(LatLng.class);
                 if (snapshot.exists()) {
                     for (DataSnapshot d : snapshot.getChildren()) {
+                        ContactModel model = new ContactModel();
+                        Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+                        model.setEmail(d.child("followerEmail").getValue(String.class));
+                        model.setName(d.child("followerName").getValue(String.class));
+                        model.setNumber(d.child("followerNumber").getValue(String.class));
+                        contactList.add(model);
+                        adapter = new MainAdapter(NewActivityPage.this, contactList);
+                        // set adapter
+                        recyclerView.setAdapter(adapter);
+                        if(recyclerView!=null){
+                            addedFollower.setVisibility(View.VISIBLE);
+                        }
                         followerNumbers.add(d.child("follower_Number").getValue(String.class));
                         followerEmails.add(d.child("follower_Email").getValue(String.class));
                     }
@@ -324,6 +336,8 @@ public class NewActivityPage extends AppCompatActivity {
                     duration = snapshot.child("duration").getValue(String.class);
                     searchDestination.setText(destination);
                     etd.setText(duration);
+                    layoutEtd.setVisibility(View.VISIBLE);
+
                 }
             }
 
@@ -377,10 +391,8 @@ public class NewActivityPage extends AppCompatActivity {
                     duration = data.getStringExtra("duration");
                     etd.setText(duration);
                     searchDestination.setText(destination);
-                    if(layoutEtd != null) {
-                        layoutEtd.setVisibility(View.VISIBLE);
-                    }
                     if(etd != null) {
+                        layoutEtd.setVisibility(View.VISIBLE);
                         etd.setVisibility(View.VISIBLE);
                     }
 
