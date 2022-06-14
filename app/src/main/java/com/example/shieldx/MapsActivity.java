@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -140,6 +141,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     User userData = new User();
 
     private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
+    private static final int HANDLER_DELAY = 1000;
+    private static final int START_HANDLER_DELAY = 0;
     private static final float IN_PROXIMITY_OF_DESTINATION = 40f;
     String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
     Boolean isThisDestinationSetup;
@@ -175,10 +178,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationDatabasereference = FirebaseDatabase.getInstance().getReference("Location");
+        if(Build.VERSION.SDK_INT>=23) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},1);
 
-        checkLocationPermissions();
+        }
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                checkLocationPermissions();
+                handler.postDelayed(this, HANDLER_DELAY);
+            }
+        }, START_HANDLER_DELAY);
         readChanges();
         autoCompleteDestination();
         startPauseButton.setOnClickListener(new View.OnClickListener() {
@@ -466,6 +479,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void checkLocationPermissions() {
+        if(locationManager==null){
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (locationManager != null) {
@@ -485,13 +501,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 101) {
+//        if (requestCode == 101) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                checkLocationPermissions();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        checkLocationPermissions();
+                        handler.postDelayed(this, HANDLER_DELAY);
+                    }
+                }, START_HANDLER_DELAY);
             } else {
                 Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
             }
-        }
+//        }
     }
 
     /**
@@ -541,6 +564,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
+        Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         try {
             if (location != null) {
@@ -574,6 +599,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }else{
                     if (currentMarker != null) {
                         currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     } else {
                         int height = 120;
                         int width = 120;
@@ -581,6 +608,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Bitmap b = bitmapdraw.getBitmap();
                         Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
                         currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userData.getFirstName() + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
+                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     }
                     onNewLocation(location);
                 }
