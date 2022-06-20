@@ -9,7 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="cian">#C8E8E5</color>
     <color name="colorBackground">#419d9c</color>
-    <color name="dashboardBackground">#EBEBEB</color>
+    <color name="dashboardBackground">#0d2037</color>
     <color name="colorTrendingStart">#419d9c</color>
     <color name="colorTrendingEnd">#A8EAE0</color>
     <color name="colorDivider">#D6D6D6</color>
@@ -18,4 +18,6 @@
     <color name="colorPrimaryLight">#E9F8F1</color>
     <color name="colorGrey">#808080</color>
     <color name="accentGrey">#95FFFFFF</color>
+    <color name="nightMode">#6124B1</color>
+    <color name="notification">#13B2C3</color>
 </resources>

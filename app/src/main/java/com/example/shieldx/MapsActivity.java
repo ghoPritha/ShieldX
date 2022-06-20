@@ -1038,21 +1038,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(10);
-                    lineOptions.color(Color.MAGENTA);
-//                if (directionMode.equalsIgnoreCase("walking")) {
-//                    lineOptions.width(10);
+//                lineOptions.width(10);
 //                    lineOptions.color(Color.MAGENTA);
-//                } else if (directionMode.equalsIgnoreCase("driving")) {
-//                    lineOptions.width(20);
-//                    lineOptions.color(Color.BLUE);
-//                } else {
-//                    lineOptions.width(20);
-//                    lineOptions.color(Color.RED);
-//                }
+                if (directionMode.equalsIgnoreCase("walking")) {
+                    lineOptions.width(10);
+                    lineOptions.color(Color.MAGENTA);
+                } else if (directionMode.equalsIgnoreCase("driving")) {
+                    lineOptions.width(20);
+                    lineOptions.color(Color.BLUE);
+                } else {
+                    lineOptions.width(20);
+                    lineOptions.color(Color.RED);
+                }
                 Log.d("mylog", "onPostExecute lineoptions decoded");
                 sourceDestinationLatLngList = points;
-                Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
+               // Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
             }
 
             // Drawing polyline in the Google Map for the i-th route

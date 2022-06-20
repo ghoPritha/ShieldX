@@ -36,8 +36,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     ImageView newActivityButton;
     TextView userName, newActivityText;
-    LinearLayout myFollower;
-    LinearLayout addFollower;
+    LinearLayout myFollower, layoutSettings, addFollower;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     androidx.appcompat.widget.Toolbar toolbar;
@@ -55,6 +54,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         newActivityButton = (ImageView) findViewById(R.id.newActivityButton);
         newActivityText = (TextView) findViewById(R.id.newActivity);
         myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
+        layoutSettings =  (LinearLayout) findViewById(R.id.layoutSettings);
         addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navView);
@@ -98,38 +98,49 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
-                        newActivityText.setText("Resume Activity");
-                        newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
-                    } else {
+                    if (snapshot.child("destinationReached").exists()) {
+                        if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
+                            newActivityText.setText("Resume Activity");
+                            newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
+                        } else {
+                            newActivityText.setText("New Activity");
+                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                            newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
+                            ActivityLog pastActivities = new ActivityLog();
+                            ArrayList<Follower> listOffollower = new ArrayList<>();
+                            pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
+                            pastActivities.setCurrentLocation(snapshot.child("currentLocation").getValue(LatLng.class));
+                            pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                            pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
+                            pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                            pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
+                            pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
+                            pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
+                            pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
+                            pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
+                            pastActivities.setDestinationReached(snapshot.child("destinationReached").getValue(Boolean.class));
+                            for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
+                                Follower model = new Follower();
+                                Log.i("followersss", String.valueOf(d));
+                                model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
+                                model.setFollowerName(d.child("follower_Name").getValue(String.class));
+                                model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
+                                listOffollower.add(model);
+                            }
+                            pastActivities.setFollowersList(listOffollower);
+                            activityReference.child("Activity history").push().setValue(pastActivities);
+                        }
+                    }
+                    else{
                         newActivityText.setText("New Activity");
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
                         newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
-                        ActivityLog pastActivities = new ActivityLog();
-                        ArrayList<Follower> listOffollower = new ArrayList<>();
-                        pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
-                        pastActivities.setCurrentLocation(snapshot.child("currentLocation").getValue(LatLng.class));
-                        pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
-                        pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
-                        pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
-                        pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
-                        pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
-                        pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
-                        pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
-                        pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
-                        pastActivities.setDestinationReached(snapshot.child("destinationReached").getValue(Boolean.class));
-                        for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
-                            Follower model = new Follower();
-                            Log.i("followersss", String.valueOf(d));
-                            model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
-                            model.setFollowerName(d.child("follower_Name").getValue(String.class));
-                            model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
-                            listOffollower.add(model);
-                        }
-                        pastActivities.setFollowersList(listOffollower);
-                        activityReference.child("Activity history").push().setValue(pastActivities);
+                        activityReference.setValue(newActivity);
                     }
                 } else {
+                    newActivityText.setText("New Activity");
+                    newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                    newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
                     activityReference.setValue(newActivity);
                 }
             }
@@ -137,6 +148,16 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+
+        layoutSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(HomePage.this, SettingsActivity.class);
+                myIntent.putExtra("user_key", userData);
+                myIntent.putExtra("comingFromNeworExisting", false);
+                startActivity(myIntent);
             }
         });
 
@@ -148,14 +169,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.logout:
-                logOut();
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch(item.getItemId()){
+//            case R.id.logout:
+//                logOut();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void logOut() {
         finish();
