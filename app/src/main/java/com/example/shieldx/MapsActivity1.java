@@ -7,7 +7,9 @@
 //import android.content.Context;
 //import android.content.Intent;
 //import android.content.pm.PackageManager;
+//import android.graphics.Bitmap;
 //import android.graphics.Color;
+//import android.graphics.drawable.BitmapDrawable;
 //import android.location.Address;
 //import android.location.Geocoder;
 //import android.location.Location;
@@ -24,7 +26,6 @@
 //import android.widget.ImageButton;
 //import android.widget.ImageView;
 //import android.widget.LinearLayout;
-//import android.widget.RelativeLayout;
 //import android.widget.TextView;
 //import android.widget.Toast;
 //
@@ -37,13 +38,15 @@
 //import androidx.recyclerview.widget.LinearLayoutManager;
 //import androidx.recyclerview.widget.RecyclerView;
 //
+//import com.example.shieldx.DAO.User;
 //import com.example.shieldx.Util.ContactModel;
 //import com.example.shieldx.Util.DataParser;
 //import com.example.shieldx.Util.FcmNotificationsSender;
 //import com.example.shieldx.Util.MainAdapter;
 //import com.example.shieldx.Util.TaskLoadedCallback;
-//import com.example.shieldx.DAO.User;
 //import com.google.android.gms.common.api.Status;
+//import com.google.android.gms.location.LocationCallback;
+//import com.google.android.gms.location.LocationResult;
 //import com.google.android.gms.maps.CameraUpdateFactory;
 //import com.google.android.gms.maps.GoogleMap;
 //import com.google.android.gms.maps.OnMapReadyCallback;
@@ -65,6 +68,12 @@
 //import com.google.firebase.database.FirebaseDatabase;
 //import com.google.firebase.database.Query;
 //import com.google.firebase.database.ValueEventListener;
+//import com.google.maps.DirectionsApi;
+//import com.google.maps.DirectionsApiRequest;
+//import com.google.maps.GeoApiContext;
+//import com.google.maps.android.PolyUtil;
+//import com.google.maps.model.EncodedPolyline;
+//import com.google.maps.model.TravelMode;
 //
 //import org.json.JSONObject;
 //
@@ -83,13 +92,15 @@
 //
 //public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, TaskLoadedCallback {
 //
+//    String apiKey = "AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0";
+//
 //    //map definition
 //    private GoogleMap mMap;
 //    //layout definitions
 //    EditText sourceTextBox, destinationTextBox;
 //    TextView etd;
-//    LinearLayout locationSearch, followerLayout, countDownTimer, transportOptions;
-//    RelativeLayout buttons;
+//    LinearLayout locationSearch, countDownTimer, transportOptions;
+//    LinearLayout buttons;
 //    ImageButton backButton, startPauseButton;
 //    ImageView alertButton;
 //    private TextView mTextViewCountDown;
@@ -100,23 +111,43 @@
 //    MainAdapter adapter;
 //
 //    FirebaseDatabase rootNode;
-//    private DatabaseReference databasereference, activityReference;
+//    private DatabaseReference locationDatabasereference, activityReference;
 //
 //    private LocationListener locationListener;
 //    private LocationManager locationManager;
-//    Location loc;
-//    Marker sourceMarker;
+//    Marker sourceMarker, currentMarker, destinationMarker;
 //    private MarkerOptions source, destination;
+//    Location sourceLoc, destinationLoc, loc, mLocation, currentLoc;
+//    LatLng sourceLatLng, destinationLatLng;
 //    private Polyline currentPolyline;
+//    LocationCallback mLocationCallback;
+//    GeoApiContext geoApiContext = new GeoApiContext.Builder()
+//            .apiKey(apiKey)
+//            .build();
+//    List<List<LatLng>> polylineList;
+//    ArrayList<Polyline> sourceDestinationPolylineList;
+//    List<LatLng> sourceDestinationLatLngList;
+//    List<Long> journeyDurationList;
+//
+//    private boolean reachedDestination = false;
+//    private boolean routeDeviation = false;
+//    private Long journeyDuration = 0L;
+//    EncodedPolyline sourceDestinationEncodedPolyline;
+//    Polyline sourceDestinationPolyline;
+//    List<EncodedPolyline> sourceDestinationEncodedPolylineList;
+//
 //
 //    User userData = new User();
 //
-//    private final long Min_Time = 1000 , Min_dist = 1;  //1 meter
+//    private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
+//    private static final float IN_PROXIMITY_OF_DESTINATION = 40f;
 //    String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
 //    Boolean isThisDestinationSetup;
 //    private boolean mTimerRunning;
 //    private long mTimeLeftInMillis, durationInSeconds;
-//    ArrayList<String> guardiansPhoneNoList, guardiansEmailList = new ArrayList<>();
+//    ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
+//    ArrayList<String> guardiansEmailList = new ArrayList<>();
+//    private TravelMode travelMode;
 //
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +176,7 @@
 //        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 //
 //        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        databasereference = FirebaseDatabase.getInstance().getReference("Location");
+//        locationDatabasereference = FirebaseDatabase.getInstance().getReference("Location");
 //
 //        checkLocationPermissions();
 //        readChanges();
@@ -170,14 +201,27 @@
 //                return false;
 //            }
 //        });
+//        mLocationCallback = new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                super.onLocationResult(locationResult);
+//                onNewLocation(locationResult.getLastLocation());
+//            }
+//        };
 //    }
 //
 //    public void QuitApp(View view) {
-//        this.finishAffinity();
+////        this.finishAffinity();
+//        Intent intent = new Intent(MapsActivity.this,HomePage.class);
+//        intent.putExtra("user_key",userData);
+//        startActivity(intent);
+//        this.finish();
 //        System.exit(0);
 //    }
 //
 //    private void IntializeView() {
+//        rootNode = FirebaseDatabase.getInstance();
+//        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 //        //setup source destination view
 //        etd = findViewById(R.id.etd);
 //        sourceTextBox = findViewById(R.id.startlocation);
@@ -185,7 +229,6 @@
 //        locationSearch = findViewById(R.id.locationSearch);
 //        backButton = findViewById(R.id.backButton);
 //        //start journey view
-//        followerLayout = findViewById(R.id.followerLayout);
 //        recyclerView = findViewById(R.id.recyclerView);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //
@@ -206,17 +249,17 @@
 //            etd.setVisibility(View.VISIBLE);
 //            backButton.setVisibility(View.VISIBLE);
 //            alertButton.setVisibility(View.GONE);
-//            followerLayout.setVisibility(View.GONE);
+//            //followerLayout.setVisibility(View.GONE);
+//            recyclerView.setVisibility(View.GONE);
 //            countDownTimer.setVisibility(View.GONE);
 //            buttons.setVisibility(View.GONE);
-//            selectMode();
 //        } else {
 //            locationSearch.setVisibility(View.GONE);
 //            etd.setVisibility(View.GONE);
 //            backButton.setVisibility(View.GONE);
 //            transportOptions.setVisibility(View.GONE);
 //            alertButton.setVisibility(View.VISIBLE);
-//            followerLayout.setVisibility(View.VISIBLE);
+//            recyclerView.setVisibility(View.VISIBLE);
 //            countDownTimer.setVisibility(View.VISIBLE);
 //            buttons.setVisibility(View.VISIBLE);
 //            startJourney();
@@ -283,9 +326,15 @@
 //                e.printStackTrace();
 //            }
 //            destination = new MarkerOptions().position(place.getLatLng()).title("destination");
-//            mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),17));
+//            destinationLoc = new Location(LocationManager.GPS_PROVIDER);
+//            destinationLoc.setLatitude(place.getLatLng().latitude);
+//            destinationLoc.setLongitude(place.getLatLng().longitude);
+//            if (destinationMarker == null) {
+//                destinationMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 17));
+//            }
 ////            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
+//            selectMode();
 //            createRoute(selectedTravelMode);
 //        }
 //    }
@@ -326,7 +375,7 @@
 //                String number = guardiansPhoneNoList.get(i);
 //
 //                SmsManager mySmsManager = SmsManager.getDefault();
-//                mySmsManager.sendTextMessage(number, null, message, null, null);
+//                //mySmsManager.sendTextMessage(number, null, message, null, null);
 //                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
 //            }
 //        }
@@ -374,6 +423,7 @@
 //        ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
+//                travelMode = TravelMode.DRIVING;
 //                selectedTravelMode = modeOfTransport.get(0);
 //                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
 //                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -385,6 +435,7 @@
 //        ((ImageView) findViewById(R.id.cycling)).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
+//                travelMode = TravelMode.BICYCLING;
 //                selectedTravelMode = modeOfTransport.get(1);
 //                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
 //                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -397,6 +448,7 @@
 //        ((ImageView) findViewById(R.id.walking)).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
+//                travelMode = TravelMode.WALKING;
 //                selectedTravelMode = modeOfTransport.get(2);
 //                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
 //                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
@@ -405,10 +457,11 @@
 //
 //            }
 //        });
+//        getRoutes(travelMode);
+//
 //    }
 //
 //    private void createRoute(String selectedTravelMode) {
-//
 //        new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
 //    }
 //
@@ -417,25 +470,27 @@
 //                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 //            if (locationManager != null) {
 //                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-//                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Min_Time, Min_dist, this);
+//                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DIST, this);
 //                } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Min_Time, Min_dist, this);
+//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, this);
 //                } else {
 //
 //                }
 //            }
 //        } else {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
 //        }
 //    }
 //
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            checkLocationPermissions();
-//        } else {
-//            Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
+//        if (requestCode == 101) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                checkLocationPermissions();
+//            } else {
+//                Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
+//            }
 //        }
 //    }
 //
@@ -486,30 +541,48 @@
 //
 //    @Override
 //    public void onLocationChanged(@NonNull Location location) {
+//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 //        try {
 //            if (location != null) {
-//                databasereference.setValue(location);
+//                locationDatabasereference.setValue(location);
+//                activityReference.child("currentLocation").setValue(location);
 //                loc = location;
 //                if (isThisDestinationSetup) {
 //                    sourceTextBox.setText(getAddress(location));
-//                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    sourceLoc = location;
+//                    currentLoc = location;
 //                    source = new MarkerOptions().position(latLng).title("Source");
-//                    if (sourceMarker != null) {
-//                        sourceMarker.setPosition(latLng);              /////to update marker on location
-//                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
-//                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
-//                    } else {
+////                    if (sourceMarker != null) {
+////                        sourceMarker.setPosition(latLng);              /////to update marker on location
+////                        databasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+////                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
+////                    } else {
+//
+//                    if(sourceMarker== null){
 //                        sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-//                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
-//                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 //                    }
+////                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
+////                        databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
+////                    }
 ////                    source = new MarkerOptions().position(latLng).title("Source");
 ////                    sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(startlocation.getText().toString()));
 ////                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 ////                    databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
 ////                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 ////                    saveLocation();
+//                }else{
+//                    if (currentMarker != null) {
+//                        currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+//                    } else {
+//                        int height = 120;
+//                        int width = 120;
+//                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_pin);
+//                        Bitmap b = bitmapdraw.getBitmap();
+//                        Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
+//                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userData.getFirstName() + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
+//                    }
+//                    onNewLocation(location);
 //                }
 //            }
 //        } catch (Exception e) {
@@ -520,7 +593,7 @@
 //
 //    private void readChanges() {
 //
-//        databasereference.addValueEventListener(new ValueEventListener() {                          //read changes from Firebase
+//        locationDatabasereference.addValueEventListener(new ValueEventListener() {                          //read changes from Firebase
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                if (snapshot.exists()) {
@@ -541,11 +614,11 @@
 //
 //                        Location location = snapshot.getValue(Location.class);
 //                        if (location != null) {
-//                            sourceMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+//                            currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
 //                        }
 //                        // mMap.addMarker(new MarkerOptions().position(latLng).title(latitude + " , " + longitude));
 //
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
 //                    } catch (Exception e) {
 //                        e.printStackTrace();
 //                    }
@@ -560,8 +633,6 @@
 //    }
 //
 //    private void startJourney() {
-//        rootNode = FirebaseDatabase.getInstance();
-//        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 //        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
 //        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
@@ -589,26 +660,28 @@
 //                    if (snapshot.child("modeOfTransport").exists()) {
 //                        selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
 //                    }
-//                    createRoute(selectedTravelMode);
 //                    if (snapshot.child("followersList").exists()) {
 //                        for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
 //                            ContactModel model = new ContactModel();
-//                            model.setEmail(d.child("follower_Email").getValue(String.class));
-//                            model.setName(d.child("follower_Name").getValue(String.class));
-//                            model.setNumber(d.child("follower_Number").getValue(String.class));
+//                            Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+//
+//                            model.setEmail(d.child("followerEmail").getValue(String.class));
+//                            model.setName(d.child("followerName").getValue(String.class));
+//                            model.setNumber(d.child("followerNumber").getValue(String.class));
 //                            contactList.add(model);
 //                            adapter = new MainAdapter(MapsActivity.this, contactList);
 //                            // set adapter
 //                            recyclerView.setAdapter(adapter);
-//                            guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
-//                            guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+//                            guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+//                            guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
 //
 //                        }
 //                    }
+//                    createRoute(selectedTravelMode);
 //
 //                    String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
+//                    setMarkersAndDuration();
 //                    sendPushNotificationToFollower(message);
-//                    setMarkersDuration();
 //                    Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
 //                }
 //            }
@@ -626,15 +699,15 @@
 ////
 ////                    for (DataSnapshot d : snapshot.getChildren()) {
 ////                        ContactModel model = new ContactModel();
-////                        model.setEmail(d.child("follower_Email").getValue(String.class));
-////                        model.setName(d.child("follower_Name").getValue(String.class));
-////                        model.setNumber(d.child("follower_Number").getValue(String.class));
+////                        model.setEmail(d.child("followerEmail").getValue(String.class));
+////                        model.setName(d.child("followerName").getValue(String.class));
+////                        model.setNumber(d.child("followerNumber").getValue(String.class));
 ////                        contactList.add(model);
 ////                        adapter = new MainAdapter(MapsActivity.this, contactList);
 ////                        // set adapter
 ////                        recyclerView.setAdapter(adapter);
-////                        guardiansPhoneNoList.add(d.child("follower_Number").getValue(String.class));
-////                        guardiansEmailList.add(d.child("follower_Email").getValue(String.class));
+////                        guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+////                        guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
 ////
 ////
 ////                    }
@@ -648,13 +721,13 @@
 ////        });
 //    }
 //
-//    private void setMarkersDuration() {
+//    private void setMarkersAndDuration() {
 //        if (source != null && destination != null) {
 //            mMap.addMarker(source);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 17));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source.getPosition(), 15));
 //
 //            mMap.addMarker(destination);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 17));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
 //
 //            createRoute(selectedTravelMode);
 //            mTimerRunning = false;
@@ -729,8 +802,6 @@
 //        //        activityLog.setDestinationName(destinationLocation.getText().toString());
 //        //        activityLog.setDestination(getLocationFromAddress(destinationLocation.getText().toString()));
 //        //        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
-//        rootNode = FirebaseDatabase.getInstance();
-//        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 //        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
 //        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @RequiresApi(api = Build.VERSION_CODES.N)
@@ -967,17 +1038,21 @@
 //                }
 //                // Adding all the points in the route to LineOptions
 //                lineOptions.addAll(points);
-//                if (directionMode.equalsIgnoreCase("walking")) {
-//                    lineOptions.width(10);
-//                    lineOptions.color(Color.MAGENTA);
-//                } else if (directionMode.equalsIgnoreCase("driving")) {
-//                    lineOptions.width(20);
-//                    lineOptions.color(Color.BLUE);
-//                } else {
-//                    lineOptions.width(20);
-//                    lineOptions.color(Color.RED);
-//                }
+//                lineOptions.width(10);
+//                lineOptions.color(Color.MAGENTA);
+////                if (directionMode.equalsIgnoreCase("walking")) {
+////                    lineOptions.width(10);
+////                    lineOptions.color(Color.MAGENTA);
+////                } else if (directionMode.equalsIgnoreCase("driving")) {
+////                    lineOptions.width(20);
+////                    lineOptions.color(Color.BLUE);
+////                } else {
+////                    lineOptions.width(20);
+////                    lineOptions.color(Color.RED);
+////                }
 //                Log.d("mylog", "onPostExecute lineoptions decoded");
+//                sourceDestinationLatLngList = points;
+//                Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
 //            }
 //
 //            // Drawing polyline in the Google Map for the i-th route
@@ -1019,7 +1094,16 @@
 //
 //                    @Override
 //                    public void onClick(View v) {
-//
+////                        if(distance < SAFE_REACH_THRESHOLD) {
+////                            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
+////                            activityReference.child("reachedDestination").setValue("true");
+////                            reachedDestination = true;
+////                            String message = userData.getFirstName() + " has reached destination" ;
+////                            sendPushNotificationToFollower(message);
+////
+////                        }
+//                        mTimeLeftInMillis = 60000;
+//                        startTimer();
 //                        startPauseButton.setImageResource(R.drawable.ic_start);
 //
 //                    }
@@ -1052,16 +1136,166 @@
 //        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
 //        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
 //
-//        if (((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
-//            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
-//            sendPushNotificationToUser(message1);
-//            String message2 = userData.getFirstName() +" have " + minutes + " : " + seconds + " left to complete the journey";
-//            sendPushNotificationToFollower(message2);
-//        }
+////        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
+////            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
+////            sendPushNotificationToUser(message1);
+////            String message2 = userData.getFirstName() +" has " + minutes + " : " + seconds + " left to complete the journey";
+////            sendPushNotificationToFollower(message2);
+////        }
 //        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 //
 //        mTextViewCountDown.setText(timeLeftFormatted);
 //
 //    }
+//
+//    void getRoutes(TravelMode travelMode) {
+//        DirectionsApiRequest req = DirectionsApi.getDirections(geoApiContext, source.getPosition().latitude + "," + source.getPosition().longitude, destination.getPosition().latitude + "," + destination.getPosition().longitude).alternatives(true).mode(TravelMode.DRIVING);
+//
+////        try {
+////            polylineList = new ArrayList<List<LatLng>>();
+////            sourceDestinationPolylineList = new ArrayList<Polyline>();
+////            //sourceDestinationEncodedPolylineList = new ArrayList<EncodedPolyline>();
+////            DirectionsResult res = req.await();
+////            Log.i("GuardActivity", String.valueOf(res.routes));
+////
+////            //Loop through legs and steps to get encoded polylines of each step
+////            if (res.routes != null && res.routes.length > 0) {
+////                Log.i("GuardActivity", "Number of routes: " + res.routes.length);
+////                for (DirectionsRoute route : res.routes) {
+//////                            DirectionsRoute route = res.routes[0];
+////                    sourceDestinationEncodedPolylineList.add(route.overviewPolyline);
+////
+////                    //String routePolylineString = route.overviewPolyline.toString();
+////
+////                    //"shg}Hal`fAdEEr@Ch@C~@E?M@_@FkBDiALyD\\WLWBGDW`Ai_@HHLCFQ@WE]|DKCrB"
+////                    List<LatLng> path = new ArrayList();
+////                    List<com.google.maps.model.LatLng> coords1 = route.overviewPolyline.decodePath();
+////                    for (com.google.maps.model.LatLng coord1 : coords1) {
+////                        path.add(new LatLng(coord1.lat, coord1.lng));
+////                    }
+////                    polylineList.add(path);
+////                    if (route.legs != null) {
+////                        for (int i = 0; i < route.legs.length; i++) {
+////                            DirectionsLeg leg = route.legs[i];
+////                            journeyDuration = leg.duration.inSeconds;
+////                            journeyDurationList.add(journeyDuration);
+////                        }
+////                    }
+////                }
+////            }
+////        } catch (IOException ex) {
+////            Log.e("GuardActivity", ex.getMessage());
+////        } catch (InterruptedException e) {
+////            e.printStackTrace();
+////        } catch (ApiException e) {
+////            e.printStackTrace();
+////        }
+////        boolean routeSelected;
+////        if (polylineList.size() > 1) {
+////            routeSelected = false;
+////            Log.i("GuardActivity", "Total Polylines: " + polylineList.size());
+////            for (List<LatLng> polyline : polylineList) {
+////                Log.i("GuardianActivity", "Adding a polyline to map");
+////                PolylineOptions opts = new PolylineOptions().addAll(polyline).color(0xFF6A2D57).width(8);
+////                Polyline sourceDestinationPolyline = mMap.addPolyline(opts);
+////                sourceDestinationPolyline.setClickable(true);
+////                sourceDestinationPolylineList.add(sourceDestinationPolyline);
+////            }
+////        } else if (polylineList.size() > 0) {
+////            routeSelected = true;
+////            PolylineOptions opts = new PolylineOptions().addAll(polylineList.get(0)).color(0xFF6A2D57).width(8);
+////            sourceDestinationPolyline = mMap.addPolyline(opts);
+////            journeyDuration = journeyDurationList.get(0);
+////            sourceDestinationEncodedPolyline = sourceDestinationEncodedPolylineList.get(0);
+////        }
+//    }
+//
+//
+//    private void onNewLocation(Location location) {
+//        Log.i("LocationTrackingService", "New location: " + location);
+//
+//        mLocation = location;
+//        // Notify anyone listening for broadcasts about the new location.
+//        Intent intent = new Intent("LocationTrackingService.broadcast");
+//        intent.putExtra("LocationTrackingService.location", location);
+//
+//        // Update notification content if running as a foreground service.
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+////        DatabaseReference activityReference = database.getReference("journeys/" + email);
+////
+////        activityReference.child("currentLocation").setValue(new LatLng(location.getLatitude(), location.getLongitude()));
+//
+//        float distance = location.distanceTo(destinationLoc);
+//        float finalWarning = sourceLoc.distanceTo(destinationLoc)*0.75F;
+//        float secondWarning = sourceLoc.distanceTo(destinationLoc)*0.50F;
+//        float firstWarning = sourceLoc.distanceTo(destinationLoc)*0.25F;
+//        //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
+//
+//        Log.i("LocationTrackingService", "Distance: " + distance);
+//        Log.i("LocationTrackingService", "distance: " + sourceLoc.distanceTo(destinationLoc));
+//        Log.i("LocationTrackingService", "finalWarning " + finalWarning);
+//        Log.i("LocationTrackingService", "secondWarning " + secondWarning);
+//        Log.i("LocationTrackingService", "firstWarning " + firstWarning);
+//        if(distance < IN_PROXIMITY_OF_DESTINATION) {
+//            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
+//            activityReference.child("reachedDestination").setValue("true");
+//            reachedDestination = true;
+//            String message = userData.getFirstName() + " has reached destination" ;
+//            sendPushNotificationToFollower(message);
+//
+//        }
+//        if(distance < firstWarning) {
+//            activityReference.child("firstWarning").setValue("true");
+//        }
+//        if(distance < secondWarning) {
+//            activityReference.child("secondWarning").setValue("true");
+//        }
+//        if(distance < finalWarning) {
+//            activityReference.child("finalWarning").setValue("true");
+//        }
+//
+//        //500m tolerance is used for detecting devaition in route
+//        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 50)) {
+//            activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if(dataSnapshot.exists()) {
+//                        if(dataSnapshot.getValue(String.class).equals("true")) {
+//                            routeDeviation = false;
+//                            activityReference.child("routeDeviation").setValue("false");
+//
+////                            if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
+////                                NotificationCompat.Builder builder = new NotificationCompat.Builder(LocationTrackingService.this, CHANNEL_ID)
+////                                        .setSmallIcon(R.drawable.user_location)
+////                                        .setContentTitle(getString(R.string.locationTracking_routeDeviation))
+////                                        .setContentText(getString(R.string.locationTracking_backToSelectedRoute))
+////                                        .setPriority(Notification.PRIORITY_HIGH);
+////                                mNotificationManager.notify(8, builder.build());
+////                            }
+//                        }
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//        }
+//        else {
+//            if(!routeDeviation) {
+//                routeDeviation = true;
+//                activityReference.child("routeDeviation").setValue("true");
+////                if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
+////                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+////                            .setSmallIcon(R.drawable.user_location)
+////                            .setContentTitle(getString(R.string.locationTracking_routeDeviation))
+////                            .setContentText(getString(R.string.locationTracking_deviatedFromSelectedRoute))
+////                            .setPriority(Notification.PRIORITY_HIGH);
+////                    mNotificationManager.notify(7, builder.build());
+////                }
+//            }
+//        }
+//    }
+//
 //
 //}
