@@ -6,14 +6,15 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,11 +23,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShieldX"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_about_us" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
@@ -41,14 +48,16 @@
              project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <uses-library
-            android:name="com.google.android.maps" />
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+        <uses-library android:name="com.google.android.maps" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDABRoUPJwz3yMOpwWdr0S24YRaqoVrTH0" />
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -94,28 +103,13 @@
 
         <service
             android:name=".Util.FirebaseMessagingService"
-            android:permission="TODO"
+            android:directBootAware="true"
             android:exported="true"
-            android:directBootAware="true">
+            android:permission="TODO">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-
-        <!--        <service android:name=".MyFirebaseInstanceIDService"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->
-<!--            </intent-filter>-->
-<!--        </service>-->
-<!--        <service android:name=".MyFirebaseMessagingService" android:permission="com.google.android.c2dm.permission.SEND"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
-<!--                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>-->
-<!--            </intent-filter>-->
-<!--        </service>-->
     </application>
 
 </manifest>

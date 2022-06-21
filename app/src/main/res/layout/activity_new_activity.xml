@@ -71,12 +71,75 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/cardLayoutAddFollower"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/trending_background"
+                app:cardBackgroundColor="@null">
+
+                <RelativeLayout
+                    android:id="@+id/layoutAddFollower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/addFollowerText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60sp"
+                        android:gravity="center"
+                        android:paddingStart="20sp"
+                        android:text="@string/addFollower"
+                        android:textColor="@color/colorPrimaryLight"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/openAddFollower"
+                        android:layout_width="60sp"
+                        android:layout_height="60sp"
+                        android:layout_alignParentEnd="true"
+                        android:contentDescription="@string/app_name"
+                        android:padding="5sp"
+                        android:src="@drawable/ic_double_arrow"
+                        app:tint="@color/white" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/addedFollower"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
+                    <ScrollView
+                        android:id="@+id/scrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="68sp"
+                        app:layout_constraintBottom_toTopOf="@+id/followerOptions">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="MissingConstraints"
+                            tools:listitem="@layout/item_contact" />
+                    </ScrollView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
                 android:id="@+id/layoutSearchDestination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/trending_background"
                 android:orientation="vertical"
                 android:padding="16sp"
+                android:layout_marginTop="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -253,69 +316,7 @@
 
 <!--            </RelativeLayout>-->
 
-            <LinearLayout
-                android:id="@+id/cardLayoutAddFollower"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
-                android:orientation="vertical"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/trending_background"
-                app:cardBackgroundColor="@null">
 
-                    <RelativeLayout
-                        android:id="@+id/layoutAddFollower"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/addFollowerText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="60sp"
-                            android:gravity="center"
-                            android:paddingStart="20sp"
-                            android:text="@string/addFollower"
-                            android:textColor="@color/colorPrimaryLight"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:id="@+id/openAddFollower"
-                            android:layout_width="60sp"
-                            android:layout_height="60sp"
-                            android:layout_alignParentEnd="true"
-                            android:contentDescription="@string/app_name"
-                            android:padding="5sp"
-                            android:src="@drawable/ic_double_arrow"
-                            app:tint="@color/white" />
-
-                    </RelativeLayout>
-
-                <LinearLayout
-                    android:id="@+id/addedFollower"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
-                    <ScrollView
-                        android:id="@+id/scrollView"
-                        android:layout_width="match_parent"
-                        android:layout_height="68sp"
-                        app:layout_constraintBottom_toTopOf="@+id/followerOptions">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="MissingConstraints"
-                            tools:listitem="@layout/item_contact" />
-                    </ScrollView>
-                </LinearLayout>
-            </LinearLayout>
 
 <!--            <RelativeLayout-->
 <!--                android:id="@+id/activityType"-->
