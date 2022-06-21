@@ -564,8 +564,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
-        Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         try {
             if (location != null) {
@@ -597,6 +596,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
                 }else{
+                    Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
+                    Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
                     if (currentMarker != null) {
                         currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
                         locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
@@ -613,6 +614,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     onNewLocation(location);
                 }
+                locationManager.removeUpdates(this);
             }
         } catch (Exception e) {
             e.printStackTrace();
