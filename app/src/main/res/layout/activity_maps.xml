@@ -179,7 +179,7 @@
             android:hint="Expected time"
             android:src="@drawable/ic_search"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold|italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -203,7 +203,8 @@
                 android:paddingEnd="20sp"
                 android:text="00:00"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textStyle="bold"
+                android:textSize="20sp" />
 
             <ImageButton
                 android:id="@+id/button_start_pause"

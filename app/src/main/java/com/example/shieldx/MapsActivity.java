@@ -105,7 +105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout buttons;
     ImageButton backButton, startPauseButton;
     ImageView alertButton;
-    private TextView mTextViewCountDown;
+    private TextView countDownText;
     private CountDownTimer mCountDownTimer;
     RecyclerView recyclerView;
     ArrayList<ContactModel> contactList = new ArrayList<>();
@@ -128,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             .build();
     List<List<LatLng>> polylineList;
     ArrayList<Polyline> sourceDestinationPolylineList;
-    List<LatLng> sourceDestinationLatLngList;
+    List<LatLng> routeLatLngList;
     List<Long> journeyDurationList;
 
     private boolean reachedDestination = false, firstAlarm = false, secondAlarm = false, thirdAlarm = false;
@@ -138,17 +138,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Polyline sourceDestinationPolyline;
     List<EncodedPolyline> sourceDestinationEncodedPolylineList;
 
-    Context mContext=this;
+    Context mContext = this;
     User userData = new User();
 
-    private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
+    private final long MIN_TIME = 100, MIN_DIST = 1;  //1 meter
     private static final int HANDLER_DELAY = 1000;
     private static final int START_HANDLER_DELAY = 0;
     private static final float IN_PROXIMITY_OF_DESTINATION = 20f;
-    String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
+    String distance = "", duration = "", sourceName, destinatioName, selectedTravelMode, DBLatString, DBLonString, userName, userMail, usertoken;
+
     Boolean isThisDestinationSetup;
-    private boolean mTimerRunning;
-    private long mTimeLeftInMillis, durationInSeconds;
+    private boolean isTimerRunning;
+    private long timeLeftMilliSec, durationInSeconds;
     ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
     ArrayList<String> guardiansEmailList = new ArrayList<>();
     private TravelMode travelMode;
@@ -159,9 +160,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
-        userData = (User) intent.getSerializableExtra("user_key");
-        isThisDestinationSetup = (Boolean) intent.getSerializableExtra("isThisDestinationSetup");
-
+        if (intent.getSerializableExtra("user_key") != null) {
+            userData = (User) intent.getSerializableExtra("user_key");
+            userName = userData.getFirstName();
+            userMail = userData.encodedEmail();
+        }
+        if (intent.getSerializableExtra("isThisDestinationSetup") != null) {
+            isThisDestinationSetup = (Boolean) intent.getSerializableExtra("isThisDestinationSetup");
+        }
         IntializeView();
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -198,7 +204,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTimerRunning) {
+                if (isTimerRunning) {
                     pauseTimer();
                 } else {
                     startTimer();
@@ -209,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
+                String message = (userName + " " + getString(R.string.guardianAdded_userInDanger));
                 sendPushNotificationToFollower( "!!!  DANGER !!!", message);
                 sendNotificationViaSmS(message);
                 return false;
@@ -224,21 +230,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
     }
 
-    public void QuitApp(View view) {
-//        this.finishAffinity();
-        Intent intent = new Intent(MapsActivity.this,HomePage.class);
-        intent.putExtra("user_key",userData);
-        startActivity(intent);
-        this.finish();
-        System.exit(0);
-    }
-
     private void IntializeView() {
-        if(CommonMethods.isLocationEnabled(mContext)) {
+        if (CommonMethods.isLocationEnabled(mContext)) {
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
         rootNode = FirebaseDatabase.getInstance();
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userMail);
         //setup source destination view
         etd = findViewById(R.id.etd);
         sourceTextBox = findViewById(R.id.startlocation);
@@ -250,7 +247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         countDownTimer = findViewById(R.id.countDownTimer);
-        mTextViewCountDown = findViewById(R.id.text_view_countdown);
+        countDownText = findViewById(R.id.text_view_countdown);
         startPauseButton = findViewById(R.id.button_start_pause);
         alertButton = findViewById(R.id.alertButton);
         transportOptions = findViewById(R.id.transportOptions);
@@ -282,6 +279,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startJourney();
         }
     }
+
+    public void abortActivity(View view) {
+//        this.finishAffinity();
+        Intent intent = new Intent(MapsActivity.this, HomePage.class);
+        intent.putExtra("user_key", userData);
+        startActivity(intent);
+        this.finish();
+        System.exit(0);
+    }
+
 
     private void autoCompleteDestination() {
 
@@ -366,9 +373,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             for (DataSnapshot d : snapshot.getChildren()) {
-                                String usertoken = d.child("userToken").getValue(String.class);
-                                FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, NotificationHeader, message, getApplicationContext(), MapsActivity.this);
-                                notificationsSender.SendNotifications();
+                                if (d.child("userToken").exists()) {
+                                    usertoken = d.child("userToken").getValue(String.class);
+
+                                    FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, NotificationHeader, message, getApplicationContext(), MapsActivity.this);
+                                    notificationsSender.SendNotifications();
+                                }
                             }
                         } else {
                             Log.d("snapshott", String.valueOf(snapshot));
@@ -431,20 +441,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void selectMode() {
-
+        modeOfTransport.add("walking");
         modeOfTransport.add("driving");
         modeOfTransport.add("bicycling");
-        modeOfTransport.add("walking");
         selectedTravelMode = modeOfTransport.get(2);
         ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 travelMode = TravelMode.DRIVING;
-                selectedTravelMode = modeOfTransport.get(0);
-                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
+                if (modeOfTransport.size() > 0) {
+                    selectedTravelMode = modeOfTransport.get(1);
+                }
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
                 createRoute(selectedTravelMode);
             }
         });
@@ -453,10 +464,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 travelMode = TravelMode.BICYCLING;
-                selectedTravelMode = modeOfTransport.get(1);
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                if (modeOfTransport.size() > 0) {
+                    selectedTravelMode = modeOfTransport.get(2);
+                }
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 createRoute(selectedTravelMode);
 
             }
@@ -465,11 +478,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ((ImageView) findViewById(R.id.walking)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                travelMode = TravelMode.WALKING;
-                selectedTravelMode = modeOfTransport.get(2);
-                ((ImageView)findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView)findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView)findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                if (modeOfTransport.size() > 0) {
+                    travelMode = TravelMode.WALKING;
+                }
+                selectedTravelMode = modeOfTransport.get(0);
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 createRoute(selectedTravelMode);
 
             }
@@ -586,8 +601,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        databasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
 //                    } else {
 
-                    if(sourceMarker== null){
-                        sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
+                    if (sourceMarker == null) {
+                        if (sourceTextBox.getText() != null) {
+                            sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
+                        }
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                     }
 //                        databasereference.child("latitude").push().setValue(Double.toString(location.getLatitude()));
@@ -612,7 +629,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_pin);
                         Bitmap b = bitmapdraw.getBitmap();
                         Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userData.getFirstName() + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userName + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
                         locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
                         locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     }
@@ -627,14 +644,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readChanges() {
-
         locationDatabasereference.addValueEventListener(new ValueEventListener() {                          //read changes from Firebase
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     try {
-                        String DBLatString = snapshot.child("latitude").getValue().toString().substring(1, snapshot.child("latitude").getValue().toString().length() - 1);
-                        String DBLonString = snapshot.child("longitude").getValue().toString().substring(1, snapshot.child("longitude").getValue().toString().length() - 1);
+                        if (snapshot.child("latitude").exists()) {
+                            DBLatString = snapshot.child("latitude").getValue().toString().substring(1, snapshot.child("latitude").getValue().toString().length() - 1);
+                        }
+                        DBLonString = snapshot.child("longitude").getValue().toString().substring(1, snapshot.child("longitude").getValue().toString().length() - 1);
 
                         String[] stringLat = DBLatString.split(", ");
                         Arrays.sort(stringLat);
@@ -668,7 +686,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void startJourney() {
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        //activityReference.orderByChild("userMail").equalTo(userMail);
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -720,9 +738,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     createRoute(selectedTravelMode);
 
-                    String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
+                    String message = userName + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
                     setMarkersAndDuration();
                     sendPushNotificationToFollower("Journey Started", message);
+                    sendPushNotificationToUser("Journey started \n Source: " + sourceName + " \n Destination: " + destinatioName + "\n Expected duration: " + duration);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -771,9 +790,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
 
             createRoute(selectedTravelMode);
-            mTimerRunning = false;
-            startCountdowneTimer();
-
+            isTimerRunning = false;
+            startCountdownTimer();
         }
     }
 
@@ -843,7 +861,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //        activityLog.setDestinationName(destinationLocation.getText().toString());
         //        activityLog.setDestination(getLocationFromAddress(destinationLocation.getText().toString()));
         //        ActivityLog acty = new ActivityLog(activityLog.getUserMail(), getLocationFromAddress(startlocation.getText().toString()), getLocationFromAddress(destination.getText().toString()), destination.getText().toString());
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        //activityReference.orderByChild("userMail").equalTo(userMail);
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -875,6 +893,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.N)
     private int convertToSeconds(String expectedtime) {
         int[] total = {0, 0, 0}; // days, hours, minutes
+        int day, hours, mins, seconds = 0;
         if (expectedtime.contains("day ")) {
             total[0]++;
         } else if (expectedtime.contains("days")) {
@@ -907,22 +926,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        int day = total[0];
-        int hours = total[1];
-        int mins = total[2];
-        Log.d("LOG", total[0] + " days " + total[1] + " hours " + total[2] + " mins.");
-        int seconds = 0;
-        if (mins != 0) {
-            seconds = seconds + mins * 60;
+        if (total.length > 0) {
+            day = total[0];
+            hours = total[1];
+            mins = total[2];
+            Log.d("LOG", total[0] + " days " + total[1] + " hours " + total[2] + " mins.");
+            seconds = 0;
+            if (mins != 0) {
+                seconds = seconds + mins * 60;
+            }
+            if (hours != 0) {
+                seconds = seconds + hours * 60 * 60;
+            }
+            if (day != 0) {
+                seconds = seconds + day * 24 * 60 * 60;
+            }
         }
-        if (hours != 0) {
-            seconds = seconds + hours * 60 * 60;
-        }
-        if (day != 0) {
-            seconds = seconds + day * 24 * 60 * 60;
-        }
-        Log.d("seconds", String.valueOf(seconds));
-
         return seconds;
     }
 
@@ -1092,7 +1111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lineOptions.color(Color.RED);
                 }
                 Log.d("mylog", "onPostExecute lineoptions decoded");
-                sourceDestinationLatLngList = points;
+                routeLatLngList = points;
                // Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
             }
 
@@ -1108,9 +1127,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void startCountdowneTimer() {
-        mTimeLeftInMillis = durationInSeconds * 1000;
-        if (mTimerRunning) {
+    private void startCountdownTimer() {
+        timeLeftMilliSec = durationInSeconds * 1000;
+        if (isTimerRunning) {
             pauseTimer();
         } else {
             startTimer();
@@ -1120,30 +1139,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void startTimer() {
 
-        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
+        mCountDownTimer = new CountDownTimer(timeLeftMilliSec, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                mTimeLeftInMillis = millisUntilFinished;
+                timeLeftMilliSec = millisUntilFinished;
                 updateCountDownText();
             }
 
             @Override
             public void onFinish() {
-                mTimerRunning = false;
+                isTimerRunning = false;
                 //  startPauseButton.setText("Start");
                 startPauseButton.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-//                        if(distance < SAFE_REACH_THRESHOLD) {
-//                            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
-//                            activityReference.child("reachedDestination").setValue("true");
-//                            reachedDestination = true;
-//                            String message = userData.getFirstName() + " has reached destination" ;
-//                            sendPushNotificationToFollower(message);
-//
-//                        }
-                        mTimeLeftInMillis = 60000;
+                        timeLeftMilliSec = 60000;
                         startTimer();
                         startPauseButton.setImageResource(R.drawable.ic_start);
 
@@ -1153,39 +1164,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }.start();
 
-        mTimerRunning = true;
+        isTimerRunning = true;
         startPauseButton.setBackgroundResource(R.drawable.ic_pause);
         //  mButtonStartPause.setText("pause");
     }
 
     private void pauseTimer() {
         mCountDownTimer.cancel();
-        mTimerRunning = false;
+        isTimerRunning = false;
         startPauseButton.setBackgroundResource(R.drawable.ic_start);
         // mButtonStartPause.setText("Start");
         startPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startPauseButton.setImageResource(R.drawable.ic_pause);
-                String message = userData.getFirstName() +" has paused the journey ";
+                String message = userName + " has paused the journey ";
                 sendPushNotificationToFollower("Journey Paused" , message);
             }
         });
     }
 
     private void updateCountDownText() {
-        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
-        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
+        int minutes = (int) (timeLeftMilliSec / 1000) / 60;
+        int seconds = (int) (timeLeftMilliSec / 1000) % 60;
 
-//        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == mTimeLeftInMillis) {
+//        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == timeLeftMilliSec) {
 //            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
 //            sendPushNotificationToUser(message1);
-//            String message2 = userData.getFirstName() +" has " + minutes + " : " + seconds + " left to complete the journey";
+//            String message2 = userName +" has " + minutes + " : " + seconds + " left to complete the journey";
 //            sendPushNotificationToFollower(message2);
 //        }
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
-        mTextViewCountDown.setText(timeLeftFormatted);
+        countDownText.setText(timeLeftFormatted);
 
     }
 
@@ -1253,18 +1264,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void onNewLocation(Location location) {
-        Log.i("LocationTrackingService", "New location: " + location);
-
         mLocation = location;
-        // Notify anyone listening for broadcasts about the new location.
-        Intent intent = new Intent("LocationTrackingService.broadcast");
-        intent.putExtra("LocationTrackingService.location", location);
-
         // Update notification content if running as a foreground service.
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference activityReference = database.getReference("journeys/" + email);
-//
-//        activityReference.child("currentLocation").setValue(new LatLng(location.getLatitude(), location.getLongitude()));
 
         float distance = location.distanceTo(destinationLoc);
         float finalWarning = sourceLoc.distanceTo(destinationLoc)*0.75F;
@@ -1272,57 +1274,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float firstWarning = sourceLoc.distanceTo(destinationLoc)*0.25F;
         //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
 
-        Log.i("LocationTrackingService", "Distance: " + distance);
-        Log.i("LocationTrackingService", "distance: " + sourceLoc.distanceTo(destinationLoc));
-        Log.i("LocationTrackingService", "finalWarning " + finalWarning);
-        Log.i("LocationTrackingService", "secondWarning " + secondWarning);
-        Log.i("LocationTrackingService", "firstWarning " + firstWarning);
-
         if(distance < firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
-            String message = userData.getFirstName() + " is " + distance +" meters away from destination";
+            String message = userName + " is " + distance + " meters away from destination";
             sendPushNotificationToFollower("!!! First Warning !!!"  , message);
         }
         if(distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
-            String message = userData.getFirstName() + " is " + distance +" meters away from destination";
+            String message = userName + " is " + distance + " meters away from destination";
             sendPushNotificationToFollower("!!! Second Warning !!!" , message);
         }
         if(distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
-            String message = userData.getFirstName() + " is " + distance +" meters away from destination, !!! HURRY !!!";
+            String message = userName + " is " + distance + " meters away from destination, !!! HURRY !!!";
             sendPushNotificationToFollower("!!! Third Warning !!!" , message);
         }
         if(distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
             Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
             activityReference.child("destinationReached").setValue("true");
             reachedDestination = true;
-            String message = userData.getFirstName() + " has reached destination " + destinatioName;
+            String message = userName + " has reached destination " + destinatioName;
             sendPushNotificationToFollower("!! Destination Reached !!!" , message);
 
         }
 
         //500m tolerance is used for detecting devaition in route
-        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 0.6)) {
+        if (PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), routeLatLngList, false, 0.1)) {
             activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()) {
-                        if(dataSnapshot.getValue(String.class).equals("true")) {
+                    if (dataSnapshot.exists()) {
+                        if (dataSnapshot.getValue(String.class).equals("true")) {
                             routeDeviation = false;
                             activityReference.child("routeDeviation").setValue("false");
-
-//                            if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
-//                                NotificationCompat.Builder builder = new NotificationCompat.Builder(LocationTrackingService.this, CHANNEL_ID)
-//                                        .setSmallIcon(R.drawable.user_location)
-//                                        .setContentTitle(getString(R.string.locationTracking_routeDeviation))
-//                                        .setContentText(getString(R.string.locationTracking_backToSelectedRoute))
-//                                        .setPriority(Notification.PRIORITY_HIGH);
-//                                mNotificationManager.notify(8, builder.build());
-//                            }
+                            String message = userName + " is deviated from route";
+                            sendPushNotificationToFollower("!! Out of Route !!!", message);
                         }
                     }
                 }
@@ -1336,14 +1325,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(!routeDeviation) {
                 routeDeviation = true;
                 activityReference.child("routeDeviation").setValue("true");
-//                if (userDetails.getPreferences().get("journeyRouteDeviated").equals("true")) {
-//                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                            .setSmallIcon(R.drawable.user_location)
-//                            .setContentTitle(getString(R.string.locationTracking_routeDeviation))
-//                            .setContentText(getString(R.string.locationTracking_deviatedFromSelectedRoute))
-//                            .setPriority(Notification.PRIORITY_HIGH);
-//                    mNotificationManager.notify(7, builder.build());
-//                }
             }
         }
     }
