@@ -37,7 +37,6 @@ import com.example.shieldx.SendNotificationPack.APIService;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.MainAdapter;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -95,16 +94,17 @@ public class NewActivityPage extends AppCompatActivity {
         addedFollower = (LinearLayout) findViewById(R.id.addedFollower);
         layoutEtd.setVisibility(View.GONE);
         addedFollower.setVisibility(View.GONE);
-        if (userData != null) {
-            userName.setText(userData.getFirstName());
-        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         // outerLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
         rootNode = FirebaseDatabase.getInstance();
         ActivityLog newActivity = new ActivityLog();
-        newActivity.setUserMail(userData.encodedEmail());
-        newActivity.setUserName(userData.getFirstName());
+        if (userData != null) {
+            userName.setText(userData.getFirstName());
+            newActivity.setUserMail(userData.encodedEmail());
+            newActivity.setUserName(userData.getFirstName());
+        }
         Toast.makeText(NewActivityPage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 //        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -268,7 +268,9 @@ public class NewActivityPage extends AppCompatActivity {
 
     private void fetchJourneyData() {
         rootNode = FirebaseDatabase.getInstance();
-        username = userData.getFirstName();
+        if (userData != null) {
+            username = userData.getFirstName();
+        }
         DatabaseReference fromReference, toReference;
 //        fromReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 //       // toReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
@@ -307,18 +309,24 @@ public class NewActivityPage extends AppCompatActivity {
                     for (DataSnapshot d : snapshot.getChildren()) {
                         ContactModel model = new ContactModel();
                         Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
-                        model.setEmail(d.child("followerEmail").getValue(String.class));
-                        model.setName(d.child("followerName").getValue(String.class));
-                        model.setNumber(d.child("followerNumber").getValue(String.class));
+                        if (d.child("followerEmail").exists()) {
+                            model.setEmail(d.child("followerEmail").getValue(String.class));
+                            followerEmails.add(d.child("follower_Email").getValue(String.class));
+                        }
+                        if (d.child("followerName").exists()) {
+                            model.setName(d.child("followerName").getValue(String.class));
+                        }
+                        if (d.child("followerNumber").exists()) {
+                            model.setNumber(d.child("followerNumber").getValue(String.class));
+                            followerNumbers.add(d.child("follower_Number").getValue(String.class));
+                        }
                         contactList.add(model);
                         adapter = new MainAdapter(NewActivityPage.this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);
-                        if(recyclerView!=null){
+                        if (recyclerView != null) {
                             addedFollower.setVisibility(View.VISIBLE);
                         }
-                        followerNumbers.add(d.child("follower_Number").getValue(String.class));
-                        followerEmails.add(d.child("follower_Email").getValue(String.class));
                     }
                 }
             }
@@ -331,12 +339,19 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    source = snapshot.child("sourceName").getValue(String.class);
-                    destination = snapshot.child("destinationName").getValue(String.class);
-                    duration = snapshot.child("duration").getValue(String.class);
-                    searchDestination.setText(destination);
-                    etd.setText(duration);
-                    layoutEtd.setVisibility(View.VISIBLE);
+                    if (snapshot.child("sourceName").exists()) {
+                        source = snapshot.child("sourceName").getValue(String.class);
+                    }
+                    if (snapshot.child("destinationName").exists()) {
+                        destination = snapshot.child("destinationName").getValue(String.class);
+                        searchDestination.setText(destination);
+                    }
+
+                    if (snapshot.child("duration").exists()) {
+                        duration = snapshot.child("duration").getValue(String.class);
+                        etd.setText(duration);
+                        layoutEtd.setVisibility(View.VISIBLE);
+                    }
 
                 }
             }
@@ -375,11 +390,14 @@ public class NewActivityPage extends AppCompatActivity {
         switch (requestCode) {
             case (FOLLOWER_ADDED): {
                 if (resultCode == RESULT_OK) {
-                    contactList = (ArrayList<ContactModel>) data.getSerializableExtra("follower");
-                    adapter = new MainAdapter(this, contactList);
-                    // set adapter
-                    recyclerView.setAdapter(adapter);
-                    if(recyclerView != null){
+                    if (data.getSerializableExtra("follower") != null) {
+                        contactList = (ArrayList<ContactModel>) data.getSerializableExtra("follower");
+
+                        adapter = new MainAdapter(this, contactList);
+                        // set adapter
+                        recyclerView.setAdapter(adapter);
+                    }
+                    if (recyclerView != null) {
                         addedFollower.setVisibility(View.VISIBLE);
                     }
                 }
@@ -387,15 +405,18 @@ public class NewActivityPage extends AppCompatActivity {
             case (DESTINATION_ADDED): {
                 if (resultCode == RESULT_OK) {
                     // Get String data from Intent
-                    destination = data.getStringExtra("destination");
-                    duration = data.getStringExtra("duration");
-                    etd.setText(duration);
-                    searchDestination.setText(destination);
-                    if(etd != null) {
-                        layoutEtd.setVisibility(View.VISIBLE);
-                        etd.setVisibility(View.VISIBLE);
+                    if (data.getStringExtra("destination") != null) {
+                        destination = data.getStringExtra("destination");
+                        searchDestination.setText(destination);
                     }
-
+                    if (data.getStringExtra("duration") != null) {
+                        duration = data.getStringExtra("duration");
+                        etd.setText(duration);
+                        if (etd != null) {
+                            layoutEtd.setVisibility(View.VISIBLE);
+                            etd.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
             }
         }

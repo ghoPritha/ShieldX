@@ -130,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<LatLng> sourceDestinationLatLngList;
     List<Long> journeyDurationList;
 
-    private boolean reachedDestination = false;
+    private boolean reachedDestination = false, firstAlarm = false, secondAlarm = false, thirdAlarm = false;
     private boolean routeDeviation = false;
     private Long journeyDuration = 0L;
     EncodedPolyline sourceDestinationEncodedPolyline;
@@ -143,7 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
     private static final int HANDLER_DELAY = 1000;
     private static final int START_HANDLER_DELAY = 0;
-    private static final float IN_PROXIMITY_OF_DESTINATION = 40f;
+    private static final float IN_PROXIMITY_OF_DESTINATION = 20f;
     String distance = "" , duration = "", sourceName, destinatioName, selectedTravelMode;
     Boolean isThisDestinationSetup;
     private boolean mTimerRunning;
@@ -209,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onLongClick(View v) {
                 String message = (userData.getFirstName() + " " + getString(R.string.guardianAdded_userInDanger));
-                sendPushNotificationToFollower(message);
+                sendPushNotificationToFollower( "!!!  DANGER !!!", message);
                 sendNotificationViaSmS(message);
                 return false;
             }
@@ -352,7 +352,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void sendPushNotificationToFollower(String message) {
+    private void sendPushNotificationToFollower(String NotificationHeader, String message) {
         if (guardiansEmailList != null) {
             for (String email : guardiansEmailList) {
                 Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
@@ -363,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (snapshot.exists()) {
                             for (DataSnapshot d : snapshot.getChildren()) {
                                 String usertoken = d.child("userToken").getValue(String.class);
-                                FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, "Journey started", message, getApplicationContext(), MapsActivity.this);
+                                FcmNotificationsSender notificationsSender = new FcmNotificationsSender(usertoken, NotificationHeader, message, getApplicationContext(), MapsActivity.this);
                                 notificationsSender.SendNotifications();
                             }
                         } else {
@@ -672,12 +672,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (snapshot.exists()) {
                     if (snapshot.child("source").exists() && snapshot.child("source").child("latitude").exists() && snapshot.child("source").child("longitude").exists()) {
                         source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("source"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        sourceLoc = new Location(LocationManager.GPS_PROVIDER);
+                        sourceLoc.setLatitude(snapshot.child("source").child("latitude").getValue(double.class));
+                        sourceLoc.setLongitude(snapshot.child("source").child("longitude").getValue(double.class));
                     }
                     if (snapshot.child("sourceName").exists()) {
                         sourceName = snapshot.child("sourceName").getValue(String.class);
                     }
                     if (snapshot.child("destination").exists() && snapshot.child("destination").child("latitude").exists() && snapshot.child("destination").child("longitude").exists()) {
                         destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("destination"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        destinationLoc = new Location(LocationManager.GPS_PROVIDER);
+                        destinationLoc.setLatitude(snapshot.child("destination").child("latitude").getValue(double.class));
+                        destinationLoc.setLongitude(snapshot.child("destination").child("longitude").getValue(double.class));
                     }
 
                     if (snapshot.child("destinationName").exists()) {
@@ -710,7 +716,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     String message = userData.getFirstName() + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
                     setMarkersAndDuration();
-                    sendPushNotificationToFollower(message);
+                    sendPushNotificationToFollower("Journey Started", message);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -1156,7 +1162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 startPauseButton.setImageResource(R.drawable.ic_pause);
                 String message = userData.getFirstName() +" has paused the journey ";
-                sendPushNotificationToFollower(message);
+                sendPushNotificationToFollower("Journey Paused" , message);
             }
         });
     }
@@ -1265,26 +1271,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("LocationTrackingService", "finalWarning " + finalWarning);
         Log.i("LocationTrackingService", "secondWarning " + secondWarning);
         Log.i("LocationTrackingService", "firstWarning " + firstWarning);
-        if(distance < IN_PROXIMITY_OF_DESTINATION) {
-            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
-            activityReference.child("reachedDestination").setValue("true");
-            reachedDestination = true;
-            String message = userData.getFirstName() + " has reached destination" ;
-            sendPushNotificationToFollower(message);
 
-        }
-        if(distance < firstWarning) {
+        if(distance < firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
+            firstAlarm = true;
+            String message = userData.getFirstName() + " is " + distance +" meters away from destination";
+            sendPushNotificationToFollower("!!! First Warning !!!"  , message);
         }
-        if(distance < secondWarning) {
+        if(distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
+            secondAlarm = true;
+            String message = userData.getFirstName() + " is " + distance +" meters away from destination";
+            sendPushNotificationToFollower("!!! Second Warning !!!" , message);
         }
-        if(distance < finalWarning) {
+        if(distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
+            thirdAlarm = true;
+            String message = userData.getFirstName() + " is " + distance +" meters away from destination, !!! HURRY !!!";
+            sendPushNotificationToFollower("!!! Third Warning !!!" , message);
+        }
+        if(distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
+            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
+            activityReference.child("destinationReached").setValue("true");
+            reachedDestination = true;
+            String message = userData.getFirstName() + " has reached destination " + destinatioName;
+            sendPushNotificationToFollower("!! Destination Reached !!!" , message);
+
         }
 
         //500m tolerance is used for detecting devaition in route
-        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 50)) {
+        if(PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), sourceDestinationLatLngList, false, 0.6)) {
             activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

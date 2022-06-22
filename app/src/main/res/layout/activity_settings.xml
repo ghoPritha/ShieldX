@@ -221,8 +221,8 @@
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="20sp"
-                        android:layout_height="20sp"
+                        android:layout_width="14dp"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:src="@drawable/ic_double_arrow"

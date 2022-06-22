@@ -24,7 +24,7 @@
             android:layout_marginStart="120sp"
             android:text="@string/hello"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4sp"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/testHello"
             app:layout_constraintTop_toTopOf="parent" />
@@ -81,27 +81,31 @@
 
                 <RelativeLayout
                     android:id="@+id/layoutAddFollower"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/trending_background"
+                    android:orientation="vertical"
+                    android:paddingTop="16sp"
+                    android:paddingStart="16sp"
+                    android:paddingEnd="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">>
 
                     <TextView
                         android:id="@+id/addFollowerText"
                         android:layout_width="wrap_content"
-                        android:layout_height="60sp"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:paddingStart="20sp"
                         android:text="@string/addFollower"
                         android:textColor="@color/colorPrimaryLight"
-                        android:textSize="18sp"
+
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/openAddFollower"
-                        android:layout_width="60sp"
-                        android:layout_height="60sp"
+                        android:layout_width="30sp"
+                        android:layout_height="30sp"
                         android:layout_alignParentEnd="true"
                         android:contentDescription="@string/app_name"
                         android:padding="5sp"
@@ -114,7 +118,9 @@
                     android:id="@+id/addedFollower"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16sp"
+                    android:paddingBottom="16sp"
+                    android:paddingStart="16sp"
+                    android:paddingEnd="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/destinationLabel">
                     <ScrollView
@@ -151,7 +157,7 @@
                     android:gravity="center"
                     android:text="@string/destination"
                     android:textColor="@color/colorPrimaryLight"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/layoutSearchDestination"
                     app:layout_constraintStart_toStartOf="parent"
@@ -214,7 +220,7 @@
                     android:gravity="center"
                     android:text="@string/expectedTime"
                     android:textColor="@color/colorPrimaryLight"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/layoutSearchDestination"
                     app:layout_constraintStart_toStartOf="parent"
@@ -275,7 +281,7 @@
 <!--                    android:paddingStart="20sp"-->
 <!--                    android:text="@string/expectedTime"-->
 <!--                    android:textColor="@color/colorPrimaryLight"-->
-<!--                    android:textSize="18sp"-->
+<!--                    android:textSize="16sp"-->
 <!--                    android:textStyle="bold"-->
 <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
 <!--                    app:layout_constraintEnd_toEndOf="parent"-->
@@ -291,7 +297,7 @@
 <!--                    android:gravity="center"-->
 <!--                    android:hint="jbvdfsd"-->
 <!--                    android:textColor="@color/white"-->
-<!--                    android:textSize="18sp"-->
+<!--                    android:textSize="16sp"-->
 <!--                    android:textStyle="bold" />-->
 <!--                </LinearLayout>-->
 <!--                <RelativeLayout-->
@@ -335,7 +341,7 @@
 <!--                    android:paddingStart="20sp"-->
 <!--                    android:text="@string/activityType"-->
 <!--                    android:textColor="@color/colorPrimaryLight"-->
-<!--                    android:textSize="18sp"-->
+<!--                    android:textSize="16sp"-->
 <!--                    android:textStyle="bold" />-->
 
 <!--                <ImageView-->
@@ -399,7 +405,7 @@
 <!--        android:paddingStart="20sp"-->
 <!--        android:text="text"-->
 <!--        android:textColor="@color/black"-->
-<!--        android:textSize="18sp"-->
+<!--        android:textSize="16sp"-->
 <!--        android:textStyle="bold"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
