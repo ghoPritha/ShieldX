@@ -62,7 +62,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         userName = (TextView) findViewById(R.id.userName);
 
         if(userData != null) {
-            userName.setText(userData.getFirstName());
+            userName.setText("Hello, " + userData.getFirstName());
         }
         //toolbar
 

@@ -25,11 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.CommonMethods;
 
 public class SettingsActivity extends AppCompatActivity {
 
     ImageView logoutOption;
+    TextView userName;
+    TextView userEmail;
     androidx.appcompat.widget.SwitchCompat allowLocationSwitch;
     androidx.appcompat.widget.SwitchCompat allowContactAccessSwitch;
     Context mContext = this;
@@ -42,6 +45,8 @@ public class SettingsActivity extends AppCompatActivity {
         logoutOption = (ImageView) findViewById(R.id.logoutOption);
         allowLocationSwitch = (androidx.appcompat.widget.SwitchCompat) findViewById(R.id.allowLocationSwitch);
         allowContactAccessSwitch = (androidx.appcompat.widget.SwitchCompat) findViewById(R.id.allowContactAccessSwitch);
+        userName = (TextView) findViewById(R.id.userName);
+        userEmail = (TextView) findViewById(R.id.userEmail);
 
         Initialize();
 
@@ -90,6 +95,13 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void Initialize() {
+        Intent intent = getIntent();
+        // Get the data of the activity providing the same key value
+        User userData = (User) intent.getSerializableExtra("user_key");
+        if(userData != null) {
+            userName.setText(userData.getFirstName());
+            userEmail.setText(userData.getEmail());
+        }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();
         }
