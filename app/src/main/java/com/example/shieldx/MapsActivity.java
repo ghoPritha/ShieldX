@@ -738,7 +738,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     createRoute(selectedTravelMode);
 
-                    String message = userName + " has started a journey from " + sourceName + " to " + destinatioName + " expected duration: " + duration;
+                    String message = userName + " has started a journey from \n " + sourceName + " to \n" + destinatioName + "\n expected duration: " + duration;
                     setMarkersAndDuration();
                     sendPushNotificationToFollower("Journey Started", message);
                     sendPushNotificationToUser("Journey started \n Source: " + sourceName + " \n Destination: " + destinatioName + "\n Expected duration: " + duration);

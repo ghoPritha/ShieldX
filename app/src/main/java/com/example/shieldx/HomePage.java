@@ -1,13 +1,12 @@
 package com.example.shieldx;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    ImageView newActivityButton;
+    Button newActivityButton;
     TextView userName, newActivityText;
     LinearLayout myFollower, layoutSettings, addFollower;
     DrawerLayout drawerLayout;
@@ -51,7 +51,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         // Get the data of the activity providing the same key value
         User userData = (User) intent.getSerializableExtra("user_key");
 
-        newActivityButton = (ImageView) findViewById(R.id.newActivityButton);
+        newActivityButton = (Button) findViewById(R.id.newActivityButton);
         newActivityText = (TextView) findViewById(R.id.newActivity);
         myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
         layoutSettings =  (LinearLayout) findViewById(R.id.layoutSettings);
@@ -62,7 +62,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         userName = (TextView) findViewById(R.id.userName);
 
         if(userData != null) {
-            userName.setText("Hello, " + userData.getFirstName());
+            userName.setText(userData.getFirstName());
         }
         //toolbar
 
@@ -99,13 +99,17 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
+                        int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
                         if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
                             newActivityText.setText("Resume Activity");
                             newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
+                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+
                         } else {
                             newActivityText.setText("New Activity");
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
-                            newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
+                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+
                             ActivityLog pastActivities = new ActivityLog();
                             ArrayList<Follower> listOffollower = new ArrayList<>();
                             pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
@@ -130,17 +134,16 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             pastActivities.setFollowersList(listOffollower);
                             activityReference.child("Activity history").push().setValue(pastActivities);
                         }
-                    }
-                    else{
+                    } else {
                         newActivityText.setText("New Activity");
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
-                        newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
+                        newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                         activityReference.setValue(newActivity);
                     }
                 } else {
                     newActivityText.setText("New Activity");
                     newActivityButton.setBackgroundResource(R.drawable.ic_add);
-                    newActivityButton.setColorFilter(Color.argb(255, 255, 255, 255));
+                    newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                     activityReference.setValue(newActivity);
                 }
             }

@@ -99,13 +99,13 @@
                         android:gravity="center"
                         android:text="@string/addFollower"
                         android:textColor="@color/colorPrimaryLight"
-
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/openAddFollower"
-                        android:layout_width="30sp"
-                        android:layout_height="30sp"
+                        android:layout_width="40sp"
+                        android:layout_height="40sp"
                         android:layout_alignParentEnd="true"
                         android:contentDescription="@string/app_name"
                         android:padding="5sp"
@@ -393,7 +393,9 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/circular_background"
-            android:text="@string/startActivity" />
+            android:text="@string/startActivity"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
     </RelativeLayout>
 
 <!--    <EditText-->

@@ -40,7 +40,7 @@
                 android:layout_centerInParent="true"
                 android:text="@string/hello"
                 android:textColor="@color/white"
-                
+                android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,10 +48,10 @@
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:layout_toEndOf="@+id/testHello"
                 android:layout_centerInParent="true"
-                
+                android:layout_toEndOf="@+id/testHello"
+                android:textSize="20sp"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/testHello"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -109,7 +109,7 @@
                     android:gravity="center"
                     android:text="@string/setting"
                     android:textColor="@color/black"
-                    
+                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -141,7 +141,7 @@
                     android:gravity="center"
                     android:text="@string/contacts"
                     android:textColor="@color/black"
-                    
+                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -171,7 +171,7 @@
                     android:gravity="center"
                     android:text="@string/Favourites"
                     android:textColor="@color/black"
-                    
+                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -202,7 +202,7 @@
                     android:gravity="center"
                     android:text="@string/follower"
                     android:textColor="@color/black"
-                    
+                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -233,21 +233,21 @@
                     android:gravity="center"
                     android:padding="15sp"
                     android:textColor="@color/colorPrimaryLight"
-                    
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
+                <Button
                     android:id="@+id/newActivityButton"
-                    android:layout_width="30sp"
-                    android:layout_height="30sp"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/newActivity"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/white" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </RelativeLayout>
 
 
