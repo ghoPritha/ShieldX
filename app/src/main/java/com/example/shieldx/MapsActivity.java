@@ -239,7 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void IntializeView() {
-        if (CommonMethods.isLocationEnabled(mContext)) {
+        if (!CommonMethods.isLocationEnabled(mContext)) {
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
         rootNode = FirebaseDatabase.getInstance();
