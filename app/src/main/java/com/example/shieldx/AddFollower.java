@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -263,7 +262,9 @@ public class AddFollower extends AppCompatActivity {
         rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").setValue(followerList);
+                if (snapshot.exists()) {
+                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").setValue(followerList);
+                }
             }
 
             @Override

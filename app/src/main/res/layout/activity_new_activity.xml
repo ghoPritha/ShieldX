@@ -85,8 +85,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/trending_background"
                     android:orientation="vertical"
-                    android:paddingTop="16sp"
                     android:paddingStart="16sp"
+                    android:paddingTop="16sp"
                     android:paddingEnd="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -106,9 +106,9 @@
                         android:id="@+id/openAddFollower"
                         android:layout_width="40sp"
                         android:layout_height="40sp"
+                        android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:contentDescription="@string/app_name"
-                        android:padding="5sp"
                         android:src="@drawable/ic_double_arrow"
                         app:tint="@color/white" />
 

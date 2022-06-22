@@ -125,7 +125,22 @@ public class NewActivityPage extends AppCompatActivity {
 
         enterDestiantion();
         addFollower();
-        fetchJourneyData();
+        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    if (snapshot.child("destinationReached").exists()) {
+                    } else {
+                        fetchJourneyData();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         startJourney();
 
     }

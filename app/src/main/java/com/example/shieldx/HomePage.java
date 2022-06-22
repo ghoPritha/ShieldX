@@ -43,6 +43,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     FirebaseDatabase rootNode;
 
     DatabaseReference activityReference;
+    private Boolean destinationReached;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,13 +94,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         rootNode = FirebaseDatabase.getInstance();
-
+        ActivityLog pastActivities = new ActivityLog();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
+                        destinationReached = snapshot.child("destinationReached").getValue(Boolean.class);
                         int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
                         if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
                             newActivityText.setText("Resume Activity");
@@ -110,10 +113,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
 
-                            ActivityLog pastActivities = new ActivityLog();
                             ArrayList<Follower> listOffollower = new ArrayList<>();
                             pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
-                            pastActivities.setCurrentLocation(snapshot.child("currentLocation").getValue(LatLng.class));
                             pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
                             pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
                             pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
@@ -132,7 +133,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                                 listOffollower.add(model);
                             }
                             pastActivities.setFollowersList(listOffollower);
-                            activityReference.child("Activity history").push().setValue(pastActivities);
                         }
                     } else {
                         newActivityText.setText("New Activity");
@@ -146,6 +146,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                     newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                     activityReference.setValue(newActivity);
                 }
+                activityReference.child("Activity history").push().setValue(pastActivities);
             }
 
             @Override
@@ -202,11 +203,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private void newActivitySetup(Serializable userData) {
         //New activity
         newActivityButton.setOnClickListener(v -> {
-
-            Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
-            homeIntent.putExtra("user_key", userData);
-            startActivity(homeIntent);
+            if (destinationReached) {
+                Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
+                homeIntent.putExtra("user_key", userData);
+                startActivity(homeIntent);
+            } else {
+                Intent homeIntent = new Intent(HomePage.this, MapsActivity.class);
+                homeIntent.putExtra("user_key", userData);
+                homeIntent.putExtra("isThisDestinationSetup", true);
+                startActivity(homeIntent);
+            }
         });
+
     }
 
     @Override

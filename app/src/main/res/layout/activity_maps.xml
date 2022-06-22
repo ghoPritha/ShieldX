@@ -77,7 +77,7 @@
             android:layout_marginTop="8sp"
             android:layout_marginEnd="8sp"
             android:layout_marginBottom="8sp"
-            android:onClick="QuitApp"
+            android:onClick="abortActivity"
             android:background="@drawable/ic_multiply" />
 
     </LinearLayout>

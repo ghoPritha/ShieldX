@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -83,6 +85,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -215,7 +218,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String message = (userName + " " + getString(R.string.guardianAdded_userInDanger));
+                String message = null;
+                try {
+                    message = (userName + " " + getString(R.string.guardianAdded_userInDanger) + getAddress(currentLoc));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 sendPushNotificationToFollower( "!!!  DANGER !!!", message);
                 sendNotificationViaSmS(message);
                 return false;
@@ -444,7 +452,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("walking");
         modeOfTransport.add("driving");
         modeOfTransport.add("bicycling");
-        selectedTravelMode = modeOfTransport.get(2);
+        selectedTravelMode = modeOfTransport.get(0);
         ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -453,9 +461,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (modeOfTransport.size() > 0) {
                     selectedTravelMode = modeOfTransport.get(1);
                 }
-                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
                 ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
                 createRoute(selectedTravelMode);
             }
         });
@@ -715,6 +723,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     if (snapshot.child("durationInSeconds").exists()) {
                         durationInSeconds = snapshot.child("durationInSeconds").getValue(long.class);
+                    }
+                    if (snapshot.child("duration").exists()) {
+                        duration = snapshot.child("duration").getValue(String.class);
                     }
                     if (snapshot.child("modeOfTransport").exists()) {
                         selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
@@ -1267,38 +1278,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocation = location;
         // Update notification content if running as a foreground service.
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-
+        int minutes = (int) (timeLeftMilliSec / 1000) / 60;
+        int seconds = (int) (timeLeftMilliSec / 1000) % 60;
+        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == timeLeftMilliSec) {
+            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
+        }
         float distance = location.distanceTo(destinationLoc);
-        float finalWarning = sourceLoc.distanceTo(destinationLoc)*0.75F;
+        float  firstWarning= sourceLoc.distanceTo(destinationLoc)*0.75F;
         float secondWarning = sourceLoc.distanceTo(destinationLoc)*0.50F;
-        float firstWarning = sourceLoc.distanceTo(destinationLoc)*0.25F;
+        float  finalWarning= sourceLoc.distanceTo(destinationLoc)*0.25F;
         //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
 
         if(distance < firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
-            String message = userName + " is " + distance + " meters away from destination";
+            String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
             sendPushNotificationToFollower("!!! First Warning !!!"  , message);
         }
         if(distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
-            String message = userName + " is " + distance + " meters away from destination";
+            String message = userName + " is " + distance + " meters away from destination \n Remaining time : "+ minutes + " : " +  seconds;
             sendPushNotificationToFollower("!!! Second Warning !!!" , message);
         }
         if(distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
-            String message = userName + " is " + distance + " meters away from destination, !!! HURRY !!!";
+            String message = userName + " is " + distance + " meters away from destination \n Remaining time :"+ minutes + " : " +  seconds+" !!! HURRY !!!";
             sendPushNotificationToFollower("!!! Third Warning !!!" , message);
         }
         if(distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
-            Log.i("LocationTrackingService", "Distance less than 200mts: " + distance);
-            activityReference.child("destinationReached").setValue("true");
+            activityReference.child("destinationReached").setValue(true);
             reachedDestination = true;
             String message = userName + " has reached destination " + destinatioName;
             sendPushNotificationToFollower("!! Destination Reached !!!" , message);
-
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Destination Reached")
+                    .setMessage("You have reached your destination \n" + destinatioName)
+                    .setPositiveButton("Ok, Exit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent myIntent = new Intent(MapsActivity.this, HomePage.class);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            startActivity(myIntent);
+                        }
+                    }).show();
         }
 
         //500m tolerance is used for detecting devaition in route
