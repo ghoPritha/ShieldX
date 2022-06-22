@@ -1,8 +1,10 @@
 package com.example.shieldx.Util;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,8 +13,14 @@ import android.text.TextUtils;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.example.shieldx.SettingsActivity;
 
 public class CommonMethods extends AppCompatActivity {
+
+    public static int CONTACT_PERMISSION_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,13 @@ public class CommonMethods extends AppCompatActivity {
         }
 
 
+    }
+
+    public static boolean checkPermissionForContacts(Context context) {
+        //check condition
+        boolean result = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED;
+        return result;
     }
 
 }
