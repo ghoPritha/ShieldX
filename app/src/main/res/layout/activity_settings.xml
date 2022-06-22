@@ -27,16 +27,17 @@
                 android:src="@drawable/ic_woman" />
 
             <TextView
+                android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10sp"
-                android:text="@string/userName"
                 android:textColor="@color/colorPrimaryLight"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/userEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -122,6 +123,7 @@
                         android:textStyle="bold" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/allowLocationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -152,6 +154,7 @@
                         android:textStyle="bold" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/allowContactAccessSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -323,6 +326,7 @@
                         android:textStyle="bold" />
 
                     <ImageView
+                        android:id="@+id/logoutOption"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:layout_alignParentEnd="true"

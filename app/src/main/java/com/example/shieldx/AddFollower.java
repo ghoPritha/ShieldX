@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.DAO.User;
+import com.example.shieldx.Util.CommonMethods;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DBHelper;
 import com.example.shieldx.Util.MainAdapter;
@@ -87,7 +88,7 @@ public class AddFollower extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (checkPermission()) {
+                if (CommonMethods.checkPermissionForContacts(AddFollower.this)) {
                     pickContactIntent();
                 } else {
                     requestPermissions();
@@ -150,12 +151,12 @@ public class AddFollower extends AppCompatActivity {
 //        return userData;
 //    }
 
-    private boolean checkPermission() {
-        //check condition
-        boolean result = ContextCompat.checkSelfPermission(AddFollower.this, Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED;
-        return result;
-    }
+//    private boolean checkPermission() {
+//        //check condition
+//        boolean result = ContextCompat.checkSelfPermission(AddFollower.this, Manifest.permission.READ_CONTACTS)
+//                == PackageManager.PERMISSION_GRANTED;
+//        return result;
+//    }
 
     public void requestPermissions() {
         String[] permission = {Manifest.permission.READ_CONTACTS};

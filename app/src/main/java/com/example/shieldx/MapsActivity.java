@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shieldx.DAO.User;
+import com.example.shieldx.Util.CommonMethods;
 import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.DataParser;
 import com.example.shieldx.Util.FcmNotificationsSender;
@@ -137,7 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Polyline sourceDestinationPolyline;
     List<EncodedPolyline> sourceDestinationEncodedPolylineList;
 
-
+    Context mContext=this;
     User userData = new User();
 
     private final long MIN_TIME = 100 , MIN_DIST = 1;  //1 meter
@@ -233,6 +234,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void IntializeView() {
+        if(CommonMethods.isLocationEnabled(mContext)) {
+            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
         rootNode = FirebaseDatabase.getInstance();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
         //setup source destination view
@@ -564,8 +568,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
-        Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         try {
             if (location != null) {
@@ -597,6 +600,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
                 }else{
+                    Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
+                    Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
                     if (currentMarker != null) {
                         currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
                         locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
@@ -613,6 +618,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     onNewLocation(location);
                 }
+                locationManager.removeUpdates(this);
             }
         } catch (Exception e) {
             e.printStackTrace();

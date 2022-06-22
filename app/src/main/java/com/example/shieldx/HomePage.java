@@ -62,7 +62,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         userName = (TextView) findViewById(R.id.userName);
 
         if(userData != null) {
-            userName.setText(userData.getFirstName());
+            userName.setText("Hello, " + userData.getFirstName());
         }
         //toolbar
 
@@ -178,11 +178,11 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 //        return super.onOptionsItemSelected(item);
 //    }
 
-    private void logOut() {
-        finish();
-        startActivity(new Intent(getApplicationContext(), Login.class));
-        Toast.makeText(HomePage.this,"Logout Successful", Toast.LENGTH_SHORT).show();
-    }
+//    private void logOut() {
+//        finish();
+//        startActivity(new Intent(getApplicationContext(), Login.class));
+//        Toast.makeText(HomePage.this,"Logout Successful", Toast.LENGTH_SHORT).show();
+//    }
 
     private void showMyFollowers(Serializable userData) {
         myFollower.setOnClickListener(new View.OnClickListener() {
