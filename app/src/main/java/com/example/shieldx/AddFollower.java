@@ -263,17 +263,6 @@ public class AddFollower extends AppCompatActivity {
 
     private void addFollowersToDB() {
         rootNode = FirebaseDatabase.getInstance();
-//        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").push().setValue(followerList);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
         rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
@@ -295,20 +284,22 @@ public class AddFollower extends AppCompatActivity {
                 Log.d("Transaction:onComplete:" , String.valueOf(databaseError));
             }
         });
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
-        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+        if(isTheAddFollowerfromActivity) {
+            activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
+            //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+            activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
                     activityReference.setValue(followerList);
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-
+                }
+            });
+        }
     }
     private void IntializeView() {
         //assign variable
