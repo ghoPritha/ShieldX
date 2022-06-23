@@ -27,6 +27,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
@@ -115,15 +117,61 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
                             ArrayList<Follower> listOffollower = new ArrayList<>();
                             pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
+                            if (snapshot.child("destination").exists())
+                                pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                            if (snapshot.child("destinationName").exists())
+                                pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
+                            if (snapshot.child("source").exists())
+                                pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                            if (snapshot.child("sourceName").exists())
+                                pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
+                            if (snapshot.child("modeOfTransport").exists())
+                                pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
+                            if (snapshot.child("duration").exists())
+                                pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
+                            if (snapshot.child("durationInSeconds").exists())
+                                pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
+                            if (snapshot.child("journeyCompleted").exists())
+                                pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
+                            if (snapshot.child("destinationReachedOrNewJourney").exists())
+                                pastActivities.setDestinationReached(snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class));
+                            if (snapshot.child("followersList").exists()) {
+                                for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
+                                    Follower model = new Follower();
+                                    Log.i("followersss", String.valueOf(d));
+                                    model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
+                                    model.setFollowerName(d.child("follower_Name").getValue(String.class));
+                                    model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
+                                    listOffollower.add(model);
+                                }
+                                pastActivities.setFollowersList(listOffollower);
+                            }
+                        }
+                    } else {
+                        newActivityText.setText("New Activity");
+                        newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                        newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                        ArrayList<Follower> listOffollower = new ArrayList<>();
+                        pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
+                        if (snapshot.child("destination").exists())
                             pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                        if (snapshot.child("destinationName").exists())
                             pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
+                        if (snapshot.child("source").exists())
                             pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                        if (snapshot.child("sourceName").exists())
                             pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
+                        if (snapshot.child("modeOfTransport").exists())
                             pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
+                        if (snapshot.child("duration").exists())
                             pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
+                        if (snapshot.child("durationInSeconds").exists())
                             pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
+                        if (snapshot.child("journeyCompleted").exists())
                             pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
+                        if (snapshot.child("destinationReachedOrNewJourney").exists())
                             pastActivities.setDestinationReached(snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class));
+                        if (snapshot.child("followersList").exists()) {
                             for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                                 Follower model = new Follower();
                                 Log.i("followersss", String.valueOf(d));
@@ -134,24 +182,74 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             }
                             pastActivities.setFollowersList(listOffollower);
                         }
-                    } else {
-                        newActivityText.setText("New Activity");
-                        newActivityButton.setBackgroundResource(R.drawable.ic_add);
-                        newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                         activityReference.setValue(newActivity);
+
                     }
                 } else {
                     newActivityText.setText("New Activity");
                     newActivityButton.setBackgroundResource(R.drawable.ic_add);
                     newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                    ArrayList<Follower> listOffollower = new ArrayList<>();
+                    pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
+                    if (snapshot.child("destination").exists())
+                        pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                    if (snapshot.child("destinationName").exists())
+                        pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
+                    if (snapshot.child("source").exists())
+                        pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
+                    if (snapshot.child("sourceName").exists())
+                        pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
+                    if (snapshot.child("modeOfTransport").exists())
+                        pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
+                    if (snapshot.child("duration").exists())
+                        pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
+                    if (snapshot.child("durationInSeconds").exists())
+                        pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
+                    if (snapshot.child("journeyCompleted").exists())
+                        pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
+                    if (snapshot.child("destinationReachedOrNewJourney").exists())
+                        pastActivities.setDestinationReached(snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class));
+                    if (snapshot.child("followersList").exists()) {
+                        for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
+                            Follower model = new Follower();
+                            Log.i("followersss", String.valueOf(d));
+                            model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
+                            model.setFollowerName(d.child("follower_Name").getValue(String.class));
+                            model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
+                            listOffollower.add(model);
+                        }
+                        pastActivities.setFollowersList(listOffollower);
+                    }
                     activityReference.setValue(newActivity);
                 }
-                activityReference.child("Activity history").push().setValue(pastActivities);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+
+        activityReference.child("Activity Log").runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                String lastKey = "-1";
+                for (MutableData child : currentData.getChildren()) {
+                    lastKey = child.getKey();
+                }
+                int nextKey = Integer.parseInt(lastKey) + 1;
+                currentData.child("" + nextKey).setValue(pastActivities);
+
+                // Set value and report transaction success
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d("Transaction:onComplete:", String.valueOf(databaseError));
             }
         });
 

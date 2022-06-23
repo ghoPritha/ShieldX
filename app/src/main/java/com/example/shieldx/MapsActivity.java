@@ -1288,23 +1288,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float  finalWarning= sourceLoc.distanceTo(destinationLoc)*0.25F;
         //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
 
-        if(distance < firstWarning && !firstAlarm) {
+        if(distance == firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
-            sendPushNotificationToFollower("!!! First Warning !!!"  , message);
+            sendPushNotificationToFollower(" First Warning "  , message);
         }
-        if(distance < secondWarning && !secondAlarm) {
+        if(distance == secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : "+ minutes + " : " +  seconds;
-            sendPushNotificationToFollower("!!! Second Warning !!!" , message);
+            sendPushNotificationToFollower(" Second Warning " , message);
         }
-        if(distance < finalWarning && !thirdAlarm) {
+        if(distance == finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
-            String message = userName + " is " + distance + " meters away from destination \n Remaining time :"+ minutes + " : " +  seconds+" !!! HURRY !!!";
-            sendPushNotificationToFollower("!!! Third Warning !!!" , message);
+            String message = userName + " is " + distance + " meters away from destination \n Remaining time :"+ minutes + " : " +  seconds+"  HURRY ";
+            sendPushNotificationToFollower(" Third Warning " , message);
         }
         if(distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
             SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
@@ -1313,7 +1313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             activityReference.child("activity date").setValue(currentDate);
             reachedDestination = true;
             String message = userName + " has reached destination " + destinatioName;
-            sendPushNotificationToFollower("!! Destination Reached !!!" , message);
+            sendPushNotificationToFollower(" Destination Reached " , message);
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Destination Reached")
                     .setMessage("You have reached your destination \n" + destinatioName)
@@ -1337,7 +1337,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             routeDeviation = false;
                             activityReference.child("routeDeviation").setValue("false");
                             String message = userName + " is deviated from route";
-                            sendPushNotificationToFollower("!! Out of Route !!!", message);
+                            sendPushNotificationToFollower(" Out of Route ", message);
                         }
                     }
                 }
