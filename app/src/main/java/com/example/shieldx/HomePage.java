@@ -43,7 +43,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     FirebaseDatabase rootNode;
 
     DatabaseReference activityReference;
-    private Boolean destinationReached;
+    private Boolean destinationReachedOrNewJourney = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +100,10 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    if (snapshot.child("destinationReached").exists()) {
-                        destinationReached = snapshot.child("destinationReached").getValue(Boolean.class);
+                    if (snapshot.child("destinationReachedOrNewJourney").exists()) {
+                        destinationReachedOrNewJourney = snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class);
                         int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
-                        if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
+                        if (!snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class)) {
                             newActivityText.setText("Resume Activity");
                             newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
@@ -123,7 +123,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
                             pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
                             pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
-                            pastActivities.setDestinationReached(snapshot.child("destinationReached").getValue(Boolean.class));
+                            pastActivities.setDestinationReached(snapshot.child("destinationReachedOrNewJourney").getValue(Boolean.class));
                             for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                                 Follower model = new Follower();
                                 Log.i("followersss", String.valueOf(d));
@@ -203,14 +203,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private void newActivitySetup(Serializable userData) {
         //New activity
         newActivityButton.setOnClickListener(v -> {
-            if (destinationReached) {
+            if (destinationReachedOrNewJourney) {
                 Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
                 homeIntent.putExtra("user_key", userData);
                 startActivity(homeIntent);
             } else {
                 Intent homeIntent = new Intent(HomePage.this, MapsActivity.class);
                 homeIntent.putExtra("user_key", userData);
-                homeIntent.putExtra("isThisDestinationSetup", true);
+                homeIntent.putExtra("isThisDestinationSetup", false);
                 startActivity(homeIntent);
             }
         });

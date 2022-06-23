@@ -130,8 +130,10 @@ public class NewActivityPage extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
+                        if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
+                            fetchJourneyData();
+                        }
                     } else {
-                        fetchJourneyData();
                     }
                 }
             }

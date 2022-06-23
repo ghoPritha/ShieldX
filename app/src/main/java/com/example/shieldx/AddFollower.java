@@ -262,9 +262,7 @@ public class AddFollower extends AppCompatActivity {
         rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").setValue(followerList);
-                }
+                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").push().setValue(followerList);
             }
 
             @Override

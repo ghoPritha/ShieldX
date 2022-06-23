@@ -99,7 +99,8 @@ public class SignUp extends AppCompatActivity {
                                                   lastname.setError(" Please Enter the Last Name ");
                                                   flag = true;
                                               }
-                                              if (TextUtils.isEmpty(phone.getText().toString().trim())) {
+                                              if (TextUtils.isEmpty(phone.getText().toString().trim())&& !Patterns.PHONE.matcher(phone.getText().toString().trim().toString()).matches()) {
+
                                                   phone.setError(" Please Enter the Phone Number");
                                                   flag = true;
                                               }

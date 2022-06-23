@@ -88,8 +88,10 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -219,12 +221,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onLongClick(View v) {
                 String message = null;
-                try {
-                    message = (userName + " " + getString(R.string.guardianAdded_userInDanger) + getAddress(currentLoc));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                sendPushNotificationToFollower( "!!!  DANGER !!!", message);
+                //+ getAddress(currentLoc)
+                message = userName + " " + getString(R.string.guardianAdded_userInDanger);
+                sendPushNotificationToFollower("!!!  DANGER !!!", message);
                 sendNotificationViaSmS(message);
                 return false;
             }
@@ -629,8 +628,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
                     if (currentMarker != null) {
                         currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
-                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     } else {
                         int height = 120;
                         int width = 120;
@@ -638,8 +637,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Bitmap b = bitmapdraw.getBitmap();
                         Bitmap pinMarker = Bitmap.createScaledBitmap(b, width, height, false);
                         currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(userName + " is here").icon(BitmapDescriptorFactory.fromBitmap(pinMarker)));
-                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
-                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
+//                        locationDatabasereference.child("Updatedlatitude").push().setValue(Double.toString(location.getLatitude()));
+//                        locationDatabasereference.child("Updatedlongitude").push().setValue(Double.toString(location.getLongitude()));
                     }
                     onNewLocation(location);
                 }
@@ -1308,7 +1307,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sendPushNotificationToFollower("!!! Third Warning !!!" , message);
         }
         if(distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
+            SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+            String currentDate = s.format(new Date());
             activityReference.child("destinationReached").setValue(true);
+            activityReference.child("activity date").setValue(currentDate);
             reachedDestination = true;
             String message = userName + " has reached destination " + destinatioName;
             sendPushNotificationToFollower("!! Destination Reached !!!" , message);
