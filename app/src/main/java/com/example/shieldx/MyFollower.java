@@ -67,24 +67,26 @@ public class MyFollower extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot d : snapshot.getChildren()) {
-                        Follower follower = snapshot.getValue(Follower.class);
-                        followerList.add(follower);
                         Log.d("followersList", String.valueOf(d));
-                    }
-                    for (Follower foll : followerList) {
+//
+//                        Log.d("followersList", String.valueOf(foll.getFollowerEmail()));
 
                         ContactModel model = new ContactModel();
-                        model.setEmail(foll.getFollowerEmail());
-
-                        model.setName(foll.getFollowerName());
-
-                        model.setNumber(foll.getFollowerNumber());
+                        Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+                        if (d.child("followerEmail").exists()) {
+                            model.setEmail(d.child("followerEmail").getValue(String.class));
+                        }
+                        if (d.child("followerName").exists()) {
+                            model.setName(d.child("followerName").getValue(String.class));
+                        }
+                        if (d.child("followerNumber").exists()) {
+                            model.setNumber(d.child("followerNumber").getValue(String.class));
+                        }
                         contactList.add(model);
-
+                        adapter = new MainAdapter(MyFollower.this, contactList);
+                        // set adapter
+                        recyclerView.setAdapter(adapter);
                     }
-                    adapter = new MainAdapter(MyFollower.this, contactList);
-                    // set adapter
-                    recyclerView.setAdapter(adapter);
                 }
             }
 

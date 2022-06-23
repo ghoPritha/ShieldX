@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -31,6 +32,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
@@ -55,6 +58,7 @@ public class AddFollower extends AppCompatActivity {
     DatabaseReference followerReference, activityReference;
     int maxId = 0;
     ArrayList<Follower> followerList = new ArrayList<>();
+    Follower follower;
     ArrayList<String> nameList = new ArrayList<>();
     Boolean isTheAddFollowerfromActivity;
 
@@ -232,7 +236,7 @@ public class AddFollower extends AppCompatActivity {
 
                         contactList.add(model);
                         nameList.add(contactName);
-                        Follower follower = new Follower(contactName, contactNumber, contactEmail, null);
+                        follower = new Follower(contactName, contactNumber, contactEmail, null);
                         followerList.add(follower);
                     }
                     c.close();
@@ -259,15 +263,36 @@ public class AddFollower extends AppCompatActivity {
 
     private void addFollowersToDB() {
         rootNode = FirebaseDatabase.getInstance();
-        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
+//        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").push().setValue(followerList);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").runTransaction(new Transaction.Handler() {
+            @NonNull
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").push().setValue(followerList);
-            }
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                String lastKey = "-1";
+                for (MutableData child: currentData.getChildren()) {
+                    lastKey = child.getKey();
+                }
+                int nextKey = Integer.parseInt(lastKey) + 1;
+                currentData.child("" + nextKey).setValue(follower);
+
+                // Set value and report transaction success
+                return Transaction.success(currentData);            }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d("Transaction:onComplete:" , String.valueOf(databaseError));
             }
         });
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
