@@ -182,7 +182,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             }
                             pastActivities.setFollowersList(listOffollower);
                         }
-                        activityReference.setValue(newActivity);
+                       // activityReference.setValue(newActivity);
 
                     }
                 } else {
@@ -220,7 +220,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                         }
                         pastActivities.setFollowersList(listOffollower);
                     }
-                    activityReference.setValue(newActivity);
+                    //activityReference.setValue(newActivity);
                 }
             }
 

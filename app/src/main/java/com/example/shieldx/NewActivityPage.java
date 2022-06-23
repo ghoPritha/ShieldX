@@ -47,7 +47,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NewActivityPage extends AppCompatActivity {
-
+    String SENT = "SMS_SENT";
+    String DELIVERED = "SMS_DELIVERED";
     //Initialise variables
     EditText searchDestination, etd;
     EditText text;
@@ -181,6 +182,7 @@ public class NewActivityPage extends AppCompatActivity {
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fetchJourneyData();
                 proceedToStartJourney();
             }
         });
@@ -253,7 +255,6 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-        fetchJourneyData();
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
                 .setMessage("How do you want to notify your followers ? ")
@@ -328,14 +329,14 @@ public class NewActivityPage extends AppCompatActivity {
                         Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
                         if (d.child("followerEmail").exists()) {
                             model.setEmail(d.child("followerEmail").getValue(String.class));
-                            followerEmails.add(d.child("follower_Email").getValue(String.class));
+                            followerEmails.add(d.child("followerEmail").getValue(String.class));
                         }
                         if (d.child("followerName").exists()) {
                             model.setName(d.child("followerName").getValue(String.class));
                         }
                         if (d.child("followerNumber").exists()) {
                             model.setNumber(d.child("followerNumber").getValue(String.class));
-                            followerNumbers.add(d.child("follower_Number").getValue(String.class));
+                            followerNumbers.add(d.child("followerNumber").getValue(String.class));
                         }
                         contactList.add(model);
                         adapter = new MainAdapter(NewActivityPage.this, contactList);
@@ -467,13 +468,21 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void sendSMS() {
-        String message = username + " has started a journey from " + source + " to " + destination + " expected duration: " + duration;
+        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(SENT), 0);
+
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(DELIVERED), 0);
+        String message = username + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
 
         ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-
-        for (String number : followerNumbers) {
-            SmsManager mySmsManager = SmsManager.getDefault();
-            mySmsManager.sendTextMessage("number", null, "message", null, null);
+        if (followerNumbers != null && followerNumbers.size() > 0) {
+            for (String number : followerNumbers) {
+                Log.d("numberrr", number);
+                SmsManager mySmsManager = SmsManager.getDefault();
+                mySmsManager.sendTextMessage(""+number, null,
+                        ""+message, sentPI, deliveredPI);
+            }
         }
     }
 }
