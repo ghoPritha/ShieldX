@@ -253,7 +253,7 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-      //  fetchJourneyData();
+        fetchJourneyData();
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Start Activity")
                 .setMessage("How do you want to notify your followers ? ")
@@ -473,7 +473,7 @@ public class NewActivityPage extends AppCompatActivity {
 
         for (String number : followerNumbers) {
             SmsManager mySmsManager = SmsManager.getDefault();
-            mySmsManager.sendTextMessage(number, null, message, null, null);
+            mySmsManager.sendTextMessage("number", null, "message", null, null);
         }
     }
 }
