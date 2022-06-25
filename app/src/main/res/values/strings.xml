@@ -18,7 +18,7 @@
     <string name="userName">John</string>
     <string name="userEmail">john.nash@gmail.com</string>
     <string name="contacts">Add Follower</string>
-    <string name="pastActivities">Past Activities</string>
+    <string name="pastActivities">Past Journey</string>
     <string name="follower">My Followers</string>
     <string name="newActivity">New Activity</string>
     <string name="addFollower">Add Follower</string>

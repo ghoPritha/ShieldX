@@ -42,8 +42,7 @@ import java.util.ArrayList;
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact, addFromMyFollower, addFromNewFollower;
-    ImageButton backButton;
+    ImageView addFromContact, addFromMyFollower, addFromNewFollower,backButton;
     User userData;
     int userId;
     TextView userName;

@@ -87,7 +87,7 @@
         android:id="@+id/locationSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorTrendingStart"
+        android:background="@color/dashboardBackground"
         android:layout_gravity="bottom"
         android:orientation="vertical">
 <LinearLayout
@@ -96,8 +96,8 @@
     android:layout_margin="6dp"
     android:orientation="horizontal">
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
         android:layout_gravity="center"
         android:src="@drawable/ic_source"/>
         <EditText
@@ -120,8 +120,8 @@
             android:layout_margin="6dp"
             android:orientation="horizontal">
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_destination"/>
 
@@ -151,24 +151,23 @@
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintStart_toStartOf="parent">-->
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20sp"
-        android:background="@color/teal_700">
+        android:layout_marginTop="20sp"
+        android:padding="10sp"
+        android:background="@color/dashboardBackground">
 
 
-        <ImageButton
+        <ImageView
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="43dp"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:layout_marginStart="20sp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:rotationX="2"
-            android:src="@drawable/ic_back"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/etd"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:src="@drawable/ic_save" />
 
         <TextView
             android:id="@+id/etd"
@@ -179,11 +178,10 @@
             android:hint="Expected time"
             android:src="@drawable/ic_search"
             android:textColor="@color/white"
+            android:textColorHint="@color/colorGrey"
             android:textSize="20sp"
             android:textStyle="bold|italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_centerInParent="true"/>
 
         <LinearLayout
             android:id="@+id/countDownTimer"
@@ -191,6 +189,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
+            android:layout_centerInParent="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -214,14 +213,14 @@
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/ic_start" />
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:background="@color/colorTrendingStart"
+            android:background="@color/dashboardBackground"
             android:layout_width="match_parent"
             android:layout_height="120sp"
-            android:layout_margin="10sp"
+        android:padding="10sp"
             tools:listitem="@layout/item_contact"
             android:layout_gravity="bottom"
             app:layout_constraintBottom_toBottomOf="parent"

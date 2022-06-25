@@ -2,6 +2,7 @@ package com.example.shieldx;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -49,6 +50,7 @@ public class NewFollowerManually extends AppCompatActivity {
         setContentView(R.layout.activity_new_follower_manually);
         putname = (EditText) findViewById(R.id.putname);
         putnumber = (EditText) findViewById(R.id.putnumber);
+        putnumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         putemail = (EditText) findViewById(R.id.putemail);
         saveButton  = findViewById(R.id.saveButton);
 

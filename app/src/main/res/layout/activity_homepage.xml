@@ -49,11 +49,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/testHello"
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/testHello"
                 app:layout_constraintTop_toTopOf="parent" />
             <!--            app:tint="@color/white" />-->
             <androidx.appcompat.widget.Toolbar
@@ -146,7 +144,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutFavorites"
+                android:id="@+id/layooutJounryeList"
                 android:layout_width="170sp"
                 android:layout_height="171sp"
                 android:layout_marginTop="22sp"
@@ -224,7 +222,7 @@
                 app:layout_constraintEnd_toEndOf="@id/layoutMyFollower"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/layoutSettings"
-                app:layout_constraintTop_toBottomOf="@id/layoutFavorites">
+                app:layout_constraintTop_toBottomOf="@id/layooutJounryeList">
 
                 <TextView
                     android:id="@+id/newActivity"

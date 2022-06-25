@@ -394,8 +394,8 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/circular_background"
             android:text="@string/startActivity"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 <!--    <EditText-->
