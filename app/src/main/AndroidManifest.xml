@@ -71,7 +71,7 @@
             android:name=".Notification"
             android:exported="false" />
         <activity
-            android:name=".StartJourney"
+            android:name=".PastJourney"
             android:exported="false" />
         <activity
             android:name=".NewFollowerManually"

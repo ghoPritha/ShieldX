@@ -2,15 +2,16 @@ package com.example.shieldx.DAO;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.List;
 
-public class ActivityLog {
+public class ActivityLog implements Serializable {
 
     LatLng currentLocation, destination, source;
     String userMail, userName, destinationName, sourceName, modeOfTransport, duration;
     Long durationInSeconds;
-    Boolean journeyCompleted, destinationReached;
+    Boolean journeyCompleted, destinationReached, aborted;
     Time expectedTime;
     List<Follower> followersList;
 
@@ -150,5 +151,13 @@ public class ActivityLog {
 
     public void setDurationInSeconds(Long durationInSeconds) {
         this.durationInSeconds = durationInSeconds;
+    }
+
+    public Boolean getAborted() {
+        return aborted;
+    }
+
+    public void setAborted(Boolean aborted) {
+        this.aborted = aborted;
     }
 }

@@ -48,6 +48,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NewActivityPage extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 3;
     String SENT = "SMS_SENT";
     String DELIVERED = "SMS_DELIVERED";
     //Initialise variables
@@ -60,7 +61,7 @@ public class NewActivityPage extends AppCompatActivity {
     LinearLayout expandedLayout, layoutEtd, addedFollower;
     CardView outerLayout;
     RecyclerView recyclerView;
-    String duration, source, destination, username;
+    String duration, source, destination, username, usermail;
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
@@ -75,7 +76,6 @@ public class NewActivityPage extends AppCompatActivity {
     DatabaseReference activityReference, followerReference;
     ArrayList<String> followerNumbers = new ArrayList<>();
     ArrayList<String> followerEmails = new ArrayList<>();
-    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     private boolean cantStartActivity=false;
 
     @Override
@@ -85,6 +85,7 @@ public class NewActivityPage extends AppCompatActivity {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
+//        newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         etd = findViewById(R.id.etd);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
@@ -106,11 +107,13 @@ public class NewActivityPage extends AppCompatActivity {
         ActivityLog newActivity = new ActivityLog();
         if (userData != null) {
             userName.setText(userData.getFirstName());
-            newActivity.setUserMail(userData.encodedEmail());
-            newActivity.setUserName(userData.getFirstName());
+            username = userData.getFirstName();
+            usermail = userData.encodedEmail();
+//            newActivity.setUserMail(usermail);
+//            newActivity.setUserName(userData.getFirstName());
         }
-        Toast.makeText(NewActivityPage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
-        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+        Toast.makeText(NewActivityPage.this, usermail, Toast.LENGTH_LONG).show();
+        activityReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
 //        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -129,6 +132,11 @@ public class NewActivityPage extends AppCompatActivity {
 
         enterDestiantion();
         addFollower();
+//        if (newOrExistingJourney) {
+//
+//        } else {
+//            fetchJourneyData();
+//        }
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -178,7 +186,7 @@ public class NewActivityPage extends AppCompatActivity {
                 listOffollower.add(model);
             }
             pastActivities.setFollowersList(listOffollower);
-            activityReference.child("Activity History").push().setValue(pastActivities);
+            //activityReference.child("Activity History").push().setValue(pastActivities);
         }
     }
 
@@ -188,6 +196,31 @@ public class NewActivityPage extends AppCompatActivity {
             public void onClick(View v) {
                 fetchJourneyData();
                 proceedToStartJourney();
+//                if (destination == null) {
+//                    final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
+//                            .setTitle("Error")
+//                            .setMessage("Please provide Destination location ")
+//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                }
+//                            })
+//                            .show();
+//                } else {
+//                    if (addedFollower.getVisibility() == View.GONE) {
+//                        final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
+//                                .setTitle("Error")
+//                                .setMessage("Please add follower ")
+//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                    }
+//                                })
+//                                .show();
+//                    } else {
+//                        proceedToStartJourney();
+//                    }
+//                }
             }
         });
     }
@@ -311,8 +344,8 @@ public class NewActivityPage extends AppCompatActivity {
             username = userData.getFirstName();
         }
         DatabaseReference fromReference, toReference;
-//        fromReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-//       // toReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+//        fromReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
+//       // toReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
 //        fromReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -336,8 +369,8 @@ public class NewActivityPage extends AppCompatActivity {
 //
 //            }
 //        });
-        followerReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
+        followerReference = rootNode.getReference("ACTIVITY_LOG").child(usermail).child("followersList");
+        //activityReference.orderByChild("userMail").equalTo(usermail);
         followerReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -489,56 +522,48 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void sendSMS() {
-
-
-        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
-                new Intent(SENT), 0);
-
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
-                new Intent(DELIVERED), 0);
-        String message = username + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
+//        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+//                new Intent(SENT), 0);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-        }
-        else if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                == PackageManager.PERMISSION_GRANTED) {
-            if (followerNumbers != null && followerNumbers.size() > 0) {
-                for (String number : followerNumbers) {
-                    Log.d("numberrr", number);
-                    SmsManager mySmsManager;
-//                    SmsManager mySmsManager = SmsManager.getDefault();
-                    //Context.getSystemService(SmsManager.class)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mySmsManager = getSystemService(SmsManager.class);
-                    } else {
-                        mySmsManager = SmsManager.getDefault();
-                    }
 
-                    mySmsManager.sendTextMessage("+4915758198817", null,
-                            message, sentPI, deliveredPI);
-                    Toast.makeText(getApplicationContext(), "SMS sent",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    101);
+        } else {
+            SendTextMsg();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_SEND_SMS: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sendSMS();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "SMS faild, please try again.", Toast.LENGTH_LONG).show();
-                }
+
+        if (grantResults.length > 0 && requestCode == 101
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            SendTextMsg();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "SMS faild, please try again.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void SendTextMsg() {
+        Intent intent = new Intent(getApplicationContext(), NewActivityPage.class);
+        PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(DELIVERED), 0);
+        String message = username + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
+
+        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+        if (followerNumbers != null && followerNumbers.size() > 0) {
+            for (String number : followerNumbers) {
+                Log.d("numberrr", number);
+                SmsManager mySmsManager = SmsManager.getDefault();
+                mySmsManager.sendTextMessage(""+number, null,
+                        ""+message, sentPI, deliveredPI);
             }
         }
     }
