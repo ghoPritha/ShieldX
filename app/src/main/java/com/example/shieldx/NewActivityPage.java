@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,6 +75,8 @@ public class NewActivityPage extends AppCompatActivity {
     DatabaseReference activityReference, followerReference;
     ArrayList<String> followerNumbers = new ArrayList<>();
     ArrayList<String> followerEmails = new ArrayList<>();
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
+    private boolean cantStartActivity=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +138,7 @@ public class NewActivityPage extends AppCompatActivity {
                             fetchJourneyData();
                         }
                     } else {
+                        cantStartActivity=true;
                     }
                 }
             }
@@ -255,32 +259,49 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Start Activity")
-                .setMessage("How do you want to notify your followers ? ")
-                .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                        myIntent.putExtra("user_key", (Serializable) userData);
-                        myIntent.putExtra("isThisDestinationSetup", false);
-                        sendSMS();
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                        myIntent.putExtra("user_key", (Serializable) userData);
-                        myIntent.putExtra("isThisDestinationSetup", false);
-                        // startActivity(myIntent);
+        if(cantStartActivity==false && searchDestination.getText().length() > 0 && followerNumbers.size() > 0 ) {
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Start Activity")
+                    .setMessage("How do you want to notify your followers ? ")
+                    .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            myIntent.putExtra("isThisDestinationSetup", false);
+                            sendSMS();
+                            startActivity(myIntent);
+                        }
+                    })
+                    .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            myIntent.putExtra("isThisDestinationSetup", false);
+                            // startActivity(myIntent);
 //                        sendSMS();
-                        // fetchJourneyData();
-                        startActivity(myIntent);
-                    }
-                })
-                .show();
+                            // fetchJourneyData();
+                            startActivity(myIntent);
+                        }
+                    })
+                    .show();
+        }
+        else{
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Start Activity")
+                    .setMessage("Please enter both destination and followers to proceed!!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                            Intent myIntent = new Intent(NewActivityPage.this, NewActivityPage.class);
+//                            myIntent.putExtra("user_key", (Serializable) userData);
+//                            myIntent.putExtra("isThisDestinationSetup", false);
+//                            startActivity(myIntent);
+                        }
+                    })
+                    .show();
+        }
 //        createPushNotification();
     }
 
@@ -475,13 +496,40 @@ public class NewActivityPage extends AppCompatActivity {
                 new Intent(DELIVERED), 0);
         String message = username + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
 
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-        if (followerNumbers != null && followerNumbers.size() > 0) {
-            for (String number : followerNumbers) {
-                Log.d("numberrr", number);
-                SmsManager mySmsManager = SmsManager.getDefault();
-                mySmsManager.sendTextMessage(""+number, null,
-                        ""+message, sentPI, deliveredPI);
+        }
+        else if(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (followerNumbers != null && followerNumbers.size() > 0) {
+                for (String number : followerNumbers) {
+                    Log.d("numberrr", number);
+                    SmsManager mySmsManager = SmsManager.getDefault();
+                    //Context.getSystemService(SmsManager.class)
+                    mySmsManager.sendTextMessage("+4915758198817", null,
+                            message, sentPI, deliveredPI);
+                    Toast.makeText(getApplicationContext(), "SMS sent",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_SEND_SMS: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sendSMS();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "SMS faild, please try again.", Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

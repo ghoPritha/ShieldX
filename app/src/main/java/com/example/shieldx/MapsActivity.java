@@ -880,8 +880,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     convertToSeconds(duration);
                     activityReference.child("destinationName").setValue(destinationTextBox.getText().toString());
                     activityReference.child("sourceName").setValue(sourceTextBox.getText().toString());
+                    if(destination!=null)
                     activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
+                    if(etd!=null)
                     activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
                     activityReference.child("modeOfTransport").setValue(selectedTravelMode);
                     activityReference.child("duration").setValue(etd.getText().toString());
