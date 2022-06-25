@@ -76,7 +76,6 @@ public class NewActivityPage extends AppCompatActivity {
     DatabaseReference activityReference, followerReference;
     ArrayList<String> followerNumbers = new ArrayList<>();
     ArrayList<String> followerEmails = new ArrayList<>();
-    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     private boolean cantStartActivity=false;
 
     @Override
@@ -319,24 +318,6 @@ public class NewActivityPage extends AppCompatActivity {
                     })
                     .show();
         }
-        else{
-            final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle("Start Activity")
-                    .setMessage("Please enter both destination and followers to proceed!!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-//                            Intent myIntent = new Intent(NewActivityPage.this, NewActivityPage.class);
-//                            myIntent.putExtra("user_key", (Serializable) userData);
-//                            myIntent.putExtra("isThisDestinationSetup", false);
-//                            startActivity(myIntent);
-                        }
-                    })
-                    .show();
-        }
-//        createPushNotification();
-    }
-
     private void fetchJourneyData() {
         rootNode = FirebaseDatabase.getInstance();
         DatabaseReference fromReference, toReference;
