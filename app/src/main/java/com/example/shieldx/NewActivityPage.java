@@ -489,6 +489,8 @@ public class NewActivityPage extends AppCompatActivity {
 //    }
 
     public void sendSMS() {
+
+
         PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
                 new Intent(SENT), 0);
 
@@ -507,8 +509,15 @@ public class NewActivityPage extends AppCompatActivity {
             if (followerNumbers != null && followerNumbers.size() > 0) {
                 for (String number : followerNumbers) {
                     Log.d("numberrr", number);
-                    SmsManager mySmsManager = SmsManager.getDefault();
+                    SmsManager mySmsManager;
+//                    SmsManager mySmsManager = SmsManager.getDefault();
                     //Context.getSystemService(SmsManager.class)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        mySmsManager = getSystemService(SmsManager.class);
+                    } else {
+                        mySmsManager = SmsManager.getDefault();
+                    }
+
                     mySmsManager.sendTextMessage("+4915758198817", null,
                             message, sentPI, deliveredPI);
                     Toast.makeText(getApplicationContext(), "SMS sent",
