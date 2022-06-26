@@ -1,6 +1,7 @@
 package com.example.shieldx;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -9,7 +10,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,6 +34,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
@@ -244,6 +246,7 @@ public class AddFollower extends AppCompatActivity {
                 followerList = (ArrayList<Follower>) data.getSerializableExtra("addedFollower");
 
                 for (Follower f : followerList) {
+                    follower = f;
                     ContactModel model = new ContactModel();
                     //set name
                     model.setName(f.getFollowerName());
@@ -257,30 +260,52 @@ public class AddFollower extends AppCompatActivity {
         adapter = new MainAdapter(this, contactList);
         // set adapter
         recyclerView.setAdapter(adapter);
-        addFollowersToDB();
+        if (follower != null && follower.getFollowerName() != null) {
+            addFollowersToDB();
+        } else {
+            final AlertDialog dialog = new AlertDialog.Builder(AddFollower.this)
+                    .setTitle("Error")
+                    .setMessage("Please add follower first ")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .show();
+        }
     }
 
     private void addFollowersToDB() {
         rootNode = FirebaseDatabase.getInstance();
-        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").runTransaction(new Transaction.Handler() {
-            @NonNull
+        DatabaseReference userReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList");
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                String lastKey = "-1";
-                for (MutableData child: currentData.getChildren()) {
-                    lastKey = child.getKey();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getKey() == "followersList") {
+                    Query query = userReference.orderByChild("followerName").equalTo(follower.getFollowerName());
+                    Log.d("query", String.valueOf(query));
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                follower = null;
+                            } else {
+                                extracted(userReference);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                } else {
+                    extracted(userReference);
                 }
-                int nextKey = Integer.parseInt(lastKey) + 1;
-                currentData.child("" + nextKey).setValue(follower);
-
-                // Set value and report transaction success
-                return Transaction.success(currentData);            }
+            }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b,
-                                   DataSnapshot dataSnapshot) {
-                // Transaction completed
-                Log.d("Transaction:onComplete:" , String.valueOf(databaseError));
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
@@ -300,6 +325,31 @@ public class AddFollower extends AppCompatActivity {
             });
         }
     }
+
+    private void extracted(DatabaseReference userReference) {
+        userReference.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                String lastKey = "-1";
+                for (MutableData child : currentData.getChildren()) {
+                    lastKey = child.getKey();
+                }
+                int nextKey = Integer.parseInt(lastKey) + 1;
+                currentData.child("" + nextKey).setValue(follower);
+
+                // Set value and report transaction success
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d("Transaction:onComplete:", String.valueOf(databaseError));
+            }
+        });
+    }
+
     private void IntializeView() {
         //assign variable
         backButton = findViewById(R.id.backButton);

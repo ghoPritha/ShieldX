@@ -1294,19 +1294,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float  finalWarning= sourceLoc.distanceTo(destinationLoc)*0.25F;
         //Formula id reverse .75 for 25% and .25 for 75% because the distance variable calculating the remaining distance in the journey
 
-        if (distance == firstWarning) {
+        if (distance < firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
             sendPushNotificationToFollower(" First Warning ", message);
         }
-        if (distance == secondWarning) {
+        if (distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
             sendPushNotificationToFollower(" Second Warning ", message);
         }
-        if (distance == finalWarning) {
+        if (distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time :" + minutes + " : " + seconds + "  HURRY ";
