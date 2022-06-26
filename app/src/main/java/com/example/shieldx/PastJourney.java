@@ -3,22 +3,15 @@ package com.example.shieldx;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.DAO.User;
-import com.example.shieldx.Util.ContactModel;
 import com.example.shieldx.Util.JourneyAdapter;
 import com.example.shieldx.Util.JourneyModel;
-import com.example.shieldx.Util.MainAdapter;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +40,7 @@ public class PastJourney extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         rootNode = FirebaseDatabase.getInstance();
-        pastJourneyreference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("Past activities");
+        pastJourneyreference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
         //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         pastJourneyreference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -71,8 +64,17 @@ public class PastJourney extends AppCompatActivity {
                         if (d.child("duration").exists()) {
                             model.setDuration(d.child("duration").getValue(String.class));
                         }
+                        if (d.child("destinationReached").exists()) {
+                            model.setDestinationReached(d.child("destinationReached").getValue(Boolean.class));
+                        }
                         if (d.child("modeOfTransport").exists()) {
                             model.setModeOfTransport(d.child("modeOfTransport").getValue(String.class));
+                        }
+                        if (d.child("activityDate").exists()) {
+                            model.setActivityDate(d.child("activityDate").getValue(String.class));
+                        }
+                        if(d.child("journeyCompleted").exists()){
+                            model.setJourneyCompleted(d.child("journeyCompleted").getValue(Boolean.class));
                         }
                         journeyList.add(model);
                         adapter = new JourneyAdapter(PastJourney.this, journeyList);

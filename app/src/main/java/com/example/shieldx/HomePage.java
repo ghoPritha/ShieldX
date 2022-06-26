@@ -21,14 +21,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.shieldx.DAO.ActivityLog;
 import com.example.shieldx.DAO.Follower;
 import com.example.shieldx.DAO.User;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
@@ -190,27 +188,22 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     private void extractPastActivities(@NonNull DataSnapshot snapshot) {
         ArrayList<Follower> listOffollower = new ArrayList<>();
-        pastActivities.setUserMail(snapshot.child("userMail").getValue(String.class));
-        if (snapshot.child("destination").exists())
-            pastActivities.setDestination(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
         if (snapshot.child("destinationName").exists())
             pastActivities.setDestinationName(snapshot.child("destinationName").getValue(String.class));
-        if (snapshot.child("source").exists())
-            pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
-        if (snapshot.child("abo").exists())
-            pastActivities.setSource(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class)));
         if (snapshot.child("sourceName").exists())
             pastActivities.setSourceName(snapshot.child("sourceName").getValue(String.class));
         if (snapshot.child("modeOfTransport").exists())
             pastActivities.setModeOfTransport(snapshot.child("modeOfTransport").getValue(String.class));
         if (snapshot.child("duration").exists())
             pastActivities.setDuration(snapshot.child("duration").getValue(String.class));
-        if (snapshot.child("durationInSeconds").exists())
-            pastActivities.setDurationInSeconds(snapshot.child("durationInSeconds").getValue(Long.class));
         if (snapshot.child("journeyCompleted").exists())
             pastActivities.setJourneyCompleted(snapshot.child("journeyCompleted").getValue(Boolean.class));
         if (snapshot.child("destinationReached").exists())
             pastActivities.setDestinationReached(snapshot.child("destinationReached").getValue(Boolean.class));
+        if (snapshot.child("aborted").exists())
+            pastActivities.setAborted(snapshot.child("aborted").getValue(Boolean.class));
+        if (snapshot.child("activity date").exists())
+            pastActivities.setActivityDate(snapshot.child("activity date").getValue(String.class));
         if (snapshot.child("followersList").exists()) {
             for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                 Follower model = new Follower();
@@ -225,33 +218,16 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     private void addPastActivitytoDB(ActivityLog pastActivities) {
-        Query query = activityReference.child("Past activities").orderByChild("destinationName").equalTo(pastActivities.getDestinationName());
-        Log.d("query", String.valueOf(query));
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    alreadyAdded = true;
-                } else {
-                    alreadyAdded = false;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-//        activityReference.child("Past activities").addListenerForSingleValueEvent(new ValueEventListener() {
+//        Query query = activityReference.child("Past activities").orderByChild("destinationName").equalTo(pastActivities.getDestinationName());
+//        Log.d("query", String.valueOf(query));
+//        query.addValueEventListener(new ValueEventListener() {
 //            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot data : dataSnapshot.getChildren()) {
-//                    if (data.child("destinationName").equals(pastActivities.getDestinationName())) {
-//                        //do ur stuff
-//                        alreadyAdded = true;
-//                    } else {
-//                        //do something if not exists
-//                    }
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    alreadyAdded = true;
+//
+//                } else {
+//                    alreadyAdded = false;
 //                }
 //            }
 //
@@ -260,30 +236,47 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 //
 //            }
 //        });
-        if (!alreadyAdded) {
-            activityReference.child("Past activities").runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                    String lastKey = "-1";
-                    for (MutableData child : currentData.getChildren()) {
-                        lastKey = child.getKey();
-                    }
-                    int nextKey = Integer.parseInt(lastKey) + 1;
-                    // currentData.child("" + nextKey).setValue(pastActivities);
-
-                    // Set value and report transaction success
-                    return Transaction.success(currentData);
+//        DatabaseReference pastactivityReference= rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
+//        pastactivityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if(snapshot.exists()){
+//
+//                }
+//                else{
+//                    pastactivityReference.setValue(pastActivities);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+        DatabaseReference pastactivityReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
+        pastactivityReference.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                String lastKey = "-1";
+                for (MutableData child : currentData.getChildren()) {
+                    lastKey = child.getKey();
                 }
+                int nextKey = Integer.parseInt(lastKey) + 1;
+                currentData.child("" + nextKey).setValue(pastActivities);
 
-                @Override
-                public void onComplete(DatabaseError databaseError, boolean b,
-                                       DataSnapshot dataSnapshot) {
-                    // Transaction completed
-                    Log.d("Transaction:onComplete:", String.valueOf(databaseError));
-                }
-            });
-        }
+                // Set value and report transaction success
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d("Transaction:onComplete:", String.valueOf(databaseError));
+            }
+        });
+
     }
 
     @Override

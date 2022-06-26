@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dashboardBackground"
     tools:context=".PastJourney">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,8 +46,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0sp"
+        android:layout_margin="20sp"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -54,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            tools:ignore="MissingConstraints"
             tools:listitem="@layout/item_journey"></androidx.recyclerview.widget.RecyclerView>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

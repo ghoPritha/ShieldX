@@ -60,7 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public Cursor checkDataOnLogin(String email, String password){
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where email_id=? or password=?", new String[] {email, password});
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where email_id=? and password=?", new String[] {email, password});
         if (cursor.moveToFirst()) //cursor.getCount()>0)
             return cursor;
         else
@@ -68,7 +68,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public boolean checkDataOnSignUp(String phone,String email){
         SQLiteDatabase shieldXDB = this.getWritableDatabase();
-        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=? or email_id=?", new String[] {phone,email});
+        Cursor cursor = shieldXDB.rawQuery("Select * from USERS where phone_number=? and email_id=?", new String[] {phone,email});
         if (cursor.moveToFirst())
             return true;
         else

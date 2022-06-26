@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="10sp"
     android:layout_marginBottom="8sp"
-    android:padding="20sp"
     android:background="@color/white">
 
     <RelativeLayout
@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -31,16 +32,25 @@
             android:layout_height="20sp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:layout_gravity="bottom"
             android:background="@drawable/circular_background"
-            android:contentDescription="@string/app_name"
             app:tint="@color/white" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
+            android:layout_toEndOf="@+id/tags"
             android:orientation="vertical">
+            <TextView
+                android:id="@+id/date"
+                android:layout_marginStart="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/teal_700"
+                android:layout_margin="5sp" />
 
             <TextView
                 android:id="@+id/source"
@@ -48,15 +58,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/teal_700"
-                android:textStyle="bold" />
+                android:layout_margin="5sp" />
 
             <TextView
                 android:id="@+id/destination"
                 android:layout_marginStart="25dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/teal_700"
-                android:textStyle="bold" />
+                android:layout_margin="5sp"
+                android:textColor="@color/teal_700"/>
 
             <TextView
                 android:id="@+id/duration"
@@ -64,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:textColor="@color/teal_700"
-                android:textStyle="bold" />
+                android:layout_margin="5sp" />
 
 
             <TextView
@@ -73,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:textColor="@color/teal_700"
-                android:textStyle="bold" />
+                android:layout_margin="5sp" />
 
         </LinearLayout>
 

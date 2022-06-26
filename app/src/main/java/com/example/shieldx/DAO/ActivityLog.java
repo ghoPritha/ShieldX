@@ -9,7 +9,7 @@ import java.util.List;
 public class ActivityLog implements Serializable {
 
     LatLng currentLocation, destination, source;
-    String userMail, userName, destinationName, sourceName, modeOfTransport, duration;
+    String userMail, userName, destinationName, sourceName, modeOfTransport, duration, activityDate;
     Long durationInSeconds;
     Boolean journeyCompleted, destinationReached, aborted;
     Time expectedTime;
@@ -159,5 +159,13 @@ public class ActivityLog implements Serializable {
 
     public void setAborted(Boolean aborted) {
         this.aborted = aborted;
+    }
+
+    public String getActivityDate() {
+        return activityDate;
+    }
+
+    public void setActivityDate(String activityDate) {
+        this.activityDate = activityDate;
     }
 }

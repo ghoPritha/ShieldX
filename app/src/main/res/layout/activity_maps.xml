@@ -55,30 +55,30 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="150sp">
-        <ImageView
-            android:id="@+id/alertButton"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="8sp"
-            android:layout_marginTop="8sp"
-            android:layout_marginEnd="8sp"
-            android:layout_marginBottom="8sp"
-            android:background="@drawable/ic_siren" />
+<!--        <ImageView-->
+<!--            android:id="@+id/alertButton"-->
+<!--            android:layout_width="50sp"-->
+<!--            android:layout_height="50sp"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_marginStart="8sp"-->
+<!--            android:layout_marginTop="8sp"-->
+<!--            android:layout_marginEnd="8sp"-->
+<!--            android:layout_marginBottom="8sp"-->
+<!--            android:background="@drawable/ic_siren" />-->
 
 
-        <ImageView
-            android:id="@+id/abort"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="8sp"
-            android:layout_marginStart="8sp"
-            android:layout_marginTop="8sp"
-            android:layout_marginEnd="8sp"
-            android:layout_marginBottom="8sp"
-            android:onClick="abortActivity"
-            android:background="@drawable/ic_multiply" />
+<!--        <ImageView-->
+<!--            android:id="@+id/abort"-->
+<!--            android:layout_width="50sp"-->
+<!--            android:layout_height="50sp"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_margin="8sp"-->
+<!--            android:layout_marginStart="8sp"-->
+<!--            android:layout_marginTop="8sp"-->
+<!--            android:layout_marginEnd="8sp"-->
+<!--            android:layout_marginBottom="8sp"-->
+<!--            android:onClick="abortActivity"-->
+<!--            android:background="@drawable/ic_multiply" />-->
 
     </LinearLayout>
 <!--    -->
@@ -163,11 +163,20 @@
             android:id="@+id/backButton"
             android:layout_width="30sp"
             android:layout_height="30sp"
-            android:layout_marginStart="20sp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="20sp"
             android:rotationX="2"
             android:src="@drawable/ic_save" />
+
+        <ImageView
+            android:id="@+id/alertButton"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10sp"
+            android:background="@drawable/ic_siren" />
 
         <TextView
             android:id="@+id/etd"
@@ -213,6 +222,17 @@
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/ic_start" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/abort"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10sp"
+            android:background="@drawable/ic_multiply"
+            android:onClick="abortActivity" />
+
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView

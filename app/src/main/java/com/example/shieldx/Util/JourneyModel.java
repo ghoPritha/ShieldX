@@ -1,14 +1,8 @@
 package com.example.shieldx.Util;
 
-import com.example.shieldx.DAO.Follower;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.sql.Time;
-import java.util.List;
-
 public class JourneyModel {
 
-    String destinationName, sourceName, modeOfTransport, duration, followers;
+    String destinationName, sourceName, modeOfTransport, duration, followers, activityDate;
     Boolean journeyCompleted, destinationReached, aborted;
 
     public String getDestinationName() {
@@ -73,5 +67,13 @@ public class JourneyModel {
 
     public void setFollowers(String followers) {
         this.followers = followers;
+    }
+
+    public String getActivityDate() {
+        return activityDate;
+    }
+
+    public void setActivityDate(String activityDate) {
+        this.activityDate = activityDate;
     }
 }

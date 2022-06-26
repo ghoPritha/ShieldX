@@ -1,6 +1,7 @@
 package com.example.shieldx.Util;
 
 import android.app.Activity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,25 +42,34 @@ public class JourneyAdapter  extends RecyclerView.Adapter<JourneyAdapter.ViewHol
         //Initialize Contact Model
         JourneyModel model = arrayList.get(position);
 
-        holder.followers.setText(model.getFollowers());
+        if (model.getFollowers() != null)
 
-        holder.source.setText("Source : " + model.getSourceName());
+            holder.followers.setText(model.getFollowers());
 
-        holder.destination.setText("Destination : " + model.getDestinationName());
+        if (model.getSourceName() != null)
 
-        holder.duration.setText("Duration : " + model.getDuration());
+            holder.source.setText(Html.fromHtml( "<b>" + "Source:" + "</b> " + model.getSourceName()));
 
-        if(model.getAborted()){
+        if (model.getDestinationName() != null)
+
+            holder.destination.setText(Html.fromHtml( "<b>" + "Destination:" + "</b> " + model.getDestinationName()));
+
+        if (model.getDuration() != null)
+
+            holder.duration.setText(Html.fromHtml( "<b>" + "Duration:" + "</b> " + model.getDuration()));
+
+        if (model.getActivityDate() != null)
+            holder.date.setText(Html.fromHtml( "<b>" + "Activity Date:" + "</b> " + model.getActivityDate()));
+
+        if (model.getAborted()) {
             holder.aborted.setImageResource(R.drawable.abort_background);
         }
 
-        if(model.getModeOfTransport().equalsIgnoreCase("walking")){
+        if (model.getModeOfTransport().equalsIgnoreCase("walking")) {
             holder.modeOfTransport.setBackgroundResource(R.drawable.ic_walking);
-        }
-        else if(model.getModeOfTransport().equalsIgnoreCase("driving")){
+        } else if (model.getModeOfTransport().equalsIgnoreCase("driving")) {
             holder.modeOfTransport.setBackgroundResource(R.drawable.ic_driving);
-        }
-        else{
+        } else {
             holder.modeOfTransport.setBackgroundResource(R.drawable.ic_bicycle);
         }
 
@@ -72,8 +82,9 @@ public class JourneyAdapter  extends RecyclerView.Adapter<JourneyAdapter.ViewHol
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView source,destination, duration, followers;
+        TextView source, destination, duration, followers, date;
         ImageView aborted, modeOfTransport;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             //assign variable
@@ -83,6 +94,7 @@ public class JourneyAdapter  extends RecyclerView.Adapter<JourneyAdapter.ViewHol
             modeOfTransport = itemView.findViewById(R.id.modeOfTransport);
             followers = itemView.findViewById(R.id.followers);
             aborted = itemView.findViewById(R.id.abort);
+            date = itemView.findViewById(R.id.date);
             
             //tvEmail = itemView.findViewById(R.id.tv_email);
         }
