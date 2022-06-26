@@ -65,7 +65,7 @@ public class NewActivityPage extends AppCompatActivity {
     ArrayList<ContactModel> contactList = new ArrayList<>();
     MainAdapter adapter;
     private APIService apiService;
-    Boolean isTheAddFollowerfromActivity, newOrExistingJourney;
+    Boolean isTheAddFollowerfromActivity;
 
     Button startActivityButton;
     private static final int FOLLOWER_ADDED = 1;
@@ -85,7 +85,7 @@ public class NewActivityPage extends AppCompatActivity {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
-        newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
+//        newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         etd = findViewById(R.id.etd);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
@@ -132,18 +132,18 @@ public class NewActivityPage extends AppCompatActivity {
 
         enterDestiantion();
         addFollower();
-        if (newOrExistingJourney) {
-
-        } else {
-            fetchJourneyData();
-        }
+//        if (newOrExistingJourney) {
+//
+//        } else {
+//            fetchJourneyData();
+//        }
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
                         if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
-                            // fetchJourneyData();
+                            fetchJourneyData();
                         }
                     } else {
                         cantStartActivity=true;
@@ -195,31 +195,32 @@ public class NewActivityPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fetchJourneyData();
-                if (destination == null) {
-                    final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
-                            .setTitle("Error")
-                            .setMessage("Please provide Destination location ")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .show();
-                } else {
-                    if (addedFollower.getVisibility() == View.GONE) {
-                        final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
-                                .setTitle("Error")
-                                .setMessage("Please add follower ")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                                .show();
-                    } else {
-                        proceedToStartJourney();
-                    }
-                }
+                proceedToStartJourney();
+//                if (destination == null) {
+//                    final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
+//                            .setTitle("Error")
+//                            .setMessage("Please provide Destination location ")
+//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                }
+//                            })
+//                            .show();
+//                } else {
+//                    if (addedFollower.getVisibility() == View.GONE) {
+//                        final AlertDialog dialog = new AlertDialog.Builder(NewActivityPage.this)
+//                                .setTitle("Error")
+//                                .setMessage("Please add follower ")
+//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                    }
+//                                })
+//                                .show();
+//                    } else {
+//                        proceedToStartJourney();
+//                    }
+//                }
             }
         });
     }
@@ -291,26 +292,27 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Start Activity")
-                .setMessage("How do you want to notify your followers ? ")
-                .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                        myIntent.putExtra("user_key", (Serializable) userData);
-                        myIntent.putExtra("isThisDestinationSetup", false);
-                        sendSMS();
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
-                        myIntent.putExtra("user_key", (Serializable) userData);
-                        myIntent.putExtra("isThisDestinationSetup", false);
-                        // startActivity(myIntent);
+        if(cantStartActivity==false && searchDestination.getText().length() > 0 && followerNumbers.size() > 0 ) {
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Start Activity")
+                    .setMessage("How do you want to notify your followers ? ")
+                    .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            myIntent.putExtra("isThisDestinationSetup", false);
+                            sendSMS();
+                            startActivity(myIntent);
+                        }
+                    })
+                    .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            myIntent.putExtra("isThisDestinationSetup", false);
+                            // startActivity(myIntent);
 //                        sendSMS();
                             // fetchJourneyData();
                             startActivity(myIntent);
@@ -318,8 +320,29 @@ public class NewActivityPage extends AppCompatActivity {
                     })
                     .show();
         }
+        else{
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Start Activity")
+                    .setMessage("Please enter both destination and followers to proceed!!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                            Intent myIntent = new Intent(NewActivityPage.this, NewActivityPage.class);
+//                            myIntent.putExtra("user_key", (Serializable) userData);
+//                            myIntent.putExtra("isThisDestinationSetup", false);
+//                            startActivity(myIntent);
+                        }
+                    })
+                    .show();
+        }
+//        createPushNotification();
+    }
+
     private void fetchJourneyData() {
         rootNode = FirebaseDatabase.getInstance();
+        if (userData != null) {
+            username = userData.getFirstName();
+        }
         DatabaseReference fromReference, toReference;
 //        fromReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
 //       // toReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);

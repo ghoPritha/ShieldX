@@ -23,6 +23,17 @@ import androidx.core.app.ActivityCompat;
 import com.example.shieldx.DAO.User;
 import com.example.shieldx.Util.CommonMethods;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class SettingsActivity extends AppCompatActivity {
 
     ImageView logoutOption;
@@ -31,7 +42,11 @@ public class SettingsActivity extends AppCompatActivity {
     androidx.appcompat.widget.SwitchCompat allowLocationSwitch;
     androidx.appcompat.widget.SwitchCompat allowContactAccessSwitch;
     androidx.appcompat.widget.SwitchCompat allowEnergySaver;
+    ImageView deleteTracking;
     Context mContext = this;
+    FirebaseDatabase rootNode;
+    DatabaseReference activityReference;
+    String username, usermail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +59,8 @@ public class SettingsActivity extends AppCompatActivity {
         allowEnergySaver = (androidx.appcompat.widget.SwitchCompat) findViewById(R.id.allowEnergySaver);
         userName = (TextView) findViewById(R.id.userName);
         userEmail = (TextView) findViewById(R.id.userEmail);
+        deleteTracking = (ImageView) findViewById(R.id.deleteTracking);
+
 
         Initialize();
 
@@ -92,6 +109,49 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        deleteTracking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rootNode = FirebaseDatabase.getInstance();
+                activityReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
+                final Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                String currentDate = simpleDateFormat.format(new Date());
+                activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        //  ActivityLog a = new ActivityLog();
+                        // a = snapshot.getValue(ActivityLog.class);
+                        //sourceLo = snapshot.getValue(LatLng.class);
+                        if (snapshot.exists()) {
+                            for (DataSnapshot d : snapshot.getChildren()) {
+                                if (d.child("activity date").exists()) {
+                                    try {
+                                        String stringDate = d.child("activity date").getValue(String.class).toString();
+                                        Date date = simpleDateFormat.parse(stringDate);
+
+                                        calendar.setTime(simpleDateFormat.parse(currentDate));
+                                        calendar.add(Calendar.MONTH,-3);
+                                        if ( date.compareTo(calendar.getTime()) < 0 ) {
+                                            //Delete enteries of activity log before 3 months
+                                            d.getRef().removeValue();
+                                        }
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
         logoutOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +170,8 @@ public class SettingsActivity extends AppCompatActivity {
         if(userData != null) {
             userName.setText(userData.getFirstName());
             userEmail.setText(userData.getEmail());
+            username = userData.getFirstName();
+            usermail = userData.encodedEmail();
         }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();
