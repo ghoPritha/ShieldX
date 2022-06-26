@@ -111,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout locationSearch, countDownTimer, transportOptions;
     LinearLayout buttons;
     ImageButton startPauseButton;
-    ImageView alertButton,backButton;
+    ImageView alertButton,backButton,abort;
     private TextView countDownText;
     private CountDownTimer mCountDownTimer;
     RecyclerView recyclerView;
@@ -264,7 +264,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buttons = findViewById(R.id.buttons);
         alertButton.setColorFilter(Color.parseColor("#a64452"));
         //onbutton = (Button)findViewById(R.id.onbutton);
-
+        abort = findViewById(R.id.abort);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -276,7 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //followerLayout.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             countDownTimer.setVisibility(View.GONE);
-            buttons.setVisibility(View.GONE);
+            abort.setVisibility(View.GONE);
         } else {
             locationSearch.setVisibility(View.GONE);
             etd.setVisibility(View.GONE);
@@ -285,7 +285,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertButton.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             countDownTimer.setVisibility(View.VISIBLE);
-            buttons.setVisibility(View.VISIBLE);
+            abort.setVisibility(View.VISIBLE);
             startJourney();
         }
     }

@@ -146,8 +146,10 @@ public class NewActivityPage extends AppCompatActivity {
                             fetchJourneyData();
                         }
                     } else {
-                        cantStartActivity=true;
                     }
+                }
+                else{
+                    cantStartActivity=true;
                 }
             }
 
@@ -322,7 +324,7 @@ public class NewActivityPage extends AppCompatActivity {
         }
         else{
             final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle("Start Activity")
+                    .setTitle("Error")
                     .setMessage("Please enter both destination and followers to proceed!!")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
