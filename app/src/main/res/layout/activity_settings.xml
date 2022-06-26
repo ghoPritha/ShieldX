@@ -256,6 +256,7 @@
                         android:textStyle="bold" />
 
                     <ImageView
+                        android:id="@+id/deleteTracking"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:layout_alignParentEnd="true"
