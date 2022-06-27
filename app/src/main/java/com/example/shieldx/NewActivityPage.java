@@ -131,7 +131,7 @@ public class NewActivityPage extends AppCompatActivity {
 //            }
 //        });
 
-        enterDestiantion();
+        enterDestination();
         addFollower();
         if (newOrExistingJourney) {
 
@@ -250,7 +250,7 @@ public class NewActivityPage extends AppCompatActivity {
         });
     }
 
-    private void enterDestiantion() {
+    private void enterDestination() {
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -295,7 +295,7 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
-        if(cantStartActivity==false && searchDestination.getText().length() > 0 && followerNumbers.size() > 0 ) {
+        if(cantStartActivity==false && searchDestination.getText().length() > 0 && contactList.size()>0 ) {
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Start Activity")
                     .setMessage("How do you want to notify your followers ? ")
