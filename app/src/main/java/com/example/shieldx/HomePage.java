@@ -59,6 +59,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
+
         if (intent.getSerializableExtra("pastActivties") != null)
             pastActivities = (ActivityLog) intent.getSerializableExtra("pastActivties");
         newActivityButton = (Button) findViewById(R.id.newActivityButton);
@@ -76,7 +77,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             userName.setText("Hello, " + userData.getFirstName());
         }
         //toolbar
-
         setSupportActionBar(toolbar);
         //Navigation drawer menu
         navigationView.bringToFront();
@@ -98,11 +98,12 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(myIntent);
             }
         });
-        newActivity.setUserMail(userData.encodedEmail());
+        newActivity.setUserMail(userData.getEmail());
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         rootNode = FirebaseDatabase.getInstance();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
+
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -117,6 +118,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                             addPastActivitytoDB(pastActivities);
+                            activityReference.setValue(newActivity);
+                        } else if (intent.hasExtra("aborted")) {
+//            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
+                            newActivityText.setText("New Activity");
+                            newOrExistingJourney = true;
+                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                            activityReference.setValue(newActivity);
                         } else {
                             newActivityText.setText("Resume Activity");
                             newOrExistingJourney = false;
@@ -124,7 +133,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                         }
                     } else {
-                        if (snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists()) {
+                        if (intent.hasExtra("aborted")) {
+//            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
+                            newActivityText.setText("New Activity");
+                            newOrExistingJourney = true;
+                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                            activityReference.setValue(newActivity);
+                        } else if ((snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists())) {
                             newActivityText.setText("Resume Activity");
                             newOrExistingJourney = false;
                             newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
@@ -138,12 +154,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                         }
                     }
                 } else {
-//                    newActivityText.setText("New Activity");
-//                    newOrExistingJourney = true;
-//                    newActivityButton.setBackgroundResource(R.drawable.ic_add);
-//                    newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
-
-                    if (snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists()) {
+                    if (intent.hasExtra("aborted")) {
+//            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
+                        newActivityText.setText("New Activity");
+                        newOrExistingJourney = true;
+                        newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                        newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                        activityReference.setValue(newActivity);
+                    } else if (snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists()) {
                         newActivityText.setText("Resume Activity");
                         newOrExistingJourney = false;
                         newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
