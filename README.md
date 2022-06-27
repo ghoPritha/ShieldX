@@ -20,6 +20,19 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 ## Application Features
 
 
+## User Manual 
+
+- User can sign in or signup on the application
+- Home screen shows up with multiple options to choose from
+- User can start new activity from home page
+- The user can enter destination
+- User is shown with current location and can choose destination location  by either typing or by locating on map
+- After selecting the destination location, user can choose from different mode of transportation such as bike, car or walk
+- User is given the following options to add followers from
+- Choose follower from previously chosen followers
+- User can choose follower from contact list
+- User can add follower manually by adding contact number
+
 
 ## Visuals
 Screeshots demonstrating how application works from user's point of view can be viewed in our documentation (blog) of final application. 
