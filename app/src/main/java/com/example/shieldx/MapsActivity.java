@@ -525,7 +525,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         } else {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
         }
     }
 
@@ -543,7 +543,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }, START_HANDLER_DELAY);
             } else {
-                Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
             }
 //        }
     }
