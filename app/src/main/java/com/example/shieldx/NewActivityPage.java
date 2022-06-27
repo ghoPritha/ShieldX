@@ -66,6 +66,7 @@ public class NewActivityPage extends AppCompatActivity {
     MainAdapter adapter;
     private APIService apiService;
     Boolean isTheAddFollowerfromActivity;
+    boolean newOrExistingJourney;
 
     Button startActivityButton;
     private static final int FOLLOWER_ADDED = 1;
@@ -85,7 +86,7 @@ public class NewActivityPage extends AppCompatActivity {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         userData = (User) intent.getSerializableExtra("user_key");
-//        newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
+        newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
         etd = findViewById(R.id.etd);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
@@ -132,11 +133,11 @@ public class NewActivityPage extends AppCompatActivity {
 
         enterDestiantion();
         addFollower();
-//        if (newOrExistingJourney) {
-//
-//        } else {
-//            fetchJourneyData();
-//        }
+        if (newOrExistingJourney) {
+
+        } else {
+            fetchJourneyData();
+        }
         activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

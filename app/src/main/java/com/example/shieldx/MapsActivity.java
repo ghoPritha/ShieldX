@@ -295,6 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         activityReference.child("aborted").setValue(true);
         Intent intent = new Intent(MapsActivity.this, HomePage.class);
         intent.putExtra("user_key", userData);
+        intent.putExtra("aborted", true);
         startActivity(intent);
         this.finish();
         System.exit(0);
@@ -524,7 +525,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
         }
     }
 
