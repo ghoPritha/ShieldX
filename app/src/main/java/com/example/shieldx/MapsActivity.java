@@ -299,6 +299,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void abortActivity(View view) {
 //        this.finishAffinity();
         activityReference.child("aborted").setValue(true);
+        activityReference.child("destinationReached").setValue(true);
+
         Intent intent = new Intent(MapsActivity.this, HomePage.class);
         intent.putExtra("user_key", userData);
         intent.putExtra("aborted", true);
@@ -515,6 +517,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void createRoute(String selectedTravelMode) {
+        if(source != null && destination !=null)
         new FetchURL(MapsActivity.this).execute(getUrl(source.getPosition(), destination.getPosition(), selectedTravelMode), selectedTravelMode);
     }
 
@@ -1225,6 +1228,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void updateCountDownText() {
         int minutes = (int) (timeLeftMilliSec / 1000) / 60;
         int seconds = (int) (timeLeftMilliSec / 1000) % 60;
+        activityReference.child("durationInSeconds").setValue(timeLeftMilliSec/(1000));
 
 //        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == timeLeftMilliSec) {
 //            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
@@ -1469,8 +1473,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //    }
 
     private void SendTextMsg() {
-        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+      //  Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        // PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 //        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
 //                new Intent(DELIVERED), 0);
         String message = userName + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
@@ -1481,7 +1485,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("numberrr", number);
                 SmsManager mySmsManager = SmsManager.getDefault();
                 mySmsManager.sendTextMessage("" + number, null,
-                        "" + message, sentPI, null);
+                        "" + message, null, null);
             }
         }
     }

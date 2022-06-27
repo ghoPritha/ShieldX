@@ -98,7 +98,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(myIntent);
             }
         });
-        newActivity.setUserMail(userData.getEmail());
+        newActivity.setUserMail(userData.encodedEmail());
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         rootNode = FirebaseDatabase.getInstance();
@@ -120,6 +120,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             addPastActivitytoDB(pastActivities);
                             activityReference.setValue(newActivity);
                         } else if (intent.hasExtra("aborted")) {
+                            extractPastActivities(snapshot);
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                             newActivityText.setText("New Activity");
                             newOrExistingJourney = true;
