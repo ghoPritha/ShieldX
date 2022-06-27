@@ -110,7 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView etd;
     LinearLayout locationSearch, countDownTimer, transportOptions;
     LinearLayout buttons;
-    ImageButton startPauseButton;
+//    ImageButton startPauseButton;
     ImageView alertButton,backButton,abort;
     private TextView countDownText;
     private CountDownTimer mCountDownTimer;
@@ -209,16 +209,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }, START_HANDLER_DELAY);
         readChanges();
         autoCompleteDestination();
-        startPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isTimerRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-            }
-        });
+//        startPauseButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (isTimerRunning) {
+//                    pauseTimer();
+//                } else {
+//                    startTimer();
+//                }
+//            }
+//        });
         updateCountDownText();
         alertButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -258,7 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         countDownTimer = findViewById(R.id.countDownTimer);
         countDownText = findViewById(R.id.text_view_countdown);
-        startPauseButton = findViewById(R.id.button_start_pause);
+//        startPauseButton = findViewById(R.id.button_start_pause);
         alertButton = findViewById(R.id.alertButton);
         transportOptions = findViewById(R.id.transportOptions);
         buttons = findViewById(R.id.buttons);
@@ -1167,38 +1167,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onFinish() {
                 isTimerRunning = false;
                 //  startPauseButton.setText("Start");
-                startPauseButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        timeLeftMilliSec = 60000;
-                        startTimer();
-                        startPauseButton.setImageResource(R.drawable.ic_start);
-
-                    }
-                });
+//                startPauseButton.setOnClickListener(new View.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(View v) {
+//                        timeLeftMilliSec = 60000;
+//                        startTimer();
+//                        startPauseButton.setImageResource(R.drawable.ic_start);
+//
+//                    }
+//                });
                 //startPauseButton.setVisibility(View.INVISIBLE);
             }
         }.start();
 
         isTimerRunning = true;
-        startPauseButton.setBackgroundResource(R.drawable.ic_pause);
+//        startPauseButton.setBackgroundResource(R.drawable.ic_pause);
         //  mButtonStartPause.setText("pause");
     }
 
     private void pauseTimer() {
         mCountDownTimer.cancel();
         isTimerRunning = false;
-        startPauseButton.setBackgroundResource(R.drawable.ic_start);
+//        startPauseButton.setBackgroundResource(R.drawable.ic_start);
         // mButtonStartPause.setText("Start");
-        startPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startPauseButton.setImageResource(R.drawable.ic_pause);
-                String message = userName + " has paused the journey ";
-                sendPushNotificationToFollower("Journey Paused" , message);
-            }
-        });
+//        startPauseButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startPauseButton.setImageResource(R.drawable.ic_pause);
+//                String message = userName + " has paused the journey ";
+//                sendPushNotificationToFollower("Journey Paused" , message);
+//            }
+//        });
     }
 
     private void updateCountDownText() {
