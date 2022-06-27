@@ -17,9 +17,6 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 ```xmls```
 
 
-## Application Features
-
-
 ## User Manual 
 
 - User can sign in or signup on the application
