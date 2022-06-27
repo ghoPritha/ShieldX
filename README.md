@@ -17,12 +17,16 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 ```xmls```
 
 
-## License
-ShieldX is an android application developed by students of Otto-von Guericke University, Magdeburg in June 2022 as the part of their course project of Introduction to software engineering for engineers under the supervision of Professor Christian Braune.
+## Application Features
+
+
 
 ## Visuals
 Screeshots demonstrating how application works from user's point of view can be viewed in our documentation (blog) of final application. 
 Link = 
+
+## License
+ShieldX is an android application developed by students of Otto-von Guericke University, Magdeburg in June 2022 as the part of their course project of Introduction to software engineering for engineers under the supervision of Professor Christian Braune.
 
 ## Project status
 We have completed our project considering the semester project deadline 05.07.2022
