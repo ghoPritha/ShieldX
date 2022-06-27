@@ -37,6 +37,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -155,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float IN_PROXIMITY_OF_DESTINATION = 20f;
     String distance = "", duration = "", sourceName, destinatioName, selectedTravelMode, DBLatString, DBLonString, userName, userMail, usertoken;
 
-    Boolean isThisDestinationSetup;
+    Boolean isThisDestinationSetup, isThisSms = false;
     private boolean isTimerRunning;
     private long timeLeftMilliSec, durationInSeconds;
     ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
@@ -176,6 +177,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (intent.getSerializableExtra("isThisDestinationSetup") != null) {
             isThisDestinationSetup = (Boolean) intent.getSerializableExtra("isThisDestinationSetup");
         }
+
+        if (intent.getSerializableExtra("isThisSms") != null) {
+            isThisSms = (Boolean) intent.getSerializableExtra("isThisSms");
+        }
+
         IntializeView();
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -407,15 +413,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void sendNotificationViaSmS(String message) {
-        if (guardiansPhoneNoList != null) {
-            for (int i = 0; i < guardiansPhoneNoList.size(); i++) {
+//        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+//                new Intent(SENT), 0);
 
-                String number = guardiansPhoneNoList.get(i);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                SmsManager mySmsManager = SmsManager.getDefault();
-                //mySmsManager.sendTextMessage(number, null, message, null, null);
-                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
-            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    101);
+        } else {
+            SendTextMsg();
         }
     }
 
@@ -532,6 +541,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //        if (requestCode == 101) {
+        if (grantResults.length > 0 && requestCode == 101
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            SendTextMsg();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "SMS faild, please try again.", Toast.LENGTH_LONG).show();
+
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 Handler handler = new Handler();
@@ -544,6 +560,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 Toast.makeText(MapsActivity.this, "Permission Required", Toast.LENGTH_SHORT).show();
             }
+        }
 //        }
     }
 
@@ -754,7 +771,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     String message = userName + " has started a journey from \n " + sourceName + " to \n" + destinatioName + "\n expected duration: " + duration;
                     setMarkersAndDuration();
-                    sendPushNotificationToFollower("Journey Started", message);
+                    if (isThisSms) {
+                        sendNotificationViaSmS(message);
+                    } else {
+                        sendPushNotificationToFollower("Journey Started", message);
+                    }
                     sendPushNotificationToUser("Journey started \n Source: " + sourceName + " \n Destination: " + destinatioName + "\n Expected duration: " + duration);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
@@ -1298,19 +1319,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
-            sendPushNotificationToFollower(" First Warning ", message);
+            if (isThisSms) {
+                sendNotificationViaSmS(message);
+            } else {
+                sendPushNotificationToFollower(" First Warning ", message);
+            }
         }
         if (distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
-            sendPushNotificationToFollower(" Second Warning ", message);
+            if (isThisSms) {
+                sendNotificationViaSmS(message);
+            } else {
+                sendPushNotificationToFollower(" Second Warning ", message);
+            }
         }
         if (distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
             String message = userName + " is " + distance + " meters away from destination \n Remaining time :" + minutes + " : " + seconds + "  HURRY ";
-            sendPushNotificationToFollower(" Third Warning ", message);
+            if (isThisSms) {
+                sendNotificationViaSmS(message);
+            } else {
+                sendPushNotificationToFollower(" Third Warning ", message);
+            }
         }
         if (distance <= IN_PROXIMITY_OF_DESTINATION && !reachedDestination) {
             SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
@@ -1320,7 +1353,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             extractPastActivities();
             reachedDestination = true;
             String message = userName + " has reached destination " + destinatioName;
-            sendPushNotificationToFollower(" Destination Reached " , message);
+            if (isThisSms) {
+                sendNotificationViaSmS(message);
+            } else {
+                sendPushNotificationToFollower(" Destination Reached ", message);
+            }
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Destination Reached")
                     .setMessage("You have reached your destination \n" + destinatioName)
@@ -1328,8 +1365,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent myIntent = new Intent(MapsActivity.this, HomePage.class);
-                            myIntent.putExtra("user_key",(Serializable) userData);
-                           // myIntent.putExtra("pastActivties",(Serializable) pastActivities);
+                            myIntent.putExtra("user_key", (Serializable) userData);
+                            // myIntent.putExtra("pastActivties",(Serializable) pastActivities);
                             startActivity(myIntent);
                         }
                     }).show();
@@ -1345,7 +1382,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             routeDeviation = false;
                             activityReference.child("routeDeviation").setValue("false");
                             String message = userName + " is deviated from route";
-                            sendPushNotificationToFollower(" Out of Route ", message);
+                            if (isThisSms) {
+                                sendNotificationViaSmS(message);
+                            } else {
+                                sendPushNotificationToFollower(" Out of Route ", message);
+                            }
                         }
                     }
                 }
@@ -1410,5 +1451,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    public void sendSMS() {
+    }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//
+//        if (grantResults.length > 0 && requestCode == 101
+//                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            SendTextMsg();
+//        } else {
+//            Toast.makeText(getApplicationContext(),
+//                    "SMS faild, please try again.", Toast.LENGTH_LONG).show();
+//        }
+//    }
+
+    private void SendTextMsg() {
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+//        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+//                new Intent(DELIVERED), 0);
+        String message = userName + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
+
+        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
+        if (guardiansPhoneNoList != null && guardiansPhoneNoList.size() > 0) {
+            for (String number : guardiansPhoneNoList) {
+                Log.d("numberrr", number);
+                SmsManager mySmsManager = SmsManager.getDefault();
+                mySmsManager.sendTextMessage("" + number, null,
+                        "" + message, sentPI, null);
+            }
+        }
+    }
 
 }
