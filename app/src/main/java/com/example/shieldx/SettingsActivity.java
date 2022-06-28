@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,11 +43,12 @@ public class SettingsActivity extends AppCompatActivity {
     androidx.appcompat.widget.SwitchCompat allowLocationSwitch;
     androidx.appcompat.widget.SwitchCompat allowContactAccessSwitch;
     androidx.appcompat.widget.SwitchCompat allowEnergySaver;
+    LinearLayout viewUserProfile;
     ImageView deleteTracking;
     Context mContext = this;
     FirebaseDatabase rootNode;
-    DatabaseReference activityReference;
-    String username, usermail;
+    DatabaseReference userReference;
+    String userFirstName, userLastName, usermail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,8 @@ public class SettingsActivity extends AppCompatActivity {
         userName = (TextView) findViewById(R.id.userName);
         userEmail = (TextView) findViewById(R.id.userEmail);
         deleteTracking = (ImageView) findViewById(R.id.deleteTracking);
-
+        viewUserProfile = (LinearLayout) findViewById(R.id.viewUserProfile);
+        Context context = this;
 
         Initialize();
 
@@ -113,11 +116,11 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 rootNode = FirebaseDatabase.getInstance();
-                activityReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
+                userReference = rootNode.getReference("USERS").child(usermail);
                 final Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
                 String currentDate = simpleDateFormat.format(new Date());
-                activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                userReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //  ActivityLog a = new ActivityLog();
@@ -152,6 +155,19 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        viewUserProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+//                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+//                builder1.setMessage(stringFromTextView);
+//                builder1.setCancelable(true);
+//
+//                AlertDialog alert11 = builder1.create();
+//                alert11.show();
+            }
+        });
+
         logoutOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,11 +183,15 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
         User userData = (User) intent.getSerializableExtra("user_key");
+
         if(userData != null) {
-            userName.setText(userData.getFirstName());
-            userEmail.setText(userData.getEmail());
-            username = userData.getFirstName();
-            usermail = userData.encodedEmail();
+//            userFirstName.setText(userData.getFirstName());
+//            userLastName.setText(userData.getFirstName());
+//            userEmail.setText(userData.getEmail());
+            userFirstName = userData.getFirstName();
+            userLastName = userData.getLastName();
+//            usermail = userData.encodedEmail();
+            usermail = userData.getEmail();
         }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();
