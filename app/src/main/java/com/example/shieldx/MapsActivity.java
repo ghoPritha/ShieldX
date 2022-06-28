@@ -830,16 +830,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 ContactModel model = new ContactModel();
                                 Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
 
-                            model.setEmail(d.child("followerEmail").getValue(String.class));
-                            model.setName(d.child("followerName").getValue(String.class));
-                            model.setNumber(d.child("followerNumber").getValue(String.class));
-                            contactList.add(model);
-                            adapter = new MainAdapter(MapsActivity.this, contactList);
-                            // set adapter
-                            recyclerView.setAdapter(adapter);
-                            guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
-                            guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
 
+                                model.setEmail(d.child("followerEmail").getValue(String.class));
+                                model.setName(d.child("followerName").getValue(String.class));
+                                model.setNumber(d.child("followerNumber").getValue(String.class));
+
+                                contactList.add(model);
+                                adapter = new MainAdapter(MapsActivity.this, contactList);
+                                // set adapter
+                                recyclerView.setAdapter(adapter);
+                                guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+                                guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
+                            }
                         }
                     }
                     createRoute(selectedTravelMode);
