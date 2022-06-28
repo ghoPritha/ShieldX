@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,11 +45,13 @@ public class SettingsActivity extends AppCompatActivity {
     androidx.appcompat.widget.SwitchCompat allowLocationSwitch;
     androidx.appcompat.widget.SwitchCompat allowContactAccessSwitch;
     androidx.appcompat.widget.SwitchCompat allowEnergySaver;
+    LinearLayout viewUserProfile;
     ImageView deleteTracking;
     Context mContext = this;
     FirebaseDatabase rootNode;
-    DatabaseReference activityReference;
-    String username, usermail;
+    DatabaseReference userReference;
+    String userFirstName, userLastName, usermail, userNum, userProfileMessage;
+    User userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,9 @@ public class SettingsActivity extends AppCompatActivity {
         userEmail = (TextView) findViewById(R.id.userEmail);
         deleteTracking = (ImageView) findViewById(R.id.deleteTracking);
         aboutUs = (RelativeLayout) findViewById(R.id.aboutUs);
+        viewUserProfile = (LinearLayout) findViewById(R.id.viewUserProfile);
+        Context context = this;
+
         Initialize();
 
         allowLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
@@ -114,11 +120,11 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 rootNode = FirebaseDatabase.getInstance();
-                activityReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
+                userReference = rootNode.getReference("USERS").child(usermail);
                 final Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
                 String currentDate = simpleDateFormat.format(new Date());
-                activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                userReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //  ActivityLog a = new ActivityLog();
@@ -153,6 +159,17 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        viewUserProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
+//                settingsIntent.putExtra("message", userProfileMessage);
+                settingsIntent.putExtra("user_key", userData);
+                settingsIntent.putExtra("viewUserProfileOrAboutUs", true);
+                startActivity(settingsIntent);
+            }
+        });
+
         logoutOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,7 +182,10 @@ public class SettingsActivity extends AppCompatActivity {
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), AboutUs.class));
+                Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
+                settingsIntent.putExtra("viewUserProfileOrAboutUs", false);
+                startActivity(settingsIntent);
+//                startActivity(new Intent(getApplicationContext(), AboutUs.class));
             }
         });
     }
@@ -174,12 +194,19 @@ public class SettingsActivity extends AppCompatActivity {
     private void Initialize() {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
-        User userData = (User) intent.getSerializableExtra("user_key");
+        userData = (User) intent.getSerializableExtra("user_key");
+
         if(userData != null) {
-            userName.setText(userData.getFirstName());
-            userEmail.setText(userData.getEmail());
-            username = userData.getFirstName();
-            usermail = userData.encodedEmail();
+//            userFirstName.setText(userData.getFirstName());
+//            userLastName.setText(userData.getFirstName());
+//            userEmail.setText(userData.getEmail());
+            userFirstName = userData.getFirstName();
+            userLastName = userData.getLastName();
+            usermail = userData.getEmail();
+            userNum = userData.getNumber();
+//            userProfileMessage = "<b>Name           : </b>" + userFirstName +" " +userLastName + "\n" +
+//                                 "<b>Email          : </b>" + usermail + "\n" +
+//                                 "<b>Contact Number : </b>" + userNum;
         }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();

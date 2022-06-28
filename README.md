@@ -10,7 +10,7 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 
 ## Language For Business Logics
 
-```Javascript```
+```Java```
 
 ## Language For UI
 
