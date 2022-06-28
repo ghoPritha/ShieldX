@@ -16,6 +16,8 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 
 ```xmls```
 
+## Databases
+```Firebase & SQLite```
 
 ## User Manual 
 
