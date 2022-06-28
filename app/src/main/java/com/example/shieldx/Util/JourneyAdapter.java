@@ -64,6 +64,9 @@ public class JourneyAdapter  extends RecyclerView.Adapter<JourneyAdapter.ViewHol
         if (model.getAborted()) {
             holder.aborted.setImageResource(R.drawable.abort_background);
         }
+        else{
+            holder.aborted.setImageResource(R.drawable.trending_background);
+        }
 
         if (model.getModeOfTransport().equalsIgnoreCase("walking")) {
             holder.modeOfTransport.setBackgroundResource(R.drawable.ic_walking);

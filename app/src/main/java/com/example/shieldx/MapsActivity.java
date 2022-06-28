@@ -25,7 +25,6 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -197,6 +196,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
 
+        if(userName == null){
+            activityReference.child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists())
+                        userName = snapshot.getValue(String.class);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -312,13 +326,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        this.finishAffinity();
         activityReference.child("aborted").setValue(true);
         activityReference.child("destinationReached").setValue(true);
-
-        Intent intent = new Intent(MapsActivity.this, HomePage.class);
-        intent.putExtra("user_key", userData);
-        intent.putExtra("aborted", true);
-        startActivity(intent);
-        this.finish();
-        System.exit(0);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Aborted")
+                .setMessage("Your journey has been aborted successfully")
+                .setPositiveButton("Ok, Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MapsActivity.this, HomePage.class);
+                        intent.putExtra("user_key", userData);
+                        intent.putExtra("aborted", true);
+                        startActivity(intent);
+                        //finish();
+                        System.exit(0);
+                    }
+                }).show();
     }
 
 
@@ -389,9 +410,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 destinationMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getName())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 17));
             }
+            else{
+                destinationMarker.setPosition(place.getLatLng());
+            }
 //            mMap.moveCamera(CameraUpdateFactory.zoomTo(12f));
             selectMode();
             createRoute(selectedTravelMode);
+            activityReference.child("journeyStarted").setValue(false);
         }
     }
 
@@ -444,7 +469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void sendPushNotificationToUser() {
-        message = "Journey started \n Source: " + sourceName + " \n Destination: " + destinatioName + "\n Expected duration: " + duration;
+       // message = "Journey started \n Source: " + sourceName + " \n Destination: " + destinatioName + "\n Expected duration: " + duration;
         Intent pushIntent = new Intent(MapsActivity.this, Notification.class);
         pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pushIntent.putExtra("message", message);
@@ -452,7 +477,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this)
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setSmallIcon(R.drawable.ic_logo)
                 .setContentTitle("Notification Title")
                 .setContentText(message)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -481,7 +506,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         modeOfTransport.add("driving");
         modeOfTransport.add("bicycling");
         selectedTravelMode = modeOfTransport.get(0);
-        ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
+        ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#0d2037"));
         ((ImageView) findViewById(R.id.driving)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -489,9 +514,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (modeOfTransport.size() > 0) {
                     selectedTravelMode = modeOfTransport.get(1);
                 }
-                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#0d2037"));
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#92B9E8"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#92B9E8"));
                 createRoute(selectedTravelMode);
             }
         });
@@ -503,9 +528,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (modeOfTransport.size() > 0) {
                     selectedTravelMode = modeOfTransport.get(2);
                 }
-                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#0d2037"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#92B9E8"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#92B9E8"));
                 createRoute(selectedTravelMode);
 
             }
@@ -518,9 +543,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     travelMode = TravelMode.WALKING;
                 }
                 selectedTravelMode = modeOfTransport.get(0);
-                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#419d9c"));
-                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#A8EAE0"));
-                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#A8EAE0"));
+                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#0d2037"));
+                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#92B9E8"));
+                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#92B9E8"));
                 createRoute(selectedTravelMode);
 
             }
@@ -600,30 +625,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
         //route changes
         Log.d("mylog", "Added Markers");
-        //        mMap.addMarker(place1);
-        ////        mMap.addMarker(place2);
-        //
-        //        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-        //            @Override
-        //            public void onMapClick(LatLng point) {
-        //                markerDestination = new LatLng(point.latitude, point.longitude);
-        //                MarkerOptions option = new MarkerOptions();
-        //                option.position(markerDestination);
-        //                option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        //                option.draggable(true);
-        //                currentMarker = mMap.addMarker(option);
-        //                try {
-        //                    destinationLocation.setText(getAddressFromLatLng(markerDestination.latitude, markerDestination.longitude));
-        //                } catch (IOException e) {
-        //                    e.printStackTrace();
-        //                }
-        //
-        //                mMap.addMarker(new MarkerOptions().position(markerDestination).title(String.valueOf(point.latitude) + " , " + String.valueOf(point.longitude)));
-        //                mMap.animateCamera(CameraUpdateFactory.newLatLng(markerDestination));
-        ////                Toast.makeText(MapsActivity.this, point.latitude+" "+point.longitude, Toast.LENGTH_SHORT).show();
-        //
-        //            }
-        //        });
+
+        if(isThisDestinationSetup) {
+            activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.child("source").exists() && snapshot.child("source").child("latitude").exists() && snapshot.child("source").child("longitude").exists()) {
+                            source = new MarkerOptions().position(new LatLng(snapshot.child("source").child("latitude").getValue(double.class), snapshot.child("source").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("source"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//                        sourceLoc = new Location(LocationManager.GPS_PROVIDER);
+//                        sourceLoc.setLatitude(snapshot.child("source").child("latitude").getValue(double.class));
+//                        sourceLoc.setLongitude(snapshot.child("source").child("longitude").getValue(double.class));
+                        }
+                        if (snapshot.child("sourceName").exists()) {
+                            sourceName = snapshot.child("sourceName").getValue(String.class);
+                        }
+                        if (snapshot.child("destination").exists() && snapshot.child("destination").child("latitude").exists() && snapshot.child("destination").child("longitude").exists()) {
+                        destination = new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                            destinationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class))).title(String.valueOf(snapshot.child("destination"))).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        destinationMarker.setPosition(new LatLng(snapshot.child("destination").child("latitude").getValue(double.class), snapshot.child("destination").child("longitude").getValue(double.class)));
+                        destinationLoc = new Location(LocationManager.GPS_PROVIDER);
+                        destinationLoc.setLatitude(snapshot.child("destination").child("latitude").getValue(double.class));
+                        destinationLoc.setLongitude(snapshot.child("destination").child("longitude").getValue(double.class));
+                        }
+
+                        if (snapshot.child("destinationName").exists()) {
+                            destinatioName = snapshot.child("destinationName").getValue(String.class);
+                            destinationTextBox.setText(destinatioName);
+                        }
+                        if (snapshot.child("durationInSeconds").exists()) {
+                            durationInSeconds = snapshot.child("durationInSeconds").getValue(long.class);
+                        }
+                        if (snapshot.child("duration").exists()) {
+                            duration = snapshot.child("duration").getValue(String.class);
+                        }
+                        if (snapshot.child("modeOfTransport").exists()) {
+                            selectedTravelMode = snapshot.child("modeOfTransport").getValue(String.class);
+
+                            if(selectedTravelMode.equalsIgnoreCase("walking")){
+                                ((ImageView) findViewById(R.id.walking)).setBackgroundColor(Color.parseColor("#0d2037"));
+                            }
+                            else if(selectedTravelMode.equalsIgnoreCase("cycling")){
+                                ((ImageView) findViewById(R.id.cycling)).setBackgroundColor(Color.parseColor("#0d2037"));
+                            }else{
+                                ((ImageView) findViewById(R.id.driving)).setBackgroundColor(Color.parseColor("#0d2037"));
+                            }
+                        }
+                        createRoute(selectedTravelMode);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     @Override
@@ -794,6 +851,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         sendPushNotificationToFollower("Journey Started");
                     }
                     sendPushNotificationToUser();
+                    activityReference.child("journeyStarted").setValue(true);
                     Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
@@ -1495,7 +1553,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
         if (guardiansPhoneNoList != null && guardiansPhoneNoList.size() > 0) {
             for (String number : guardiansPhoneNoList) {
-                Log.d("numberrr", number);
                 SmsManager mySmsManager = SmsManager.getDefault();
                 ArrayList<String> parts = mySmsManager.divideMessage(message);
                 mySmsManager.sendMultipartTextMessage("" + number, null,
@@ -1503,5 +1560,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
 }

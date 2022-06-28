@@ -47,7 +47,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     FirebaseDatabase rootNode;
 
     DatabaseReference activityReference;
-    private Boolean destinationReachedOrNewJourney = true;
+    private Boolean destinationReachedOrNewJourney = true, journeyStarted=false;
     ActivityLog pastActivities = new ActivityLog();
     ActivityLog newActivity = new ActivityLog();
     private boolean newOrExistingJourney = true;
@@ -113,6 +113,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
                         destinationReachedOrNewJourney = snapshot.child("destinationReached").getValue(Boolean.class);
+                        journeyStarted =  snapshot.child("journeyStarted").getValue(Boolean.class);
                         int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
                         if (snapshot.child("destinationReached").getValue(Boolean.class)) {
                             extractPastActivities(snapshot);
@@ -124,7 +125,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             activityReference.setValue(newActivity);
                         } else if (intent.hasExtra("aborted")) {
                             extractPastActivities(snapshot);
-                            abortAlert();
+                            //abortAlert();
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                             newActivityText.setText("New Activity");
                             newOrExistingJourney = true;
@@ -141,7 +142,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                         if (intent.hasExtra("aborted")) {
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                             extractPastActivities(snapshot);
-                            abortAlert();
+                            //abortAlert();
                             newActivityText.setText("New Activity");
                             newOrExistingJourney = true;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
@@ -164,7 +165,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                     if (intent.hasExtra("aborted")) {
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                         extractPastActivities(snapshot);
-                        abortAlert();
+                        //abortAlert();
                         newActivityText.setText("New Activity");
                         newOrExistingJourney = true;
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
@@ -213,31 +214,31 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     }
 
-    private void abortAlert() {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle("Journey Aborted").setMessage("Your journey is aborted");
-        final AlertDialog alert = dialog.create();
-        alert.show();
-
-// Hide after some seconds
-        final Handler handler  = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (alert.isShowing()) {
-                    alert.dismiss();
-                }
-            }
-        };
-
-        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                handler.removeCallbacks(runnable);
-            }
-        });
-
-        handler.postDelayed(runnable, 10000);
-    }
+//    private void abortAlert() {
+//        final AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle("Journey Aborted").setMessage("Your journey is aborted");
+//        final AlertDialog alert = dialog.create();
+//        alert.show();
+//
+//// Hide after some seconds
+//        final Handler handler  = new Handler();
+//        final Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (alert.isShowing()) {
+//                    alert.dismiss();
+//                }
+//            }
+//        };
+//
+//        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//                handler.removeCallbacks(runnable);
+//            }
+//        });
+//
+//        handler.postDelayed(runnable, 10000);
+//    }
 
     private void extractPastActivities(@NonNull DataSnapshot snapshot) {
         ArrayList<Follower> listOffollower = new ArrayList<>();
@@ -373,10 +374,16 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 homeIntent.putExtra("user_key", userData);
                 homeIntent.putExtra("newOrExistingJourney", newOrExistingJourney);
                 startActivity(homeIntent);
-            } else {
+            } else if(journeyStarted){
                 Intent homeIntent = new Intent(HomePage.this, MapsActivity.class);
                 homeIntent.putExtra("user_key", userData);
                 homeIntent.putExtra("isThisDestinationSetup", false);
+                startActivity(homeIntent);
+            }
+            else{
+                Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
+                homeIntent.putExtra("user_key", userData);
+                homeIntent.putExtra("newOrExistingJourney", newOrExistingJourney);
                 startActivity(homeIntent);
             }
         });
