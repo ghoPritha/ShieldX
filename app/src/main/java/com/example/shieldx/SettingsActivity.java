@@ -49,7 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
     ImageView deleteTracking;
     Context mContext = this;
     FirebaseDatabase rootNode;
-    DatabaseReference userReference;
+    DatabaseReference pastactivityReference;  //userReference;
     String userFirstName, userLastName, usermail, userNum, userProfileMessage;
     User userData;
 
@@ -120,11 +120,12 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 rootNode = FirebaseDatabase.getInstance();
-                userReference = rootNode.getReference("USERS").child(usermail);
+//                userReference = rootNode.getReference("USERS").child(usermail);
+                pastactivityReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
                 final Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
                 String currentDate = simpleDateFormat.format(new Date());
-                userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                pastactivityReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //  ActivityLog a = new ActivityLog();
@@ -132,16 +133,17 @@ public class SettingsActivity extends AppCompatActivity {
                         //sourceLo = snapshot.getValue(LatLng.class);
                         if (snapshot.exists()) {
                             for (DataSnapshot d : snapshot.getChildren()) {
-                                if (d.child("activity date").exists()) {
+                                if (d.child("activityDate").exists()) {
                                     try {
-                                        String stringDate = d.child("activity date").getValue(String.class).toString();
+                                        String stringDate = d.child("activityDate").getValue(String.class).toString();
                                         Date date = simpleDateFormat.parse(stringDate);
 
                                         calendar.setTime(simpleDateFormat.parse(currentDate));
                                         calendar.add(Calendar.MONTH,-3);
                                         if ( date.compareTo(calendar.getTime()) < 0 ) {
                                             //Delete enteries of activity log before 3 months
-                                            d.getRef().removeValue();
+//                                            d.getRef().removeValue();
+                                            d.getRef().setValue(null);
                                         }
                                     } catch (ParseException e) {
                                         e.printStackTrace();
@@ -156,6 +158,10 @@ public class SettingsActivity extends AppCompatActivity {
 
                     }
                 });
+
+                Intent myIntent = new Intent(SettingsActivity.this, PastJourney.class);
+                myIntent.putExtra("user_key", userData);
+                startActivity(myIntent);
             }
         });
 

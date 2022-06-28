@@ -117,7 +117,7 @@ public class NewFollowerManually extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Follower follower = new Follower(putname.getText().toString(), putnumber.getText().toString(), putemail.getText().toString(), null);
+                Follower follower = new Follower(putname.getText().toString().trim(), putnumber.getText().toString(), putemail.getText().toString().trim(), null);
                 followerslist.add(follower);
                 //addToFirebase(follower);
                 Intent intent = new Intent();

@@ -78,7 +78,7 @@ public class Login extends AppCompatActivity {
         MaterialButton loginBtn = (MaterialButton) findViewById(R.id.btn_login);
         Button signupBtn = (Button) findViewById(R.id.btn_signup);
         loginBtn.setOnClickListener(v -> {
-            Cursor c = DB.checkDataOnLogin(username.getText().toString(), password.getText().toString());
+            Cursor c = DB.checkDataOnLogin(username.getText().toString().trim(), password.getText().toString());
             if (c != null) {
                 try {
                     userData = DB.fetchUserData(c);

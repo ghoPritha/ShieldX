@@ -144,7 +144,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layooutJounryeList"
+                android:id="@+id/layoutJourneyList"
                 android:layout_width="170sp"
                 android:layout_height="171sp"
                 android:background="@drawable/rectangular_background"

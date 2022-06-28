@@ -40,7 +40,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     Button newActivityButton;
     TextView userName, newActivityText;
-    LinearLayout myFollower, layoutSettings, addFollower, layooutJounryeList;
+    LinearLayout myFollower, layoutSettings, addFollower, layoutJourneyList;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     androidx.appcompat.widget.Toolbar toolbar;
@@ -70,7 +70,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
       //  myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
         layoutSettings = (LinearLayout) findViewById(R.id.layoutSettings);
         addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
-        layooutJounryeList = (LinearLayout) findViewById(R.id.layooutJounryeList);
+        layoutJourneyList = (LinearLayout) findViewById(R.id.layoutJourneyList);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navView);
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
@@ -202,7 +202,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
         });
 
-        layooutJounryeList.setOnClickListener(new View.OnClickListener() {
+        layoutJourneyList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(HomePage.this, PastJourney.class);

@@ -40,7 +40,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NewActivityPage extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 3;
@@ -290,6 +292,8 @@ public class NewActivityPage extends AppCompatActivity {
     }
 
     private void proceedToStartJourney() {
+        SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        String currentDate = s.format(new Date());
         if(cantStartActivity==false && searchDestination.getText().length() > 0 && contactList.size()>0 ) {
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Start Activity")
@@ -297,6 +301,7 @@ public class NewActivityPage extends AppCompatActivity {
                     .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("activity date").setValue(currentDate);
                             activityReference.child("isThisSms").setValue(true);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
@@ -309,6 +314,7 @@ public class NewActivityPage extends AppCompatActivity {
                     .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("activity date").setValue(currentDate);
                             activityReference.child("isThisSms").setValue(false);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);

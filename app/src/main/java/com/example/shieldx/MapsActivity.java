@@ -826,8 +826,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     if (snapshot.child("followersList").exists()) {
                         for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
-                            ContactModel model = new ContactModel();
-                            Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+                            if(d.child("followerEmail").getValue(String.class)!=null && d.child("followerNumber").getValue(String.class)!=null) {
+                                ContactModel model = new ContactModel();
+                                Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
 
                             model.setEmail(d.child("followerEmail").getValue(String.class));
                             model.setName(d.child("followerName").getValue(String.class));
