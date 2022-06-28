@@ -302,6 +302,7 @@ public class NewActivityPage extends AppCompatActivity {
                     .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("isThisSms").setValue(true);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
                             myIntent.putExtra("isThisSms", true);
@@ -313,6 +314,7 @@ public class NewActivityPage extends AppCompatActivity {
                     .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("isThisSms").setValue(false);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
                             myIntent.putExtra("isThisDestinationSetup", false);
