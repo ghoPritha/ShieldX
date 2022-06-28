@@ -1,7 +1,9 @@
 package com.example.shieldx;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -64,7 +67,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             pastActivities = (ActivityLog) intent.getSerializableExtra("pastActivties");
         newActivityButton = (Button) findViewById(R.id.newActivityButton);
         newActivityText = (TextView) findViewById(R.id.newActivity);
-        myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
+      //  myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
         layoutSettings = (LinearLayout) findViewById(R.id.layoutSettings);
         addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
         layooutJounryeList = (LinearLayout) findViewById(R.id.layooutJounryeList);
@@ -86,7 +89,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         navigationView.setNavigationItemSelectedListener(this);
 
         newActivitySetup((Serializable) userData);
-        showMyFollowers((Serializable) userData);
+        //showMyFollowers((Serializable) userData);
 
         addFollower.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +101,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(myIntent);
             }
         });
-        newActivity.setUserMail(userData.getEmail());
+        newActivity.setUserMail(userData.encodedEmail());
         newActivity.setUserName(userData.getFirstName());
         Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         rootNode = FirebaseDatabase.getInstance();
@@ -120,6 +123,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             addPastActivitytoDB(pastActivities);
                             activityReference.setValue(newActivity);
                         } else if (intent.hasExtra("aborted")) {
+                            extractPastActivities(snapshot);
+                            abortAlert();
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                             newActivityText.setText("New Activity");
                             newOrExistingJourney = true;
@@ -135,6 +140,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                     } else {
                         if (intent.hasExtra("aborted")) {
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
+                            extractPastActivities(snapshot);
+                            abortAlert();
                             newActivityText.setText("New Activity");
                             newOrExistingJourney = true;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
@@ -156,6 +163,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 } else {
                     if (intent.hasExtra("aborted")) {
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
+                        extractPastActivities(snapshot);
+                        abortAlert();
                         newActivityText.setText("New Activity");
                         newOrExistingJourney = true;
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
@@ -202,6 +211,32 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         });
 
 
+    }
+
+    private void abortAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle("Journey Aborted").setMessage("Your journey is aborted");
+        final AlertDialog alert = dialog.create();
+        alert.show();
+
+// Hide after some seconds
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (alert.isShowing()) {
+                    alert.dismiss();
+                }
+            }
+        };
+
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+
+        handler.postDelayed(runnable, 10000);
     }
 
     private void extractPastActivities(@NonNull DataSnapshot snapshot) {
@@ -319,15 +354,15 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 //    }
 
     private void showMyFollowers(Serializable userData) {
-        myFollower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(HomePage.this, MyFollower.class);
-                myIntent.putExtra("user_key", userData);
-                myIntent.putExtra("comingFromNeworExisting", false);
-                startActivity(myIntent);
-            }
-        });
+//        myFollower.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent myIntent = new Intent(HomePage.this, MyFollower.class);
+//                myIntent.putExtra("user_key", userData);
+//                myIntent.putExtra("comingFromNeworExisting", false);
+//                startActivity(myIntent);
+//            }
+//        });
     }
 
     private void newActivitySetup(Serializable userData) {

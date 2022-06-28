@@ -100,14 +100,14 @@ public class AddFollower extends AppCompatActivity {
             }
         });
 
-        addFromMyFollower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
-                myIntent.putExtra("user_key", (Serializable) userData);
-                startActivity(myIntent);
-            }
-        });
+//        addFromMyFollower.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
+//                myIntent.putExtra("user_key", (Serializable) userData);
+//                startActivity(myIntent);
+//            }
+//        });
 
         addFromNewFollower.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,37 +278,38 @@ public class AddFollower extends AppCompatActivity {
     private void addFollowersToDB() {
         rootNode = FirebaseDatabase.getInstance();
         DatabaseReference userReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList");
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getKey() == "followersList") {
-                    Query query = userReference.orderByChild("followerName").equalTo(follower.getFollowerName());
-                    Log.d("query", String.valueOf(query));
-                    query.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                follower = null;
-                            } else {
-                                extracted(userReference);
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+//        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.getKey() == "followersList") {
+//                    Query query = userReference.orderByChild("followerName").equalTo(follower.getFollowerName());
+//                    Log.d("query", String.valueOf(query));
+//                    query.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            if (snapshot.exists()) {
+//                                follower = null;
+//                            } else {
+//                                extracted(userReference);
+//                            }
+//                        }
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//
+//                        }
+//                    });
+//                } else {
+//                    extracted(userReference);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
-                        }
-                    });
-                } else {
-                    extracted(userReference);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+        extracted(userReference);
         if(isTheAddFollowerfromActivity) {
             activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
             //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
@@ -355,15 +356,15 @@ public class AddFollower extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
-        addFromMyFollower = findViewById(R.id.addFromMyFollower);
-        RelativeLayout fromMyFollower = findViewById(R.id.fromMyFollower);
-        TextView extraOR = findViewById(R.id.extraOR);
+       // addFromMyFollower = findViewById(R.id.addFromMyFollower);
+      //  RelativeLayout fromMyFollower = findViewById(R.id.fromMyFollower);
+        //TextView extraOR = findViewById(R.id.extraOR);
         addFromNewFollower = findViewById(R.id.addfromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
         if (!isTheAddFollowerfromActivity) {
             addFromMyFollower.setVisibility(View.GONE);
-            fromMyFollower.setVisibility(View.GONE);
-            extraOR.setVisibility(View.GONE);
+            //fromMyFollower.setVisibility(View.GONE);
+            //extraOR.setVisibility(View.GONE);
         }
     }
 }

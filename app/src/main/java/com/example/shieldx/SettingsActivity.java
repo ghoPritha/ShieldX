@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     ImageView logoutOption;
     TextView userName;
     TextView userEmail;
+    RelativeLayout aboutUs;
     androidx.appcompat.widget.SwitchCompat allowLocationSwitch;
     androidx.appcompat.widget.SwitchCompat allowContactAccessSwitch;
     androidx.appcompat.widget.SwitchCompat allowEnergySaver;
@@ -62,6 +64,7 @@ public class SettingsActivity extends AppCompatActivity {
         userName = (TextView) findViewById(R.id.userName);
         userEmail = (TextView) findViewById(R.id.userEmail);
         deleteTracking = (ImageView) findViewById(R.id.deleteTracking);
+        aboutUs = (RelativeLayout) findViewById(R.id.aboutUs);
         viewUserProfile = (LinearLayout) findViewById(R.id.viewUserProfile);
         Context context = this;
 
@@ -174,6 +177,13 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
                 startActivity(new Intent(getApplicationContext(), Login.class));
                 Toast.makeText(SettingsActivity.this, "Logout Successful", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        aboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), AboutUs.class));
             }
         });
     }

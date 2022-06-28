@@ -82,7 +82,9 @@ public class MyFollower extends AppCompatActivity {
                         if (d.child("followerNumber").exists()) {
                             model.setNumber(d.child("followerNumber").getValue(String.class));
                         }
-                        contactList.add(model);
+                        if(contactList.size()>0 && !contactList.contains(model)) {
+                            contactList.add(model);
+                        }
                         adapter = new MainAdapter(MyFollower.this, contactList);
                         // set adapter
                         recyclerView.setAdapter(adapter);

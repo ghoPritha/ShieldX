@@ -10,6 +10,7 @@
     <string name="phone_text">Phone Number</string>
     <string name="login_text">LOGIN</string>
     <string name="signUp_text">Sign Up</string>
+    <string name="signIn_text">Sign In</string>
     <string name="firstname_text">First Name</string>
     <string name="lastname_text">Last Name</string>
     <string name="setting">Settings</string>
@@ -62,7 +63,7 @@
     <string name="phonebookAccess">Allow PhoneBook access</string>
     <string name="energySaver">Save energy</string>
     <string name="multiLanguageSupport">Change language</string>
-    <string name="aboutUs">About us</string>
+    <string name="aboutUs">About Us</string>
     <string name="deleteTracking">Delete tracking</string>
     <string name="logout">Logout</string>
 </resources>

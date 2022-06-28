@@ -302,19 +302,23 @@ public class NewActivityPage extends AppCompatActivity {
                     .setPositiveButton("Notify via Text Message", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("isThisSms").setValue(true);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
+                            myIntent.putExtra("isThisSms", true);
                             myIntent.putExtra("isThisDestinationSetup", false);
-                            sendSMS();
+                            //sendSMS();
                             startActivity(myIntent);
                         }
                     })
                     .setNegativeButton("Notify via Follower Application", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activityReference.child("isThisSms").setValue(false);
                             Intent myIntent = new Intent(NewActivityPage.this, MapsActivity.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
                             myIntent.putExtra("isThisDestinationSetup", false);
+                            myIntent.putExtra("isThisSms", false);
                             // startActivity(myIntent);
 //                        sendSMS();
                             // fetchJourneyData();
@@ -524,50 +528,4 @@ public class NewActivityPage extends AppCompatActivity {
 //        });
 //    }
 
-    public void sendSMS() {
-//        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
-//                new Intent(SENT), 0);
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS},
-                    101);
-        } else {
-            SendTextMsg();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (grantResults.length > 0 && requestCode == 101
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            SendTextMsg();
-        } else {
-            Toast.makeText(getApplicationContext(),
-                    "SMS faild, please try again.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void SendTextMsg() {
-        Intent intent = new Intent(getApplicationContext(), NewActivityPage.class);
-        PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
-                new Intent(DELIVERED), 0);
-        String message = username + " has started a journey. \n From: " + source + "\n To: " + destination + "\n Expected duration: " + duration;
-
-        ActivityCompat.requestPermissions(NewActivityPage.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-        if (followerNumbers != null && followerNumbers.size() > 0) {
-            for (String number : followerNumbers) {
-                Log.d("numberrr", number);
-                SmsManager mySmsManager = SmsManager.getDefault();
-                mySmsManager.sendTextMessage(""+number, null,
-                        ""+message, sentPI, deliveredPI);
-            }
-        }
-    }
 }

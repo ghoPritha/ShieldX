@@ -24,6 +24,9 @@
         android:theme="@style/Theme.ShieldX"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".AboutUs"
+            android:exported="false" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false" />
 
