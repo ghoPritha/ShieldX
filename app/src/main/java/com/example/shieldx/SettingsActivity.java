@@ -50,7 +50,8 @@ public class SettingsActivity extends AppCompatActivity {
     Context mContext = this;
     FirebaseDatabase rootNode;
     DatabaseReference userReference;
-    String userFirstName, userLastName, usermail;
+    String userFirstName, userLastName, usermail, userNum, userProfileMessage;
+    User userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,13 +162,11 @@ public class SettingsActivity extends AppCompatActivity {
         viewUserProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-//                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-//                builder1.setMessage(stringFromTextView);
-//                builder1.setCancelable(true);
-//
-//                AlertDialog alert11 = builder1.create();
-//                alert11.show();
+                Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
+//                settingsIntent.putExtra("message", userProfileMessage);
+                settingsIntent.putExtra("user_key", userData);
+                settingsIntent.putExtra("viewUserProfileOrAboutUs", true);
+                startActivity(settingsIntent);
             }
         });
 
@@ -183,7 +182,10 @@ public class SettingsActivity extends AppCompatActivity {
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), AboutUs.class));
+                Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
+                settingsIntent.putExtra("viewUserProfileOrAboutUs", false);
+                startActivity(settingsIntent);
+//                startActivity(new Intent(getApplicationContext(), AboutUs.class));
             }
         });
     }
@@ -192,7 +194,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void Initialize() {
         Intent intent = getIntent();
         // Get the data of the activity providing the same key value
-        User userData = (User) intent.getSerializableExtra("user_key");
+        userData = (User) intent.getSerializableExtra("user_key");
 
         if(userData != null) {
 //            userFirstName.setText(userData.getFirstName());
@@ -200,8 +202,11 @@ public class SettingsActivity extends AppCompatActivity {
 //            userEmail.setText(userData.getEmail());
             userFirstName = userData.getFirstName();
             userLastName = userData.getLastName();
-//            usermail = userData.encodedEmail();
             usermail = userData.getEmail();
+            userNum = userData.getNumber();
+//            userProfileMessage = "<b>Name           : </b>" + userFirstName +" " +userLastName + "\n" +
+//                                 "<b>Email          : </b>" + usermail + "\n" +
+//                                 "<b>Contact Number : </b>" + userNum;
         }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();
