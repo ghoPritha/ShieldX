@@ -205,7 +205,7 @@ public class SettingsActivity extends AppCompatActivity {
         if(userData != null) {
 //            userFirstName.setText(userData.getFirstName());
 //            userLastName.setText(userData.getFirstName());
-//            userEmail.setText(userData.getEmail());
+            userEmail.setText(userData.getEmail());
             userFirstName = userData.getFirstName();
             userLastName = userData.getLastName();
             usermail = userData.getEmail();

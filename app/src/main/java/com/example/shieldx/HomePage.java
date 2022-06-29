@@ -117,7 +117,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                         int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
                         if (snapshot.child("destinationReached").getValue(Boolean.class)) {
                             extractPastActivities(snapshot);
-                            newActivityText.setText("New Activity");
+                            newActivityText.setText("New Journey");
                             newOrExistingJourney = true;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
@@ -127,13 +127,21 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             extractPastActivities(snapshot);
                             //abortAlert();
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
-                            newActivityText.setText("New Activity");
+                            newActivityText.setText("New Journey");
                             newOrExistingJourney = true;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                             activityReference.setValue(newActivity);
-                        } else {
-                            newActivityText.setText("Resume Activity");
+                        }
+                        else if(!journeyStarted){
+                            newActivityText.setText("New Journey");
+                            newOrExistingJourney = false;
+                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
+                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+                            activityReference.setValue(newActivity);
+                        }
+                        else {
+                            newActivityText.setText("Resume Journey");
                             newOrExistingJourney = false;
                             newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
@@ -143,18 +151,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                             extractPastActivities(snapshot);
                             //abortAlert();
-                            newActivityText.setText("New Activity");
+                            newActivityText.setText("New Journey");
                             newOrExistingJourney = true;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                             activityReference.setValue(newActivity);
-                        } else if ((snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists())) {
-                            newActivityText.setText("Resume Activity");
+                        } else if ((snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists()) && journeyStarted) {
+                            newActivityText.setText("Resume Journey");
                             newOrExistingJourney = false;
                             newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                         } else {
-                            newActivityText.setText("New Activity");
+                            newActivityText.setText("New Journey");
                             newOrExistingJourney = false;
                             newActivityButton.setBackgroundResource(R.drawable.ic_add);
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
@@ -166,18 +174,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 //            abortedIntent = (boolean) intent.getSerializableExtra("aborted");
                         extractPastActivities(snapshot);
                         //abortAlert();
-                        newActivityText.setText("New Activity");
+                        newActivityText.setText("New Journey");
                         newOrExistingJourney = true;
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
                         newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                         activityReference.setValue(newActivity);
                     } else if (snapshot.child("sourceName").exists() || snapshot.child("destinationName").exists() || snapshot.child("followersList").exists()) {
-                        newActivityText.setText("Resume Activity");
+                        newActivityText.setText("Resume Journey");
                         newOrExistingJourney = false;
                         newActivityButton.setBackgroundResource(R.drawable.ic_double_arrow);
                         newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                     } else {
-                        newActivityText.setText("New Activity");
+                        newActivityText.setText("New Journey");
                         newOrExistingJourney = true;
                         newActivityButton.setBackgroundResource(R.drawable.ic_add);
                         newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));

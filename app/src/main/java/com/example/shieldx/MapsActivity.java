@@ -259,7 +259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //+ getAddress(currentLoc)
                 message = userName + " " + getString(R.string.guardianAdded_userInDanger);
                 sendPushNotificationToFollower("!!!  DANGER !!!");
-                sendNotificationViaSmS();
+                sendNotificationViaSmS(true);
                 return false;
             }
         });
@@ -452,9 +452,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
     }
 
-    private void sendNotificationViaSmS() {
-//        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
-//                new Intent(SENT), 0);
+    private void sendNotificationViaSmS(boolean... optionalFlag) {
+        boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.SEND_SMS)
@@ -464,7 +463,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.SEND_SMS},
                     101);
         } else {
-            SendTextMsg();
+            if(flag)
+                SendTextMsg(flag);
+            else
+                SendTextMsg();
         }
     }
 
@@ -1546,7 +1548,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
 //    }
 
-    private void SendTextMsg() {
+    private void SendTextMsg(boolean... optionalFlag) {
+        boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
       //  Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         // PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 //        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
@@ -1557,9 +1560,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (guardiansPhoneNoList != null && guardiansPhoneNoList.size() > 0) {
             for (String number : guardiansPhoneNoList) {
                 SmsManager mySmsManager = SmsManager.getDefault();
-                ArrayList<String> parts = mySmsManager.divideMessage(message);
-                mySmsManager.sendMultipartTextMessage("" + number, null,
-                        parts, null, null);
+                if(flag){
+                    mySmsManager.sendTextMessage("" + number, null, message, null, null);
+                }
+                else {
+                    ArrayList<String> parts = mySmsManager.divideMessage(message);
+                    mySmsManager.sendMultipartTextMessage("" + number, null,
+                            parts, null, null);
+                }
+
             }
         }
     }

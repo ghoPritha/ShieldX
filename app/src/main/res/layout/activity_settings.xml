@@ -72,35 +72,35 @@
                 android:orientation="vertical"
                 android:padding="20sp">
                 <!--night mode -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20sp">
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="20sp">-->
 
-                    <ImageView
-                        android:id="@+id/nightIcon"
-                        android:layout_width="40sp"
-                        android:layout_height="40sp"
-                        android:src="@drawable/ic_nightmode" />
+<!--                    <ImageView-->
+<!--                        android:id="@+id/nightIcon"-->
+<!--                        android:layout_width="40sp"-->
+<!--                        android:layout_height="40sp"-->
+<!--                        android:src="@drawable/ic_nightmode" />-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginStart="30sp"
-                        android:layout_toEndOf="@+id/nightIcon"
-                        android:text="@string/nightMode"
-                        android:textColor="@color/accentGrey"
-                        android:textStyle="bold" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_centerInParent="true"-->
+<!--                        android:layout_marginStart="30sp"-->
+<!--                        android:layout_toEndOf="@+id/nightIcon"-->
+<!--                        android:text="@string/nightMode"-->
+<!--                        android:textColor="@color/accentGrey"-->
+<!--                        android:textStyle="bold" />-->
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:switchMinWidth="50sp"
-                        android:theme="@style/nightModeswitch" />
-                </RelativeLayout>
+<!--                    <androidx.appcompat.widget.SwitchCompat-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentEnd="true"-->
+<!--                        android:layout_centerVertical="true"-->
+<!--                        android:switchMinWidth="50sp"-->
+<!--                        android:theme="@style/nightModeswitch" />-->
+<!--                </RelativeLayout>-->
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -205,6 +205,7 @@
                 android:padding="20sp">
 
                 <RelativeLayout
+                    android:alpha="0.25"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20sp">
