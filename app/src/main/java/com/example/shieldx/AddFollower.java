@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +42,8 @@ import java.util.ArrayList;
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact, addFromMyFollower, addFromNewFollower,backButton;
+    ImageView addFromContact, addFromMyFollower, addFromNewFollower;
+    Button backButton;
     User userData;
     int userId;
     TextView userName;
@@ -256,6 +258,8 @@ public class AddFollower extends AppCompatActivity {
         adapter = new MainAdapter(this, contactList);
         // set adapter
         recyclerView.setAdapter(adapter);
+        backButton.setText("Save");
+
         if (follower != null && follower.getFollowerName() != null) {
             addFollowersToDB();
         } else {
@@ -321,7 +325,7 @@ public class AddFollower extends AppCompatActivity {
                     currentData.child("" + nextKey).setValue(follower);
 
                     // Set value and report transaction success
-                    activityReference.child("journeyStarted").setValue(false);
+                    rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("journeyStarted").setValue(false);
 
                     return Transaction.success(currentData);
                 }
@@ -381,6 +385,7 @@ public class AddFollower extends AppCompatActivity {
         //TextView extraOR = findViewById(R.id.extraOR);
         addFromNewFollower = findViewById(R.id.addfromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
+        backButton.setText("Back");
 //        if (!isTheAddFollowerfromActivity) {
 //            addFromMyFollower.setVisibility(View.GONE);
 //            fromMyFollower.setVisibility(View.GONE);extraOR.setVisibility(View.GONE);

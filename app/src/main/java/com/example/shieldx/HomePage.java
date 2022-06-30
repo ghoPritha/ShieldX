@@ -133,13 +133,13 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                             newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
                             activityReference.setValue(newActivity);
                         }
-                        else if(!journeyStarted){
-                            newActivityText.setText("New Journey");
-                            newOrExistingJourney = false;
-                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
-                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
-                            activityReference.setValue(newActivity);
-                        }
+//                        else if(!journeyStarted){
+//                            newActivityText.setText("New Journey");
+//                            newOrExistingJourney = false;
+//                            newActivityButton.setBackgroundResource(R.drawable.ic_add);
+//                            newActivityButton.setBackgroundTintList(ContextCompat.getColorStateList(HomePage.this, R.color.white));
+//                            activityReference.setValue(newActivity);
+//                        }
                         else {
                             newActivityText.setText("Resume Journey");
                             newOrExistingJourney = false;

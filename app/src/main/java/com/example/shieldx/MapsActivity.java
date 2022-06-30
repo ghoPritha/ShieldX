@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,9 +25,11 @@ import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -111,7 +114,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout locationSearch, countDownTimer, transportOptions;
     LinearLayout buttons;
 //    ImageButton startPauseButton;
-    ImageView alertButton,backButton,abort;
+    ImageView alertButton,abort;
+    Button backButton;
+    ProgressBar progress_loader;
+    ProgressDialog nDialog;
+
     private TextView countDownText;
     private CountDownTimer mCountDownTimer;
     RecyclerView recyclerView;
@@ -155,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float IN_PROXIMITY_OF_DESTINATION = 20f;
     String distance = "", duration = "", sourceName, destinatioName, selectedTravelMode, DBLatString, DBLonString, userName, userMail, usertoken, message;
 
-    Boolean isThisDestinationSetup, isThisSms = false;
+    Boolean isThisDestinationSetup, isThisSms = false, flag=false;
     private boolean isTimerRunning;
     private long timeLeftMilliSec, durationInSeconds;
     ArrayList<String> guardiansPhoneNoList = new ArrayList<>();
@@ -259,7 +266,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //+ getAddress(currentLoc)
                 message = userName + " " + getString(R.string.guardianAdded_userInDanger);
                 sendPushNotificationToFollower("!!!  DANGER !!!");
-                sendNotificationViaSmS(true);
+                flag = true;
+                sendNotificationViaSmS();
                 return false;
             }
         });
@@ -287,7 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //start journey view
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        backButton.setText("Back");
         countDownTimer = findViewById(R.id.countDownTimer);
         countDownText = findViewById(R.id.text_view_countdown);
 //        startPauseButton = findViewById(R.id.button_start_pause);
@@ -309,6 +317,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             recyclerView.setVisibility(View.GONE);
             countDownTimer.setVisibility(View.GONE);
             abort.setVisibility(View.GONE);
+            nDialog = new ProgressDialog(MapsActivity.this);
+            nDialog.setMessage("Loading..");
+            nDialog.setTitle("Fetching Currect Location");
+            nDialog.setIndeterminate(false);
+            nDialog.setCancelable(true);
+            nDialog.show();
         } else {
             locationSearch.setVisibility(View.GONE);
             etd.setVisibility(View.GONE);
@@ -399,6 +413,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Place place = Autocomplete.getPlaceFromIntent(data);
             try {
                 destinationTextBox.setText(String.valueOf(getAddressFromLatLng(place.getLatLng().latitude, place.getLatLng().longitude)));
+                backButton.setText("Save");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -452,8 +468,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
     }
 
-    private void sendNotificationViaSmS(boolean... optionalFlag) {
-        boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
+    private void sendNotificationViaSmS() {
+//        boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.SEND_SMS)
@@ -463,9 +479,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.SEND_SMS},
                     101);
         } else {
-            if(flag)
-                SendTextMsg(flag);
-            else
                 SendTextMsg();
         }
     }
@@ -696,6 +709,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 loc = location;
                 if (isThisDestinationSetup) {
                     sourceTextBox.setText(getAddress(location));
+                    nDialog.dismiss();
                     sourceLoc = location;
                     currentLoc = location;
                     source = new MarkerOptions().position(latLng).title("Source");
@@ -851,6 +865,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     message= userName + " has started a journey from \n " + sourceName + " to \n" + destinatioName + "\n expected duration: " + duration;
                     setMarkersAndDuration();
                     if (isThisSms) {
+                        flag=false;
                         sendNotificationViaSmS();
                     } else {
                         sendPushNotificationToFollower("Journey Started");
@@ -1031,7 +1046,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         if (expectedtime.contains("min ")) {
             total[2]++;
-        } else if (expectedtime.contains("mins")) {
+        } else if (expectedtime.contains(" min")) {
+            total[2] += Integer.valueOf(expectedtime.substring(0, expectedtime.indexOf(" min")));
+        }else if (expectedtime.contains("mins")) {
             if (expectedtime.indexOf(" mins") <= 3) {
                 total[2] += Integer.valueOf(expectedtime.substring(0, expectedtime.indexOf(" mins")));
             } else {
@@ -1304,7 +1321,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void updateCountDownText() {
         int minutes = (int) (timeLeftMilliSec / 1000) / 60;
         int seconds = (int) (timeLeftMilliSec / 1000) % 60;
-       // activityReference.child("durationInSeconds").setValue(timeLeftMilliSec/(1000));
+
+//        activityReference.child("durationInSeconds").setValue(timeLeftMilliSec/1000);
 
 //        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == timeLeftMilliSec) {
 //            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
@@ -1387,9 +1405,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         int minutes = (int) (timeLeftMilliSec / 1000) / 60;
         int seconds = (int) (timeLeftMilliSec / 1000) % 60;
-        if ( minutes != 0 &&  seconds != 0 && ((int) durationInSeconds) * 1000 * 0.75 == timeLeftMilliSec) {
-            String message1 = "You have " + minutes + " : " + seconds + " left to complete the journey";
-        }
+
         float distance = location.distanceTo(destinationLoc);
         float  firstWarning= sourceLoc.distanceTo(destinationLoc)*0.75F;
         float secondWarning = sourceLoc.distanceTo(destinationLoc)*0.50F;
@@ -1399,8 +1415,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (distance < firstWarning && !firstAlarm) {
             activityReference.child("firstWarning").setValue("true");
             firstAlarm = true;
-            message= userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
+            message= userName + " is " + distance + " meters away from destination \n Remaining time - " + minutes + "m : " + seconds +"s";
             if (isThisSms) {
+                flag=false;
                 sendNotificationViaSmS();
             } else {
                 sendPushNotificationToFollower(" First Warning ");
@@ -1409,8 +1426,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (distance < secondWarning && !secondAlarm) {
             activityReference.child("secondWarning").setValue("true");
             secondAlarm = true;
-            message= userName + " is " + distance + " meters away from destination \n Remaining time : " + minutes + " : " + seconds;
+            message= userName + " is " + distance + " meters away from destination \n Remaining time - " + minutes + " : " + seconds;
             if (isThisSms) {
+                flag=false;
                 sendNotificationViaSmS();
             } else {
                 sendPushNotificationToFollower(" Second Warning ");
@@ -1419,8 +1437,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
-            message= userName + " is " + distance + " meters away from destination \n Remaining time :" + minutes + " : " + seconds + "  HURRY ";
+            message= userName + " is " + distance + " meters away from destination \n Remaining time -" + minutes + " : " + seconds + "  HURRY ";
             if (isThisSms) {
+                flag=false;
                 sendNotificationViaSmS();
             } else {
                 sendPushNotificationToFollower(" Third Warning ");
@@ -1435,6 +1454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             reachedDestination = true;
             message= userName + " has reached destination " + destinatioName;
             if (isThisSms) {
+                flag=false;
                 sendNotificationViaSmS();
             } else {
                 sendPushNotificationToFollower(" Destination Reached ");
@@ -1464,6 +1484,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             activityReference.child("routeDeviation").setValue("false");
                             message= userName + " is deviated from route";
                             if (isThisSms) {
+                                flag=false;
                                 sendNotificationViaSmS();
                             } else {
                                 sendPushNotificationToFollower(" Out of Route ");
@@ -1481,6 +1502,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 routeDeviation = true;
                 activityReference.child("routeDeviation").setValue("true");
             }
+        }
+        if (minutes == 0 && seconds == 0) {
+            activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.child("destinationReached").exists()) {
+                            if (!snapshot.child("destinationReached").getValue(Boolean.class)) {
+                                countDownText.setBackgroundResource(R.drawable.abort_background);
+                                message= userName + " is " + distance + " meters away from destination, Please reach soon";
+                                if (isThisSms) {
+                                    flag=false;
+                                    sendNotificationViaSmS();
+                                } else {
+                                    sendPushNotificationToFollower(" Time Over ");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
     }
 
@@ -1548,8 +1595,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
 //    }
 
-    private void SendTextMsg(boolean... optionalFlag) {
-        boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
+    private void SendTextMsg() {
+       // boolean flag = (optionalFlag.length >= 1) ? optionalFlag[0] : false;
       //  Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         // PendingIntent sentPI = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 //        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,

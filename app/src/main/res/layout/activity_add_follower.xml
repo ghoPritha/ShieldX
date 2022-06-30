@@ -17,15 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <Button
             android:id="@+id/backButton"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
-            android:layout_marginStart="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="10sp"
             android:rotationX="2"
-            android:src="@drawable/ic_save" />
+            android:backgroundTint="@color/dashboardBackground"
+            android:textColor="@color/white"
+            android:text="@string/Save"
+            />
         <TextView
             android:id="@+id/testHello"
             android:layout_width="wrap_content"
@@ -38,15 +41,15 @@
             android:layout_centerInParent="true"/>
 
 
-        <ImageView
-            android:id="@+id/imageMenu"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="15dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_menu"
-            android:layout_alignParentEnd="true"
-            app:tint="@color/white" />
+<!--        <ImageView-->
+<!--            android:id="@+id/imageMenu"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_marginEnd="15dp"-->
+<!--            android:contentDescription="@string/app_name"-->
+<!--            android:src="@drawable/ic_menu"-->
+<!--            app:tint="@color/white" />-->
 
 
     </RelativeLayout>
