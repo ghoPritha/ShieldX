@@ -10,8 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -38,8 +40,8 @@ import java.util.ArrayList;
 
 public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    Button newActivityButton;
-    TextView userName, newActivityText;
+    Button newActivityButton, navBar_about_us, navBar_logout_btn;
+    TextView userName, newActivityText, navBar_userName, navBar_userEmail;
     LinearLayout myFollower, layoutSettings, addFollower, layoutJourneyList;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -87,6 +89,13 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        navBar_about_us = (Button) header.findViewById(R.id.navBar_about_us);
+        navBar_logout_btn = (Button) header.findViewById(R.id.navBar_logout_btn);
+        navBar_userName = (TextView) header.findViewById(R.id.navBar_userName);
+        navBar_userEmail = (TextView) header.findViewById(R.id.navBar_userEmail);
+        navBar_userName.setText(userData.getFirstName());
+        navBar_userEmail.setText(userData.getEmail());
 
         newActivitySetup((Serializable) userData);
         //showMyFollowers((Serializable) userData);
@@ -219,6 +228,24 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
         });
 
+        navBar_about_us.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View header) {
+                Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
+                settingsIntent.putExtra("viewUserProfileOrAboutUs", false);
+                startActivity(settingsIntent);
+//                startActivity(new Intent(getApplicationContext(), AboutUs.class));
+            }
+        });
+
+        navBar_logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                startActivity(new Intent(getApplicationContext(), Login.class));
+                Toast.makeText(HomePage.this, "Logout Successful", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
