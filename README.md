@@ -35,7 +35,7 @@ ShieldX makes sure to keep you safe and secure by notifying your current locatio
 
 ## Visuals
 Screeshots demonstrating how application works from user's point of view can be viewed in our documentation (blog) of final application. 
-Link = 
+Link = https://code.ovgu.de/ghosal/shieldx/-/wikis/Final-Application
 
 ## License
 ShieldX is an android application developed by students of Otto-von Guericke University, Magdeburg as the part of their course project of Introduction to Software Engineering for Engineers under the supervision of Professor Christian Braune.
