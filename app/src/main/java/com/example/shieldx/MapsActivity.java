@@ -271,6 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //+ getAddress(currentLoc)
                 message = userName + " " + getString(R.string.guardianAdded_userInDanger);
                 sendPushNotificationToFollower("!!!  DANGER !!!");
+                Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
                 flag = true;
                 sendNotificationViaSmS();
                 return false;
@@ -355,7 +356,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         intent.putExtra("user_key", userData);
                         intent.putExtra("aborted", true);
                         startActivity(intent);
-                        //finish();
+                        finish();
                         //System.exit(0);
                     }
                 }).show();
@@ -1505,6 +1506,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             myIntent.putExtra("user_key", (Serializable) userData);
                             // myIntent.putExtra("pastActivties",(Serializable) pastActivities);
                             startActivity(myIntent);
+                            finish();
                         }
                     }).show();
         }

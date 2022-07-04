@@ -72,6 +72,7 @@ public class SignUp extends AppCompatActivity {
                                                           Intent myIntent = new Intent(SignUp.this, Login.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
                                                           Toast.makeText(SignUp.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                                                          myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                          startActivity(myIntent);
                                                       }
 
