@@ -60,14 +60,6 @@ public class SignUp extends AppCompatActivity {
                                                               phone.getText().toString().trim().toString(), email.getText().toString().trim().toString(), password.getText().toString().trim().toString());
                                                       Cursor c = DB.fetchUserDataOnSignUp(phone.getText().toString().trim().toString(), email.getText().toString().trim().toString());
                                                       if (c != null) {
-//                                                          try {
-//                                                              userData = DB.fetchUserData(c);
-//                                                          } catch (IllegalAccessException e) {
-//                                                              e.printStackTrace();
-//                                                          } catch (InstantiationException e) {
-//                                                              e.printStackTrace();
-//                                                          }
-
 
                                                           Intent myIntent = new Intent(SignUp.this, Login.class);
                                                           myIntent.putExtra("user_key", (Serializable) userData);
@@ -131,27 +123,6 @@ public class SignUp extends AppCompatActivity {
     @SuppressLint("LongLogTag")
     private void saveInFirebase() {
         FirebaseDatabase.getInstance().getReference("USERS").child(userData.encodedEmail()).setValue(userData);
-//        mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(),password.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if(task.isSuccessful()){
-//                    FirebaseDatabase.getInstance().getReference("USERS").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if(task.isSuccessful()){
-//                                Toast.makeText(SignUp.this,"User has been added successfully", Toast.LENGTH_SHORT).show();
-//                            }else{
-//                                Toast.makeText(SignUp.this,"User not added", Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//                    });
-//                    followerReference.push().setValue(userData);
-//                }
-//                else{
-//                    Toast.makeText(SignUp.this,"User not added", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
     }
 
 }

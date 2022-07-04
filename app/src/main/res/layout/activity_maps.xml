@@ -57,33 +57,7 @@
         android:orientation="vertical"
         android:layout_marginTop="150sp">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/alertButton"-->
-<!--            android:layout_width="50sp"-->
-<!--            android:layout_height="50sp"-->
-<!--            android:layout_alignParentStart="true"-->
-<!--            android:layout_marginStart="8sp"-->
-<!--            android:layout_marginTop="8sp"-->
-<!--            android:layout_marginEnd="8sp"-->
-<!--            android:layout_marginBottom="8sp"-->
-<!--            android:background="@drawable/ic_siren" />-->
-
-
-<!--        <ImageView-->
-<!--            android:id="@+id/abort"-->
-<!--            android:layout_width="50sp"-->
-<!--            android:layout_height="50sp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_margin="8sp"-->
-<!--            android:layout_marginStart="8sp"-->
-<!--            android:layout_marginTop="8sp"-->
-<!--            android:layout_marginEnd="8sp"-->
-<!--            android:layout_marginBottom="8sp"-->
-<!--            android:onClick="abortActivity"-->
-<!--            android:background="@drawable/ic_multiply" />-->
-
     </LinearLayout>
-<!--    -->
 
     <LinearLayout
         android:id="@+id/locationSearch"

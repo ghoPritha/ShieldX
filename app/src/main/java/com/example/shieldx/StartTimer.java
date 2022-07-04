@@ -34,32 +34,7 @@ public class StartTimer extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//
-//
-//        // Inflate the layout for this fragment
-//        view = inflater.inflate(R.layout.fragment_timer, container, false);
-//        timerView = view.findViewById(R.id.showTimer);
         rootNode =  FirebaseDatabase.getInstance();
-       // activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
-
-//        long duration = TimeUnit.MINUTES.toMillis(10000);
-//        new CountDownTimer(duration, 10000) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                String sDuration = String.format(Locale.ENGLISH,"%02d : %02d",
-//                        TimeUnit.MILLISECONDS.toMinutes(1),
-//                        TimeUnit.MILLISECONDS.toSeconds(1) -
-//                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(1)));
-//
-//                timerView.setText(sDuration);
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//                timerView.setVisibility(View.GONE);
-//            }
-//        }.start();
-
         return view;
     }
 

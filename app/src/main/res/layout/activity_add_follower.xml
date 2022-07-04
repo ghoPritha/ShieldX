@@ -40,18 +40,6 @@
             android:textStyle="bold"
             android:layout_centerInParent="true"/>
 
-
-<!--        <ImageView-->
-<!--            android:id="@+id/imageMenu"-->
-<!--            android:layout_width="30dp"-->
-<!--            android:layout_height="30dp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_marginEnd="15dp"-->
-<!--            android:contentDescription="@string/app_name"-->
-<!--            android:src="@drawable/ic_menu"-->
-<!--            app:tint="@color/white" />-->
-
-
     </RelativeLayout>
 
     <LinearLayout
@@ -86,51 +74,6 @@
             android:layout_margin="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scrollView">
-
-<!--            <RelativeLayout-->
-<!--                android:id="@+id/fromMyFollower"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/trending_background"-->
-<!--                android:padding="5dp"-->
-<!--                app:layout_constraintBottom_toTopOf="@+id/fromContact"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:gravity="center"-->
-<!--                    android:padding="10dp"-->
-<!--                    android:text="@string/addFromMyFollower"-->
-<!--                    android:textColor="@color/colorPrimaryLight"-->
-<!--                    android:textSize="16sp"-->
-<!--                    android:textStyle="bold" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/addFromMyFollower"-->
-<!--                    android:layout_width="40sp"-->
-<!--                    android:layout_height="40sp"-->
-<!--                    android:layout_alignParentEnd="true"-->
-<!--                    android:contentDescription="@string/app_name"-->
-<!--                    android:src="@drawable/ic_add"-->
-<!--                    app:tint="@color/white" />-->
-<!--            </RelativeLayout>-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/extraOR"-->
-<!--                android:layout_width="40sp"-->
-<!--                android:layout_height="40sp"-->
-<!--                android:gravity="center"-->
-<!--                android:text="@string/OR"-->
-<!--                android:textColor="@color/colorGrey"-->
-<!--                android:textSize="20sp"-->
-<!--                android:textStyle="bold"-->
-<!--                app:layout_constraintBottom_toTopOf="@+id/fromContact"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/fromMyFollower" />-->
 
             <RelativeLayout
                 android:id="@+id/fromContact"

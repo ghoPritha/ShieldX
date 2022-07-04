@@ -1,33 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!--    <group android:checkableBehavior="single">-->
-
-<!--        <item-->
-<!--            android:id="@+id/aboutUs"-->
-<!--            android:icon="@drawable/ic_about_us"-->
-<!--            android:title="About Us" />-->
-<!--        &lt;!&ndash;        <item&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:id="@+id/nav_sidebar"&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:title="Home"&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:icon="@drawable/home"/>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <item&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:id="@+id/nav_sidebar"&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:title="Home"&ndash;&gt;-->
-<!--        &lt;!&ndash;            android:icon="@drawable/home"/>&ndash;&gt;-->
-<!--    </group>-->
-
-<!--    <item android:title="Profile">-->
-<!--        <menu>-->
-<!--            <group android:checkableBehavior="single">-->
-
-<!--                <item-->
-<!--                    android:id="@+id/logout"-->
-<!--                    android:title="Log out"-->
-<!--                    android:icon="@drawable/ic_login" />-->
-<!--            </group>-->
-<!--        </menu>-->
-<!--    </item>-->
-
-
 </menu>
