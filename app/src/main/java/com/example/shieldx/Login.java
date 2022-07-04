@@ -90,7 +90,6 @@ public class Login extends AppCompatActivity {
                 showHomePage();
 
                 getLocation(userData.encodedEmail());
-//                statusCheck();
 
                 updateToken();
             } else
@@ -122,18 +121,11 @@ public class Login extends AppCompatActivity {
     }
 
     private void showHomePage() {
-//        userData.setEmail(email.getText().toString());
-//        userData.setNumber(phone.getText().toString());
-//        userData.setFirstName(firstname.getText().toString());
-//        userData.setLastName(lastname.getText().toString());
 
         rootNode = FirebaseDatabase.getInstance();
-        // followerReference = rootNode.getReference("USERS").child(userData.encodedEmail());
-        //followerReference.setValue(userData);
 
         Intent myIntent = new Intent(Login.this, HomePage.class);
         myIntent.putExtra("user_key", (Serializable) userData);
-//                    myIntent.putExtra("Username", username.getText().toString());
         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
     }
@@ -176,7 +168,6 @@ public class Login extends AppCompatActivity {
                 @Override
                 public void onSuccess(Location location) {
                     //Initialize location
-//                    Location location = task.getResult();
                     if (location != null) {
                         try {
                             //Initialise geocoder
@@ -187,10 +178,6 @@ public class Login extends AppCompatActivity {
                             Address obj = addresses.get(0);
 
                             LatLng startLocation = new LatLng(obj.getLatitude(), obj.getLongitude());
-//                            ((EditText) findViewById(R.id.startlocation)).setText(obj.getLocality());
-//                            activityLog.setCurrentLocation(startLocation);
-//                            ActivityLog actyStartLoc = new ActivityLog(userMail, startLocation);
-//                            FirebaseDatabase.getInstance().getReference().child("ACTIVITY_LOG").push().setValue(actyStartLoc);
                             activityLog.setUserMail(userMail);
 
                             //  FirebaseDatabase.getInstance().getReference("ACTIVITY_LOG").child();
@@ -206,69 +193,13 @@ public class Login extends AppCompatActivity {
         else {
 
             askPermission();
-            // getLocation(userData.getEmail());
         }
-
-//        else {
-//            LatLng university = new LatLng(52.1205, 11.6276);
-//            mMap.addMarker(new MarkerOptions().position(university).title("Current location"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(university));
-//        }
 
     }
 
     private void askPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE);
     }
-
-//    public void statusCheck() {
-//        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//
-//        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//            buildAlertMessageNoGps();
-//
-//        }
-//    }
-//
-//    private void buildAlertMessageNoGps() {
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-//                .setCancelable(false)
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int id) {
-//                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-//                    }
-//                })
-//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int id) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        final AlertDialog alert = builder.create();
-//        alert.show();
-//    }
-//    @SuppressLint("MissingPermission")
-//    private void getLocation() {
-//        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>(){
-//            @Override
-//            public void onComplete(@NonNull Task<Location> task){
-//                //Initialize location
-//                Location location = task.getResult();
-//                if(location!=null) {
-//                    try {
-//                        //Initialise geocoder
-//                        Geocoder geocoder= new Geocoder(Login.this, Locale.getDefault());
-//                        //Initialise address list
-//                        List<Address> addresses = geocoder.getFromLocation(
-//                                location.getLatitude(),location.getLongitude(),1);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            }
-//        });
-//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

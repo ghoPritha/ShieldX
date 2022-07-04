@@ -23,7 +23,6 @@ public class ActivityLog implements Serializable {
         this.userMail = userMail;
         this.source = startLocation;
         this.destination = destination;
-//        this.startLocationName = startLocationName;
         this.destinationName = destinationName;
     }
     public ActivityLog(LatLng currentLocation, LatLng destination, LatLng startLocation, String userMail, String userName, String destinationName, String sourceName, String typeOfActivity, Boolean journeyCompleted, Boolean destinationReached, Time expectedTime, List<Follower> followersList) {

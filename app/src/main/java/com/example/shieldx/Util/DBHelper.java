@@ -25,8 +25,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase shieldXDB) {
         shieldXDB.execSQL("create Table USERS (User_ID INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT NOT NULL , lastname TEXT NOT NULL , phone_number TEXT NOT NULL UNIQUE, " +
                 "email_id TEXT NOT NULL UNIQUE, password TEXT NOT NULL )");
-//        shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_firstname TEXT NOT NULL, follower_lastname TEXT NOT NULL , " +
-//                "follower_phone_number TEXT NOT NULL UNIQUE, follower_email_id TEXT NOT NULL UNIQUE, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
         shieldXDB.execSQL("create Table FOLLOWERS (Follower_ID INTEGER PRIMARY KEY AUTOINCREMENT, follower_name TEXT NOT NULL , User_ID INTEGER NOT NULL, " +
                 "follower_phone_number TEXT NOT NULL, follower_email_id TEXT NOT NULL, follower_about TEXT, FOREIGN KEY (User_ID) REFERENCES USERS(User_ID))");
 
@@ -34,12 +32,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 "time_taken default (STRFTIME('%H:%M:%f')), start_acty default (STRFTIME('%Y-%m-%d %H:%M:%f'))," +
                 "end_acty default (STRFTIME('%Y-%m-%d %H:%M:%f')),acty_status BOOLEAN default '0',  User_ID INTEGER NOT NULL, Follower_ID INTEGER NOT NULL, " +
                 "FOREIGN KEY (User_ID) REFERENCES USERS(User_ID) , FOREIGN KEY (Follower_ID) REFERENCES FOLLOWERS(Follower_ID))");
-               // ", FOREIGN KEY (Follower_ID) REFERENCES FOLLOWERS(Follower_ID))");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase shieldXDB, int oldVersion, int newVersion) {
-//        shieldXDB.execSQL("drop Table if exists users");
         shieldXDB.execSQL("drop Table if exists USERS");
         shieldXDB.execSQL("drop Table if exists FOLLOWERS");
         shieldXDB.execSQL("drop Table if exists ACTIVITY_LOG");

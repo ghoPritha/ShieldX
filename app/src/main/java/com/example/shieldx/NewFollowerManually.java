@@ -26,13 +26,8 @@ import java.util.ArrayList;
 
 public class NewFollowerManually extends AppCompatActivity {
 
-    TextView showtime1, showtime3, showtime2;
-    NumberPicker timePickerHour;
-    NumberPicker timePickerMin;
-    NumberPicker timePickerSec;
     Button saveButton;
     EditText putname, putnumber, putemail;
-    int hour, min, second;
     User userData = new User();
 
     FirebaseDatabase rootNode;
@@ -72,54 +67,11 @@ public class NewFollowerManually extends AppCompatActivity {
         }
         rootNode = FirebaseDatabase.getInstance();
 
-//        showtime1 = findViewById(R.id.showTime);
-//        showtime3 = findViewById(R.id.showTime3);
-//        showtime2 = findViewById(R.id.showTime2);
-//        timePickerHour = findViewById(R.id.timePickerHour);
-//        timePickerMin = findViewById(R.id.timePickerMin);
-//        timePickerSec = findViewById(R.id.timePickerSec);
-//        setReminderButton = findViewById(R.id.setReminderButton);
-//        timePickerHour.setMinValue(0);
-//        timePickerHour.setMaxValue(24);
-//        timePickerMin.setMinValue(0);
-//        timePickerMin.setMaxValue(59);
-//        timePickerSec.setMinValue(0);
-//        timePickerSec.setMaxValue(59);
-
-
-//        timePickerHour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//            @Override
-//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                    //hour = picker.getValue();
-//                    showtime1.setText(String.format(String.valueOf(newVal)) + " hh : ");
-//            }
-//        });
-//        timePickerMin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//            @Override
-//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                showtime2.setText(String.format(String.valueOf(newVal)) + " mm");
-//            }
-//        });
-//        timePickerSec.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//            @Override
-//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                showtime3.setText(" : " + String.format(String.valueOf(newVal)) + " ss");
-//            }
-//        });
-//
-//        setReminderButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                //  showtime.setText(hour);
-//            }
-//        });
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Follower follower = new Follower(putname.getText().toString().trim(), putnumber.getText().toString(), putemail.getText().toString().trim(), null);
                 followerslist.add(follower);
-                //addToFirebase(follower);
                 Intent intent = new Intent();
                 intent.putExtra("addedFollower", (Serializable) followerslist);
                 setResult(RESULT_OK, intent);
@@ -128,23 +80,4 @@ public class NewFollowerManually extends AppCompatActivity {
         });
     }
 
-//    private void addToFirebase(Follower follower) {
-//
-//        rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList").child(follower.encodedfollowerEmail()).setValue(follower);
-//
-//        activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail()).child("followersList");
-//        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
-//        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                activityReference.setValue(follower);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//
-//    }
 }

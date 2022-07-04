@@ -38,12 +38,10 @@ public class AboutUs extends AppCompatActivity {
                 "\n" +
                 "The vision of developing this application is to provide a sense of security and make it widely available for all the people who travel alone and to make it easier for their friends or family to track them whenever they need. ShieldX makes sure to keep you safe and secure by notifying your current status to your friends and family throughout your journey.\n" +
         "\n" + " ShieldX version 4.0";
-//        abuotUs.setText(aboutText);
 
         Intent intent = getIntent();
 
         if (intent.getSerializableExtra("user_key") != null) {
-//            userProfileMessage = (String) intent.getSerializableExtra("message");
             User userData = (User) intent.getSerializableExtra("user_key");
             userFirstName = userData.getFirstName();
             userLastName = userData.getLastName();

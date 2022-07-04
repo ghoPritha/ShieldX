@@ -41,7 +41,6 @@ public class PastJourney extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         rootNode = FirebaseDatabase.getInstance();
         pastJourneyreference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
-        //activityReference.orderByChild("userMail").equalTo(userData.encodedEmail());
         pastJourneyreference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

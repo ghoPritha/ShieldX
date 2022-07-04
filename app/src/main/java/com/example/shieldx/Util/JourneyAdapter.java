@@ -98,8 +98,6 @@ public class JourneyAdapter  extends RecyclerView.Adapter<JourneyAdapter.ViewHol
             followers = itemView.findViewById(R.id.followers);
             aborted = itemView.findViewById(R.id.abort);
             date = itemView.findViewById(R.id.date);
-            
-            //tvEmail = itemView.findViewById(R.id.tv_email);
         }
     }
 }

@@ -43,8 +43,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         holder.tvName.setText(model.getName());
         //set number
         holder.tvNumber.setText(model.getNumber());
-        //set email
-//        holder.tvEmail.setText(model.getEmail());
     }
 
     @Override
@@ -61,7 +59,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             //assign variable
             tvName = itemView.findViewById(R.id.tv_name);
             tvNumber = itemView.findViewById(R.id.tv_number);
-            //tvEmail = itemView.findViewById(R.id.tv_email);
         }
     }
 }

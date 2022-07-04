@@ -68,8 +68,6 @@ public class MyFollower extends AppCompatActivity {
                 if (snapshot.exists()) {
                     for (DataSnapshot d : snapshot.getChildren()) {
                         Log.d("followersList", String.valueOf(d));
-//
-//                        Log.d("followersList", String.valueOf(foll.getFollowerEmail()));
 
                         ContactModel model = new ContactModel();
                         Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));

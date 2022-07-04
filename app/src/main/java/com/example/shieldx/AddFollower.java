@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class AddFollower extends AppCompatActivity {
 
     //initialize variable
-    ImageView addFromContact, addFromMyFollower, addFromNewFollower;
+    ImageView addFromContact, addFromNewFollower;
     RelativeLayout fromContact, fromNewFoollower;
     Button backButton;
     User userData;
@@ -74,20 +74,12 @@ public class AddFollower extends AppCompatActivity {
         userData = (User) intent.getSerializableExtra("user_key");
         DB = new DBHelper(this);
 
-        //assign variable
-//        backButton = findViewById(R.id.backButton);
-//        recyclerView = findViewById(R.id.recyclerView);
-//        addFromContact = findViewById(R.id.addFromContact);
-//        addFromMyFollower = findViewById(R.id.addFromMyFollower);
-//        addFromNewFollower = findViewById(R.id.addfromNewFoollower);
-//        userName = (TextView) findViewById(R.id.userName);
         isTheAddFollowerfromActivity = (Boolean) intent.getSerializableExtra("isTheAddFollowerfromActivity");
 
         IntializeView();
 
         if (userData != null)
             userId = userData.getUserId();
-        //userName.setText(userData.getFirstName());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         addFromContact.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,15 +103,6 @@ public class AddFollower extends AppCompatActivity {
                 }
             }
         });
-
-//        addFromMyFollower.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent myIntent = new Intent(AddFollower.this, MyFollower.class);
-//                myIntent.putExtra("user_key", (Serializable) userData);
-//                startActivity(myIntent);
-//            }
-//        });
 
         addFromNewFollower.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,40 +130,7 @@ public class AddFollower extends AppCompatActivity {
                 finish();
             }
         });
-        //check permission
-
-//        followerReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if(snapshot.exists())
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        })
     }
-
-//    private User fetchFollowerData() throws IllegalAccessException, InstantiationException {
-//        Cursor c = DB.fetchData(phone);
-//        if (c.moveToLast()) {
-//            userData.setUserId(c.getInt(0));
-//            userData.setFirstName(c.getString(1));
-//            userData.setLastName(c.getString(2));
-//            userData.setNumber(c.getString(3));
-//            userData.setEmail(c.getString(4));
-//        } else {
-//        }
-//        return userData;
-//    }
-
-//    private boolean checkPermission() {
-//        //check condition
-//        boolean result = ContextCompat.checkSelfPermission(AddFollower.this, Manifest.permission.READ_CONTACTS)
-//                == PackageManager.PERMISSION_GRANTED;
-//        return result;
-//    }
 
     public void requestPermissions() {
         String[] permission = {Manifest.permission.READ_CONTACTS};
@@ -201,8 +151,6 @@ public class AddFollower extends AppCompatActivity {
         } else {
             //Display toast when permission denied
             Toast.makeText(AddFollower.this, "Permission Denied.", Toast.LENGTH_SHORT).show();
-            //call check permission method
-            //checkPermission();
         }
     }
     @Override
@@ -244,8 +192,6 @@ public class AddFollower extends AppCompatActivity {
                             emailCursor.close();
                         }
                         phoneCursor.close();
-
-                        // @SuppressLint("Range") String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                         ContactModel model = new ContactModel();
                         //set name
@@ -299,36 +245,6 @@ public class AddFollower extends AppCompatActivity {
     private void addFollowersToDB() {
         rootNode = FirebaseDatabase.getInstance();
         DatabaseReference userReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("followersList");
-//        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.getKey() == "followersList") {
-//                    Query query = userReference.orderByChild("followerName").equalTo(follower.getFollowerName());
-//                    Log.d("query", String.valueOf(query));
-//                    query.addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            if (snapshot.exists()) {
-//                                follower = null;
-//                            } else {
-//                                extracted(userReference);
-//                            }
-//                        }
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
-//                } else {
-//                    extracted(userReference);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
 
         extracted(userReference);
         if(isTheAddFollowerfromActivity) {
@@ -358,17 +274,6 @@ public class AddFollower extends AppCompatActivity {
                     Log.d("Transaction:onComplete:", String.valueOf(databaseError));
                 }
             });
-//            activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    activityReference.setValue(followerList);
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
         }
     }
 
@@ -402,16 +307,10 @@ public class AddFollower extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
         fromContact = findViewById(R.id.fromContact);
-        // addFromMyFollower = findViewById(R.id.addFromMyFollower);
-        //  RelativeLayout fromMyFollower = findViewById(R.id.fromMyFollower);
         //TextView extraOR = findViewById(R.id.extraOR);
         addFromNewFollower = findViewById(R.id.addfromNewFoollower);
         fromNewFoollower = findViewById(R.id.fromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
         backButton.setText("Back");
-//        if (!isTheAddFollowerfromActivity) {
-//            addFromMyFollower.setVisibility(View.GONE);
-//            fromMyFollower.setVisibility(View.GONE);extraOR.setVisibility(View.GONE);
-//        }
     }
 }

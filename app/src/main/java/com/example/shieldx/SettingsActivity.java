@@ -49,8 +49,8 @@ public class SettingsActivity extends AppCompatActivity {
     ImageView deleteTracking;
     Context mContext = this;
     FirebaseDatabase rootNode;
-    DatabaseReference pastactivityReference;  //userReference;
-    String userFirstName, userLastName, usermail, userNum, userProfileMessage;
+    DatabaseReference pastactivityReference;
+    String userFirstName, userLastName, usermail, userNum;
     User userData;
 
     @Override
@@ -120,7 +120,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 rootNode = FirebaseDatabase.getInstance();
-//                userReference = rootNode.getReference("USERS").child(usermail);
                 pastactivityReference = rootNode.getReference("USERS").child(userData.encodedEmail()).child("Past activities");
                 final Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
@@ -128,9 +127,7 @@ public class SettingsActivity extends AppCompatActivity {
                 pastactivityReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        //  ActivityLog a = new ActivityLog();
-                        // a = snapshot.getValue(ActivityLog.class);
-                        //sourceLo = snapshot.getValue(LatLng.class);
+
                         if (snapshot.exists()) {
                             for (DataSnapshot d : snapshot.getChildren()) {
                                 if (d.child("activityDate").exists()) {
@@ -141,8 +138,6 @@ public class SettingsActivity extends AppCompatActivity {
                                         calendar.setTime(simpleDateFormat.parse(currentDate));
                                         calendar.add(Calendar.MONTH,-3);
                                         if ( date.compareTo(calendar.getTime()) < 0 ) {
-                                            //Delete enteries of activity log before 3 months
-//                                            d.getRef().removeValue();
                                             d.getRef().setValue(null);
                                         }
                                     } catch (ParseException e) {
@@ -169,7 +164,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
-//                settingsIntent.putExtra("message", userProfileMessage);
                 settingsIntent.putExtra("user_key", userData);
                 settingsIntent.putExtra("viewUserProfileOrAboutUs", true);
                 startActivity(settingsIntent);
@@ -191,7 +185,6 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(getApplicationContext(), AboutUs.class);
                 settingsIntent.putExtra("viewUserProfileOrAboutUs", false);
                 startActivity(settingsIntent);
-//                startActivity(new Intent(getApplicationContext(), AboutUs.class));
             }
         });
     }
@@ -203,16 +196,11 @@ public class SettingsActivity extends AppCompatActivity {
         userData = (User) intent.getSerializableExtra("user_key");
 
         if(userData != null) {
-//            userFirstName.setText(userData.getFirstName());
-//            userLastName.setText(userData.getFirstName());
             userEmail.setText(userData.getEmail());
             userFirstName = userData.getFirstName();
             userLastName = userData.getLastName();
             usermail = userData.getEmail();
             userNum = userData.getNumber();
-//            userProfileMessage = "<b>Name           : </b>" + userFirstName +" " +userLastName + "\n" +
-//                                 "<b>Email          : </b>" + usermail + "\n" +
-//                                 "<b>Contact Number : </b>" + userNum;
         }
         if(CommonMethods.isLocationEnabled(mContext)){
             allowLocationSwitch.toggle();
@@ -265,12 +253,9 @@ public class SettingsActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CommonMethods.CONTACT_PERMISSION_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             //call method when permission granted
-//            pickContactIntent();
         } else {
             //Display toast when permission denied
             allowContactAccessSwitch.toggle();
-            //call check permission method
-            //checkPermission();
         }
     }
 }
