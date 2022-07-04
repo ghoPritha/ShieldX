@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,11 +52,12 @@ public class NewActivityPage extends AppCompatActivity {
     //Initialise variables
     EditText searchDestination, etd;
     EditText text;
-    ImageView openAddFollower;
+    ImageView openAddFollower, searchDestinationButton;
     ImageView openTimer;
     public static int PICK_CONTACT = 1;
     TextView userName;
     LinearLayout expandedLayout, layoutEtd, addedFollower;
+    RelativeLayout layoutAddFollower;
     CardView outerLayout;
     RecyclerView recyclerView;
     String duration, source, destination, username, usermail;
@@ -85,12 +87,14 @@ public class NewActivityPage extends AppCompatActivity {
         userData = (User) intent.getSerializableExtra("user_key");
         newOrExistingJourney = (Boolean) intent.getSerializableExtra("newOrExistingJourney");
         searchDestination = (EditText) findViewById(R.id.searchDestination);
+        searchDestinationButton = (ImageView) findViewById(R.id.searchDestinationButton);
         etd = findViewById(R.id.etd);
         //expandedLayout = findViewById(R.id.expandedAddFollower);
         //outerLayout = findViewById(R.id.cardLayoutAddFollower);
         //openTimer = findViewById(R.id.openTimer);
         recyclerView = findViewById(R.id.recyclerView);
         openAddFollower = (ImageView) findViewById(R.id.openAddFollower);
+        layoutAddFollower = (RelativeLayout) findViewById(R.id.layoutAddFollower);
         userName = (TextView) findViewById(R.id.userName);
         startActivityButton = (Button) findViewById(R.id.startActivityButton);
         layoutEtd = (LinearLayout) findViewById(R.id.layoutEtd);
@@ -110,7 +114,7 @@ public class NewActivityPage extends AppCompatActivity {
 //            newActivity.setUserMail(usermail);
 //            newActivity.setUserName(userData.getFirstName());
         }
-        Toast.makeText(NewActivityPage.this, usermail, Toast.LENGTH_LONG).show();
+        ////toast.makeText(NewActivityPage.this, usermail, Toast.LENGTH_LONG).show();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(usermail);
 //        activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
@@ -245,10 +249,28 @@ public class NewActivityPage extends AppCompatActivity {
                 startActivityForResult(myIntent, FOLLOWER_ADDED);
             }
         });
+        layoutAddFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(NewActivityPage.this, AddFollower.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
+                myIntent.putExtra("isTheAddFollowerfromActivity", true);
+                startActivityForResult(myIntent, FOLLOWER_ADDED);
+            }
+        });
     }
 
     private void enterDestination() {
         searchDestination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
+                gpsIntent.putExtra("user_key", (Serializable) userData);
+                gpsIntent.putExtra("isThisDestinationSetup", true);
+                startActivityForResult(gpsIntent, DESTINATION_ADDED);
+            }
+        });
+        searchDestinationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent gpsIntent = new Intent(NewActivityPage.this, MapsActivity.class);
@@ -362,9 +384,9 @@ public class NewActivityPage extends AppCompatActivity {
 //                        @Override
 //                        public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
 //                            if (firebaseError != null) {
-//                                Toast.makeText(NewActivityPage.this, "copy Failed ", Toast.LENGTH_LONG);
+//                                //toast.makeText(NewActivityPage.this, "copy Failed ", Toast.LENGTH_LONG);
 //                            } else {
-//                                Toast.makeText(NewActivityPage.this, "copy succeeded ", Toast.LENGTH_LONG);
+//                                //toast.makeText(NewActivityPage.this, "copy succeeded ", Toast.LENGTH_LONG);
 //
 //                            }
 //                        }
@@ -404,7 +426,9 @@ public class NewActivityPage extends AppCompatActivity {
 
                         adapter = new MainAdapter(NewActivityPage.this, contactList);
                         // set adapter
-                        recyclerView.setAdapter(adapter);
+                        if (adapter != null) {
+                            recyclerView.setAdapter(adapter);
+                        }
                         if (recyclerView != null) {
                             addedFollower.setVisibility(View.VISIBLE);
                         }
@@ -448,12 +472,12 @@ public class NewActivityPage extends AppCompatActivity {
                     startActivityButton.setVisibility(View.VISIBLE);
                 } else {
                     //startActivityButton.setVisibility(View.GONE);
-                    Toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
+                    //toast.makeText(NewActivityPage.this, "Please enter a valid destination to start the Journey", Toast.LENGTH_LONG);
                 }
             }
         } else {
             //startActivityButton.setVisibility(View.GONE);
-            Toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
+            //toast.makeText(NewActivityPage.this, "At least ONE follower needs to be added to start the Journey", Toast.LENGTH_LONG);
         }
     }
 
@@ -503,6 +527,13 @@ public class NewActivityPage extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent myIntent = new Intent(NewActivityPage.this, HomePage.class);
+        myIntent.putExtra("user_key", userData);
+        startActivity(myIntent);
+        finish();
+    }
 //    private void UpdateToken() {
 //        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //        //String refreshToken = FirebaseInstanceId.getInstance().getToken();
@@ -518,7 +549,7 @@ public class NewActivityPage extends AppCompatActivity {
 //            public void onResponse(retrofit2.Call<MyResponse> call, Response<MyResponse> response) {
 //                if (response.code() == 200) {
 //                    if (response.body().success != 1) {
-//                        Toast.makeText(NewActivityPage.this, "Failed ", Toast.LENGTH_LONG);
+//                        //toast.makeText(NewActivityPage.this, "Failed ", Toast.LENGTH_LONG);
 //                    }
 //                }
 //            }

@@ -222,10 +222,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                intent.putExtra("duration", etd.getText().toString());
-                intent.putExtra("destination", destinationTextBox.getText().toString());
+                if (!etd.getText().toString().equalsIgnoreCase(""))
+                    intent.putExtra("duration", etd.getText().toString());
+                if (!destinationTextBox.getText().toString().equalsIgnoreCase(""))
+                    intent.putExtra("destination", destinationTextBox.getText().toString());
                 setResult(RESULT_OK, intent);
-                addLocationtoDatabase();
+                if (!etd.getText().toString().equalsIgnoreCase("") && !destinationTextBox.getText().toString().equalsIgnoreCase("")) {
+                    addLocationtoDatabase();
+                }
                 finish();
             }
         });
@@ -351,7 +355,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         intent.putExtra("aborted", true);
                         startActivity(intent);
                         //finish();
-                        System.exit(0);
+                        //System.exit(0);
                     }
                 }).show();
     }
@@ -373,6 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 List<Place.Field> placeList = Arrays.asList(Place.Field.ADDRESS_COMPONENTS, Place.Field.NAME, Place.Field.LAT_LNG);
                 Intent myIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeList).build(MapsActivity.this);
+                //alertDialog();
                 startActivityForResult(myIntent, 100);
             }
         });
@@ -401,6 +406,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //                Log.i(TAG, "An error occurred: " + status);
         //            }
         //        });
+    }
+
+    private void alertDialog() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle("Click again");
+        final AlertDialog alert = dialog.create();
+        alert.show();
+
+// Hide after some seconds
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (alert.isShowing()) {
+                    alert.dismiss();
+                }
+            }
+        };
+
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+
+        handler.postDelayed(runnable, 1000);
     }
 
 
@@ -437,10 +468,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void sendPushNotificationToFollower(String NotificationHeader) {
-        if (guardiansEmailList != null) {
+        if (guardiansEmailList.size() > 0) {
             for (String email : guardiansEmailList) {
                 Query query = rootNode.getReference("USERS").orderByChild("email").equalTo(email);
-                Log.d("snapshott", String.valueOf(query));
+                // //Log.d("snapshott", String.valueOf(query));
                 query.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -454,7 +485,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                             }
                         } else {
-                            Log.d("snapshott", String.valueOf(snapshot));
+                            ////Log.d("snapshott", String.valueOf(snapshot));
                         }
                     }
 
@@ -639,7 +670,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
         //route changes
-        Log.d("mylog", "Added Markers");
+        // //Log.d("mylog", "Added Markers");
 
         if(isThisDestinationSetup) {
             activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -720,7 +751,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    } else {
 
                     if (sourceMarker == null) {
-                        if (sourceTextBox.getText() != null) {
+                        if (!sourceTextBox.getText().toString().equalsIgnoreCase("")) {
                             sourceMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(sourceTextBox.getText().toString()));
                         }
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
@@ -735,7 +766,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    databasereference.child("longitude").push().setValue(Double.toString(location.getLongitude()));
 //                    saveLocation();
                 }else{
-                    Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
+                    ////Log.d("mylocationlog", "Got Location: "+location.getLatitude()+","+location.getLongitude());
 //                    Toast.makeText(this, "Got Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
                     if (currentMarker != null) {
                         currentMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -842,22 +873,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     if (snapshot.child("followersList").exists()) {
                         for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
-                            if(d.child("followerEmail").getValue(String.class)!=null && d.child("followerNumber").getValue(String.class)!=null) {
-                                ContactModel model = new ContactModel();
-                                Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+                            ContactModel model = new ContactModel();
+                            //Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
 
-
+                            if (d.child("followerEmail").exists() && !d.child("followerEmail").getValue(String.class).toString().equalsIgnoreCase("")) {
                                 model.setEmail(d.child("followerEmail").getValue(String.class));
-                                model.setName(d.child("followerName").getValue(String.class));
-                                model.setNumber(d.child("followerNumber").getValue(String.class));
-
-                                contactList.add(model);
-                                adapter = new MainAdapter(MapsActivity.this, contactList);
-                                // set adapter
-                                recyclerView.setAdapter(adapter);
-                                guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
                                 guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
                             }
+                            if (d.child("followerName").exists() && !d.child("followerName").getValue(String.class).toString().equalsIgnoreCase("")) {
+                                model.setName(d.child("followerName").getValue(String.class));
+                            }
+                            if (d.child("followerNumber").exists() && !d.child("followerNumber").getValue(String.class).toString().equalsIgnoreCase("")) {
+                                model.setNumber(d.child("followerNumber").getValue(String.class));
+                                guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+                            }
+
+                            contactList.add(model);
+                            adapter = new MainAdapter(MapsActivity.this, contactList);
+                            // set adapter
+                            recyclerView.setAdapter(adapter);
                         }
                     }
                     createRoute(selectedTravelMode);
@@ -872,7 +906,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     sendPushNotificationToUser();
                     activityReference.child("journeyStarted").setValue(true);
-                    Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
+                    //Log.d("onDataChange: ", source + " " + destination + " " + durationInSeconds);
                 }
             }
 
@@ -1000,11 +1034,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     convertToSeconds(duration);
                     activityReference.child("destinationName").setValue(destinationTextBox.getText().toString());
                     activityReference.child("sourceName").setValue(sourceTextBox.getText().toString());
-                    if(destination!=null)
-                    activityReference.child("destination").setValue(destination.getPosition());
+                    if (destination != null)
+                        activityReference.child("destination").setValue(destination.getPosition());
                     activityReference.child("source").setValue(source.getPosition());
-                    if(etd!=null)
-                    activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
+                    if (!etd.getText().toString().equalsIgnoreCase(""))
+                        activityReference.child("durationInSeconds").setValue(convertToSeconds(etd.getText().toString()));
                     activityReference.child("modeOfTransport").setValue(selectedTravelMode);
                     activityReference.child("duration").setValue(etd.getText().toString());
                     activityReference.child("journeyCompleted").setValue(false);
@@ -1064,7 +1098,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             day = total[0];
             hours = total[1];
             mins = total[2];
-            Log.d("LOG", total[0] + " days " + total[1] + " hours " + total[2] + " mins.");
+            //Log.d("LOG", total[0] + " days " + total[1] + " hours " + total[2] + " mins.");
             seconds = 0;
             if (mins != 0) {
                 seconds = seconds + mins * 60;
@@ -1121,7 +1155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 data = downloadUrl(strings[0]);
 
             } catch (Exception e) {
-                Log.d("Background Task", e.toString());
+                //Log.d("Background Task", e.toString());
             }
             return data;
         }
@@ -1153,10 +1187,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     sb.append(line);
                 }
                 data = sb.toString();
-                Log.d("mylog", "Downloaded URL: " + data.toString());
+                //Log.d("mylog", "Downloaded URL: " + data.toString());
                 br.close();
             } catch (Exception e) {
-                Log.d("mylog", "Exception downloading URL: " + e.toString());
+                //Log.d("mylog", "Exception downloading URL: " + e.toString());
             } finally {
                 iStream.close();
                 urlConnection.disconnect();
@@ -1183,17 +1217,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("mylog", jsonData[0].toString());
+                //Log.d("mylog", jsonData[0].toString());
                 DataParser parser = new DataParser();
-                Log.d("mylog", parser.toString());
+                //Log.d("mylog", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("mylog", "Executing routes");
-                Log.d("mylog", routes.toString());
+                //Log.d("mylog", "Executing routes");
+                //Log.d("mylog", routes.toString());
 
             } catch (Exception e) {
-                Log.d("mylog", e.toString());
+                //Log.d("mylog", e.toString());
                 e.printStackTrace();
             }
             return routes;
@@ -1244,7 +1278,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lineOptions.width(20);
                     lineOptions.color(Color.RED);
                 }
-                Log.d("mylog", "onPostExecute lineoptions decoded");
+                //Log.d("mylog", "onPostExecute lineoptions decoded");
                 routeLatLngList = points;
                // Polyline sourceDestinationPolyline = mMap.addPolyline(lineOptions);
             }
@@ -1255,7 +1289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 taskCallback.onTaskDone(lineOptions);
 
             } else {
-                Log.d("mylog", "without Polylines drawn");
+                //Log.d("mylog", "without Polylines drawn");
             }
         }
     }
@@ -1450,7 +1484,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String currentDate = s.format(new Date());
             activityReference.child("destinationReached").setValue(true);
             activityReference.child("activity date").setValue(currentDate);
-            extractPastActivities();
+           // extractPastActivities();
             reachedDestination = true;
             message= userName + " has reached destination " + destinatioName;
             if (isThisSms) {
@@ -1618,5 +1652,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         }
+    }
+    @Override
+    public void onBackPressed() {
+        Intent myIntent = new Intent(MapsActivity.this, HomePage.class);
+        myIntent.putExtra("user_key", userData);
+        startActivity(myIntent);
+        finish();
     }
 }

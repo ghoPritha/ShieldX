@@ -1,9 +1,7 @@
 package com.example.shieldx;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,11 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -42,7 +38,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     Button newActivityButton, navBar_about_us, navBar_logout_btn;
     TextView userName, newActivityText, navBar_userName, navBar_userEmail;
-    LinearLayout myFollower, layoutSettings, addFollower, layoutJourneyList;
+    LinearLayout myFollower, layoutSettings, layoutJourneyList;
+    RelativeLayout newActivityLayout;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     androidx.appcompat.widget.Toolbar toolbar;
@@ -68,10 +65,11 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         if (intent.getSerializableExtra("pastActivties") != null)
             pastActivities = (ActivityLog) intent.getSerializableExtra("pastActivties");
         newActivityButton = (Button) findViewById(R.id.newActivityButton);
+        newActivityLayout = (RelativeLayout) findViewById(R.id.newActivityLayout);
         newActivityText = (TextView) findViewById(R.id.newActivity);
       //  myFollower = (LinearLayout) findViewById(R.id.layoutMyFollower);
         layoutSettings = (LinearLayout) findViewById(R.id.layoutSettings);
-        addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
+        //addFollower = (LinearLayout) findViewById(R.id.layoutContacts);
         layoutJourneyList = (LinearLayout) findViewById(R.id.layoutJourneyList);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navView);
@@ -100,19 +98,19 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         newActivitySetup((Serializable) userData);
         //showMyFollowers((Serializable) userData);
 
-        addFollower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(HomePage.this, AddFollower.class);
-                myIntent.putExtra("user_key", userData);
-                myIntent.putExtra("comingFromNeworExisting", false);
-                myIntent.putExtra("isTheAddFollowerfromActivity", false);
-                startActivity(myIntent);
-            }
-        });
+//        addFollower.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent myIntent = new Intent(HomePage.this, AddFollower.class);
+//                myIntent.putExtra("user_key", userData);
+//                myIntent.putExtra("comingFromNeworExisting", false);
+//                myIntent.putExtra("isTheAddFollowerfromActivity", false);
+//                startActivity(myIntent);
+//            }
+//        });
         newActivity.setUserMail(userData.encodedEmail());
         newActivity.setUserName(userData.getFirstName());
-        Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
+       // Toast.makeText(HomePage.this, userData.encodedEmail(), Toast.LENGTH_LONG).show();
         rootNode = FirebaseDatabase.getInstance();
         activityReference = rootNode.getReference("ACTIVITY_LOG").child(userData.encodedEmail());
 
@@ -122,7 +120,9 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 if (snapshot.exists()) {
                     if (snapshot.child("destinationReached").exists()) {
                         destinationReachedOrNewJourney = snapshot.child("destinationReached").getValue(Boolean.class);
-                        journeyStarted =  snapshot.child("journeyStarted").getValue(Boolean.class);
+                        if (snapshot.child("journeyStarted").exists()) {
+                            journeyStarted = snapshot.child("journeyStarted").getValue(Boolean.class);
+                        }
                         int myTint = ContextCompat.getColor(getApplicationContext(), R.color.white);
                         if (snapshot.child("destinationReached").getValue(Boolean.class)) {
                             extractPastActivities(snapshot);
@@ -241,8 +241,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         navBar_logout_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
                 startActivity(new Intent(getApplicationContext(), Login.class));
+                finish();
                 Toast.makeText(HomePage.this, "Logout Successful", Toast.LENGTH_SHORT).show();
             }
         });
@@ -297,9 +297,12 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
                 Follower model = new Follower();
                 Log.i("followersss", String.valueOf(d));
-                model.setFollowerEmail(d.child("follower_Email").getValue(String.class));
-                model.setFollowerName(d.child("follower_Name").getValue(String.class));
-                model.setFollowerNumber(d.child("follower_Number").getValue(String.class));
+                if (d.child("followerEmail").exists())
+                    model.setFollowerEmail(d.child("followerEmail").getValue(String.class));
+                if (d.child("followerName").exists())
+                    model.setFollowerName(d.child("followerName").getValue(String.class));
+                if (d.child("followerNumber").exists())
+                    model.setFollowerNumber(d.child("followerNumber").getValue(String.class));
                 listOffollower.add(model);
             }
             pastActivities.setFollowersList(listOffollower);
@@ -423,6 +426,29 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
         });
 
+        newActivityLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (destinationReachedOrNewJourney) {
+                    Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
+                    homeIntent.putExtra("user_key", userData);
+                    homeIntent.putExtra("newOrExistingJourney", newOrExistingJourney);
+                    startActivity(homeIntent);
+                } else if(journeyStarted){
+                    Intent homeIntent = new Intent(HomePage.this, MapsActivity.class);
+                    homeIntent.putExtra("user_key", userData);
+                    homeIntent.putExtra("isThisDestinationSetup", false);
+                    startActivity(homeIntent);
+                }
+                else{
+                    Intent homeIntent = new Intent(HomePage.this, NewActivityPage.class);
+                    homeIntent.putExtra("user_key", userData);
+                    homeIntent.putExtra("newOrExistingJourney", newOrExistingJourney);
+                    startActivity(homeIntent);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -442,4 +468,5 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private void createActivityHistory(DataSnapshot snapshot) {
 
     }
+
 }

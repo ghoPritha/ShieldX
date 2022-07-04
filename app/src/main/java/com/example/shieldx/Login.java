@@ -135,6 +135,7 @@ public class Login extends AppCompatActivity {
         myIntent.putExtra("user_key", (Serializable) userData);
 //                    myIntent.putExtra("Username", username.getText().toString());
         startActivity(myIntent);
+        finish();
     }
 
     private void showSignUp(Button signupBtn) {

@@ -14,6 +14,8 @@
     <string name="firstname_text">First Name</string>
     <string name="lastname_text">Last Name</string>
     <string name="setting">Settings</string>
+    <string name="watermark">Start your journey with us</string>
+    <string name="tagline">For everyone\'s safety</string>
     <string name="search_elements">search_elements</string>
     <string name="hello">Hello, </string>
     <string name="userName">John</string>

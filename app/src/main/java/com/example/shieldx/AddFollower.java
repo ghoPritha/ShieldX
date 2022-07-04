@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class AddFollower extends AppCompatActivity {
 
     //initialize variable
     ImageView addFromContact, addFromMyFollower, addFromNewFollower;
+    RelativeLayout fromContact, fromNewFoollower;
     Button backButton;
     User userData;
     int userId;
@@ -98,6 +100,17 @@ public class AddFollower extends AppCompatActivity {
                 }
             }
         });
+        fromContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (CommonMethods.checkPermissionForContacts(AddFollower.this)) {
+                    pickContactIntent();
+                } else {
+                    requestPermissions();
+                }
+            }
+        });
 
 //        addFromMyFollower.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -109,6 +122,14 @@ public class AddFollower extends AppCompatActivity {
 //        });
 
         addFromNewFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(AddFollower.this, NewFollowerManually.class);
+                myIntent.putExtra("user_key", (Serializable) userData);
+                startActivityForResult(myIntent, ADD_FOLLOWER_MANUALLY);
+            }
+        });
+        fromNewFoollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(AddFollower.this, NewFollowerManually.class);
@@ -380,10 +401,12 @@ public class AddFollower extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         recyclerView = findViewById(R.id.recyclerView);
         addFromContact = findViewById(R.id.addFromContact);
+        fromContact = findViewById(R.id.fromContact);
         // addFromMyFollower = findViewById(R.id.addFromMyFollower);
         //  RelativeLayout fromMyFollower = findViewById(R.id.fromMyFollower);
         //TextView extraOR = findViewById(R.id.extraOR);
         addFromNewFollower = findViewById(R.id.addfromNewFoollower);
+        fromNewFoollower = findViewById(R.id.fromNewFoollower);
         userName = (TextView) findViewById(R.id.userName);
         backButton.setText("Back");
 //        if (!isTheAddFollowerfromActivity) {

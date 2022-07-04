@@ -41,10 +41,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/signin"
+            android:layout_marginBottom="5sp"
             android:background="#20ffffff"
             android:drawableLeft="@drawable/ic_baseline_perm_identity_24"
             android:drawablePadding="20dp"
-            android:layout_marginBottom="5sp"
             android:hint="@string/username_text"
             android:padding="20dp"
             android:textColor="@color/white"
@@ -85,15 +85,15 @@
             android:textStyle="bold"
             android:translationY="-20dp" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/forgotpass"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@id/btn_login"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:text="Forgot Password?"-->
-<!--            android:textColor="@color/accentGrey"-->
-<!--            android:translationY="-25dp" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/forgotpass"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_below="@id/btn_login"-->
+        <!--            android:layout_centerHorizontal="true"-->
+        <!--            android:text="Forgot Password?"-->
+        <!--            android:textColor="@color/accentGrey"-->
+        <!--            android:translationY="-25dp" />-->
     </RelativeLayout>
 
     <RelativeLayout

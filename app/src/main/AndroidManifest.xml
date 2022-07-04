@@ -84,6 +84,9 @@
             android:exported="false" /> <!-- Get API key from google console API: Play API -->
         <activity
             android:name=".Login"
+            android:exported="true" />
+        <activity
+            android:name=".LaunchScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -113,6 +116,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service android:name=".BroadcastService" />
     </application>
 
 </manifest>

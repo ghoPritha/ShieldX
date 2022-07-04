@@ -83,14 +83,14 @@
                 android:id="@+id/layoutSettings"
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="208dp"
                 android:background="@drawable/rectangular_background"
                 android:gravity="center"
+                android:layout_marginTop="20sp"
+                android:padding="5sp"
                 android:orientation="vertical"
-                android:padding="15sp"
                 app:layout_constraintDimensionRatio="H, 1:1"
-                app:layout_constraintEnd_toStartOf="@id/layoutContacts"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/layoutJourneyList"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -107,51 +107,86 @@
                     android:gravity="center"
                     android:text="@string/setting"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutContacts"
+                android:id="@+id/watermark"
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22sp"
-                android:background="@drawable/rectangular_background"
                 android:gravity="center"
+                android:layout_marginTop="30sp"
+                android:padding="5sp"
                 android:orientation="vertical"
-                android:padding="15sp"
                 app:layout_constraintDimensionRatio="H, 1:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layoutSettings"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintStart_toStartOf="@id/layoutJourneyList"
+                app:layout_constraintEnd_toEndOf="@id/layoutSettings"
+                app:layout_constraintTop_toBottomOf="@id/layoutJourneyList">
 
                 <ImageView
-                    android:id="@+id/addFollowers"
-                    android:layout_width="100sp"
-                    android:layout_height="100sp"
+                    android:id="@+id/logo"
+                    android:layout_width="200sp"
+                    android:layout_height="200sp"
                     android:layout_margin="8sp"
-                    android:src="@drawable/ic_contacts"
-                    tools:ignore="MissingConstraints" />
+                    android:padding="8sp"
+                    android:alpha="0.5"
+                    android:src="@drawable/ic_logo" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/contacts"
-                    android:textColor="@color/black"
+                    android:text="@string/watermark"
+                    android:alpha="0.3"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
+
+            <!--            <LinearLayout-->
+<!--                android:id="@+id/layoutContacts"-->
+<!--                android:layout_width="0sp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="22sp"-->
+<!--                android:background="@drawable/rectangular_background"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="vertical"-->
+<!--                android:padding="15sp"-->
+<!--                app:layout_constraintDimensionRatio="H, 1:1"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/layoutSettings"-->
+<!--                app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/addFollowers"-->
+<!--                    android:layout_width="100sp"-->
+<!--                    android:layout_height="100sp"-->
+<!--                    android:layout_margin="8sp"-->
+<!--                    android:src="@drawable/ic_contacts"-->
+<!--                    tools:ignore="MissingConstraints" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/contacts"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textStyle="bold" />-->
+<!--            </LinearLayout>-->
+
             <LinearLayout
                 android:id="@+id/layoutJourneyList"
-                android:layout_width="170sp"
-                android:layout_height="171sp"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rectangular_background"
                 android:gravity="center"
+                android:layout_marginTop="20sp"
+                android:padding="5sp"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@+id/layoutSettings"
-                app:layout_constraintEnd_toStartOf="@+id/layoutContacts"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toStartOf="@+id/layoutSettings"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -159,6 +194,7 @@
                     android:layout_width="100sp"
                     android:layout_height="100sp"
                     android:layout_margin="8sp"
+                    android:padding="8sp"
                     android:src="@drawable/ic_favourites"
                     tools:ignore="MissingConstraints" />
 
@@ -168,7 +204,6 @@
                     android:gravity="center"
                     android:text="@string/pastActivities"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -213,16 +248,20 @@
             <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
             <RelativeLayout
-                android:id="@+id/relativeLayout"
+                android:id="@+id/newActivityLayout"
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120sp"
+                android:layout_marginStart="20sp"
+                android:layout_marginEnd="20sp"
                 android:background="@drawable/trending_background"
                 android:padding="5sp"
-                app:layout_constraintEnd_toEndOf="@id/layoutContacts"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@id/layoutSettings"
-                app:layout_constraintTop_toBottomOf="@id/layoutSettings">
+                android:layout_marginTop="100sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/watermark"
+                app:layout_constraintVertical_bias="0.0">
 
                 <TextView
                     android:id="@+id/newActivity"
@@ -247,6 +286,8 @@
                     app:layout_constraintStart_toEndOf="@+id/newActivity"
                     app:layout_constraintTop_toTopOf="parent" />
             </RelativeLayout>
+
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
