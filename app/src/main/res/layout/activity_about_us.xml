@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dashboardBackground"
-    tools:context=".AddFollower">
+    tools:context=".AboutUs">
 
     <RelativeLayout
         android:id="@+id/layoutHeader"
@@ -37,6 +37,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
+
         <TextView
             android:id="@+id/txtUserProfile"
             android:layout_width="wrap_content"

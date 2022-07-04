@@ -20,8 +20,8 @@
             android:id="@+id/contact_image"
             android:layout_width="20sp"
             android:layout_height="20sp"
-            android:src="@drawable/ic_person"
-            android:layout_alignParentStart="true"/>
+            android:layout_alignParentStart="true"
+            android:src="@drawable/ic_person" />
 
         <LinearLayout
             android:layout_width="240sp"
@@ -62,6 +62,14 @@
 <!--            android:contentDescription="@string/app_name"-->
 <!--            android:src="@drawable/ic_delete"-->
 <!--            app:tint="@color/white" />-->
+
+        <ImageView
+            android:id="@+id/following"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:src="@drawable/ic_eye"
+            android:layout_alignParentEnd="true"/>
+
     </RelativeLayout>
 
 <!--    <LinearLayout-->

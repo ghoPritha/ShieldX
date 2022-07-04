@@ -145,7 +145,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<LatLng> routeLatLngList;
     List<Long> journeyDurationList;
 
-    private boolean reachedDestination = false, firstAlarm = false, secondAlarm = false, thirdAlarm = false;
+    private boolean reachedDestination = false, firstAlarm = false, secondAlarm = false, thirdAlarm = false
+            , timeOver = false;
     private boolean routeDeviation = false;
     private Long journeyDuration = 0L;
     EncodedPolyline sourceDestinationEncodedPolyline;
@@ -496,7 +497,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
             }
         }
-        Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(MapsActivity.this, getString(R.string.journey_guardianAlerted), Toast.LENGTH_SHORT).show();
     }
 
     private void sendNotificationViaSmS() {
@@ -1471,7 +1472,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (distance < finalWarning && !thirdAlarm) {
             activityReference.child("finalWarning").setValue("true");
             thirdAlarm = true;
-            message= userName + " is " + distance + " meters away from destination \n Remaining time -" + minutes + " : " + seconds + "  HURRY ";
+            message= userName + " is " + distance + " meters away from destination \n Remaining time - " + minutes + " : " + seconds + "  HURRY ";
             if (isThisSms) {
                 flag=false;
                 sendNotificationViaSmS();
@@ -1485,20 +1486,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             activityReference.child("destinationReached").setValue(true);
             activityReference.child("activity date").setValue(currentDate);
            // extractPastActivities();
-            reachedDestination = true;
-            message= userName + " has reached destination " + destinatioName;
-            if (isThisSms) {
-                flag=false;
-                sendNotificationViaSmS();
-            } else {
-                sendPushNotificationToFollower(" Destination Reached ");
-            }
+
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Destination Reached")
                     .setMessage("You have reached your destination \n" + destinatioName)
                     .setPositiveButton("Ok, Exit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            reachedDestination = true;
+                            message= userName + " has reached destination " + destinatioName;
+                            if (isThisSms) {
+                                flag=false;
+                                sendNotificationViaSmS();
+                            } else {
+                                sendPushNotificationToFollower("Destination Reached");
+                            }
                             Intent myIntent = new Intent(MapsActivity.this, HomePage.class);
                             myIntent.putExtra("user_key", (Serializable) userData);
                             // myIntent.putExtra("pastActivties",(Serializable) pastActivities);
@@ -1507,8 +1509,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }).show();
         }
 
-        //500m tolerance is used for detecting devaition in route
-        if (PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), routeLatLngList, false, 0.1)) {
+        //20m tolerance is used for detecting deviation from route
+        if (PolyUtil.isLocationOnPath(new LatLng(location.getLatitude(), location.getLongitude()), routeLatLngList, false, 20)) {
             activityReference.child("routeDeviation").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -1516,13 +1518,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (dataSnapshot.getValue(String.class).equals("true")) {
                             routeDeviation = false;
                             activityReference.child("routeDeviation").setValue("false");
-                            message= userName + " is deviated from route";
-                            if (isThisSms) {
-                                flag=false;
-                                sendNotificationViaSmS();
-                            } else {
-                                sendPushNotificationToFollower(" Out of Route ");
-                            }
                         }
                     }
                 }
@@ -1535,9 +1530,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (!routeDeviation) {
                 routeDeviation = true;
                 activityReference.child("routeDeviation").setValue("true");
+                message= userName + " is deviated from route";
+                if (isThisSms) {
+                    flag=false;
+                    sendNotificationViaSmS();
+                } else {
+                    sendPushNotificationToFollower(" Out of Route ");
+                }
             }
         }
-        if (minutes == 0 && seconds == 0) {
+        if (minutes == 0 && seconds == 0 && !timeOver) {
+            timeOver = true;
             activityReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {

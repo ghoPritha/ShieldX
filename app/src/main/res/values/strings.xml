@@ -15,6 +15,8 @@
     <string name="lastname_text">Last Name</string>
     <string name="setting">Settings</string>
     <string name="watermark">Start your journey with us</string>
+    <string name="followerDisclaimer">Make sure follower\'s email Id that he/she used during signing up to ShieldX is added
+    in your contact as well.</string>
     <string name="tagline">For everyone\'s safety</string>
     <string name="search_elements">search_elements</string>
     <string name="hello">Hello, </string>

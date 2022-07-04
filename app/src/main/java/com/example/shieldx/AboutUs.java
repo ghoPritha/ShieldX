@@ -37,7 +37,7 @@ public class AboutUs extends AppCompatActivity {
                 " The developing team consists of four students, two of them are Pritha Ghosal and Shimony Mittal from the Masters’ course Digital Engineering and the other two are Shafaq Bilal and Muhammad Umair from the Masters’ course Operatons research and Bsiness Analytics.\n" +
                 "\n" +
                 "The vision of developing this application is to provide a sense of security and make it widely available for all the people who travel alone and to make it easier for their friends or family to track them whenever they need. ShieldX makes sure to keep you safe and secure by notifying your current status to your friends and family throughout your journey.\n" +
-        "\n" + " ShieldX version 1.0";
+        "\n" + " ShieldX version 4.0";
 //        abuotUs.setText(aboutText);
 
         Intent intent = getIntent();
