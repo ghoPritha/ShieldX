@@ -875,25 +875,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     if (snapshot.child("followersList").exists()) {
                         for (DataSnapshot d : snapshot.child("followersList").getChildren()) {
-                            ContactModel model = new ContactModel();
-                            //Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
+                            if(d.child("followerEmail").getValue(String.class)!=null && d.child("followerNumber").getValue(String.class)!=null) {
+                                ContactModel model = new ContactModel();
+                                //Log.d("followersList", String.valueOf(d.child("followerEmail").getValue(String.class)));
 
-                            if (d.child("followerEmail").exists() && !d.child("followerEmail").getValue(String.class).toString().equalsIgnoreCase("")) {
-                                model.setEmail(d.child("followerEmail").getValue(String.class));
-                                guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
-                            }
-                            if (d.child("followerName").exists() && !d.child("followerName").getValue(String.class).toString().equalsIgnoreCase("")) {
-                                model.setName(d.child("followerName").getValue(String.class));
-                            }
-                            if (d.child("followerNumber").exists() && !d.child("followerNumber").getValue(String.class).toString().equalsIgnoreCase("")) {
-                                model.setNumber(d.child("followerNumber").getValue(String.class));
-                                guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
-                            }
+                                if (d.child("followerEmail").exists() && !d.child("followerEmail").getValue(String.class).toString().equalsIgnoreCase("")) {
+                                    model.setEmail(d.child("followerEmail").getValue(String.class));
+                                    guardiansEmailList.add(d.child("followerEmail").getValue(String.class));
+                                }
+                                if (d.child("followerName").exists() && !d.child("followerName").getValue(String.class).toString().equalsIgnoreCase("")) {
+                                    model.setName(d.child("followerName").getValue(String.class));
+                                }
+                                if (d.child("followerNumber").exists() && !d.child("followerNumber").getValue(String.class).toString().equalsIgnoreCase("")) {
+                                    model.setNumber(d.child("followerNumber").getValue(String.class));
+                                    guardiansPhoneNoList.add(d.child("followerNumber").getValue(String.class));
+                                }
 
-                            contactList.add(model);
-                            adapter = new MainAdapter(MapsActivity.this, contactList);
-                            // set adapter
-                            recyclerView.setAdapter(adapter);
+                                contactList.add(model);
+                                adapter = new MainAdapter(MapsActivity.this, contactList);
+                                // set adapter
+                                recyclerView.setAdapter(adapter);
+                            }
                         }
                     }
                     createRoute(selectedTravelMode);
